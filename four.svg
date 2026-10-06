@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
+<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#243c32"/><stop offset="1" stop-color="#0d1714"/></linearGradient><linearGradient id="skin" x2="0" y2="1"><stop stop-color="#fffdf8"/><stop offset="1" stop-color="#d8d4cd"/></linearGradient></defs>
+<rect width="600" height="800" fill="url(#bg)"/>
+<circle cx="300" cy="180" r="150" fill="#5e8b70" opacity=".18"/>
+<!-- ranger silhouette -->
+<path d="M120 800 Q125 560 185 475 Q225 425 300 420 Q375 425 415 475 Q475 560 480 800Z" fill="#314536" stroke="#8cae8c" stroke-width="4"/>
+<!-- studded leather -->
+<path d="M165 800 Q170 560 215 485 L300 535 L385 485 Q430 560 435 800Z" fill="#403b32" stroke="#9b927d" stroke-width="4"/>
+<g fill="#b8ae91"><circle cx="210" cy="610" r="5"/><circle cx="250" cy="635" r="5"/><circle cx="350" cy="635" r="5"/><circle cx="390" cy="610" r="5"/><circle cx="205" cy="700" r="5"/><circle cx="395" cy="700" r="5"/></g>
+<!-- neck -->
+<path d="M260 420 L340 420 L350 500 Q300 530 250 500Z" fill="url(#skin)"/>
+<!-- face -->
+<path d="M205 180 Q210 75 300 55 Q390 75 395 180 L370 350 Q350 420 300 445 Q250 420 230 350Z" fill="url(#skin)" stroke="#b9b4ad" stroke-width="3"/>
+<!-- elf ears -->
+<path d="M225 235 L125 180 Q150 270 225 285Z" fill="url(#skin)" stroke="#b9b4ad" stroke-width="3"/>
+<path d="M375 235 L475 180 Q450 270 375 285Z" fill="url(#skin)" stroke="#b9b4ad" stroke-width="3"/>
+<!-- black hair -->
+<path d="M205 190 Q190 85 255 50 Q325 10 390 75 L405 190 L370 145 L350 185 L325 125 L290 170 L260 120 L235 190Z" fill="#111316"/>
+<!-- blue eyes -->
+<ellipse cx="260" cy="250" rx="20" ry="11" fill="#eaf7ff"/><ellipse cx="340" cy="250" rx="20" ry="11" fill="#eaf7ff"/>
+<circle cx="260" cy="250" r="6" fill="#4f91d9"/><circle cx="340" cy="250" r="6" fill="#4f91d9"/>
+<path d="M280 330 Q300 340 320 330" fill="none" stroke="#6e5f5b" stroke-width="4"/>
+<!-- bow -->
+<path d="M445 470 Q535 350 455 245" fill="none" stroke="#8c6239" stroke-width="12"/>
+<path d="M455 245 L445 470" stroke="#ddd5c3" stroke-width="2"/>
+<path d="M405 525 L530 400" stroke="#8c6239" stroke-width="7"/>
+<text x="30" y="50" fill="#d9f1df" font-family="serif" font-size="28" font-weight="bold">FOUR</text>
+<text x="30" y="82" fill="#b8c9bc" font-family="sans-serif" font-size="18">Wood Elf • Ranger • Lv.3</text>
+<text x="30" y="745" fill="#e9f4eb" font-family="sans-serif" font-size="18">24 • White skin • Blue eyes • Black hair</text>
+</svg>
