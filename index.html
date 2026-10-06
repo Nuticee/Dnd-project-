@@ -12,29 +12,34 @@ body{min-height:100vh}
 .screen{min-height:100vh;padding-bottom:78px}
 .hidden{display:none!important}
 .home{position:relative;min-height:100vh;overflow:hidden;background:
-radial-gradient(circle at 72% 15%,rgba(126,210,255,.18),transparent 20%),
-linear-gradient(180deg,#061b2b 0%,#071827 46%,#02070b 100%)}
-.moon{position:absolute;width:116px;height:116px;border-radius:50%;right:12%;top:9%;background:#e5f5ff;box-shadow:0 0 52px rgba(160,220,255,.58);opacity:.94}
-.mountains{position:absolute;inset:auto 0 0;height:64%;background:
-linear-gradient(145deg,transparent 0 27%,#0b2736 27% 43%,transparent 43%),
-linear-gradient(35deg,transparent 0 31%,#092432 31% 49%,transparent 49%),
-linear-gradient(160deg,transparent 0 48%,#071722 48% 72%,transparent 72%);opacity:.98}
-.snow{position:absolute;inset:0;background-image:radial-gradient(#e4f7ff 1px,transparent 1px);background-size:29px 29px;opacity:.13}
-.gate{position:absolute;left:50%;top:28%;transform:translateX(-50%);width:224px;height:188px;border:10px solid #31566b;border-bottom:0;border-radius:112px 112px 0 0;box-shadow:0 0 45px rgba(79,185,255,.16)}
-.gate:after{content:"";position:absolute;inset:20px 22px 0;background:linear-gradient(180deg,rgba(120,211,255,.25),rgba(7,25,37,.92));border-radius:80px 80px 0 0}
-.home-content{position:relative;z-index:2;padding:28px 18px 102px;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end}
-.kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#86d8ff;font-weight:800}
-.home h1{font-family:Georgia,serif;font-size:44px;line-height:.94;margin:8px 0 10px;text-shadow:0 6px 28px #000;max-width:620px}
-.home p{color:#c0d3de;max-width:560px;margin:0 0 16px;line-height:1.5}
-.profile{display:flex;align-items:center;gap:12px;padding:11px;border:1px solid #2d6682;background:rgba(3,18,28,.78);backdrop-filter:blur(12px);border-radius:17px;margin-bottom:10px;box-shadow:0 10px 30px rgba(0,0,0,.24)}
-.profile img{width:62px;height:62px;object-fit:cover;border-radius:13px;border:1px solid #579bb9}
-.profile b{display:block;font-size:17px}.profile span{display:block;font-size:12px;color:#9db5c2;margin-top:3px}
-.profile-stats{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.profile-stats i{font-style:normal;font-size:10px;padding:4px 7px;border-radius:7px;background:#0b2a3a;color:#cde7f2}
-.cta{width:100%;padding:15px;border-radius:15px;border:1px solid #63b9e2;background:linear-gradient(180deg,#174c67,#0b2d40);color:#fff;font-weight:900;font-size:15px;letter-spacing:.02em;box-shadow:0 8px 26px rgba(0,0,0,.25)}
-.home-panels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}
-.home-panels button{padding:11px 6px;border-radius:12px;border:1px solid #204b61;background:rgba(7,24,35,.86);color:#c8dce7}
-.home-nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,720px);display:grid;grid-template-columns:repeat(5,1fr);background:rgba(2,10,16,.97);border-top:1px solid #173b4d;z-index:12;padding-bottom:env(safe-area-inset-bottom)}
+radial-gradient(circle at 76% 12%,rgba(134,218,255,.22),transparent 18%),
+radial-gradient(circle at 22% 55%,rgba(37,102,137,.16),transparent 30%),
+linear-gradient(180deg,#061a2a 0%,#071522 52%,#02070b 100%)}
+.moon{position:absolute;width:108px;height:108px;border-radius:50%;right:11%;top:7%;background:#e7f5ff;box-shadow:0 0 58px rgba(153,220,255,.62);opacity:.96}
+.mountains{position:absolute;inset:auto 0 0;height:60%;background:
+linear-gradient(147deg,transparent 0 23%,#0a2635 23% 42%,transparent 42%),
+linear-gradient(32deg,transparent 0 29%,#092331 29% 49%,transparent 49%),
+linear-gradient(160deg,transparent 0 46%,#071923 46% 72%,transparent 72%);opacity:.98}
+.snow{position:absolute;inset:0;background-image:radial-gradient(#e5f8ff 1px,transparent 1px);background-size:27px 27px;opacity:.15}
+.gate{position:absolute;left:50%;top:25%;transform:translateX(-50%);width:235px;height:190px;border:10px solid #31576a;border-bottom:0;border-radius:120px 120px 0 0;box-shadow:0 0 48px rgba(77,188,241,.18)}
+.gate:after{content:"";position:absolute;inset:21px 23px 0;background:linear-gradient(180deg,rgba(111,205,255,.28),rgba(5,21,31,.95));border-radius:82px 82px 0 0}
+.home-content{position:relative;z-index:2;padding:26px 16px 112px;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end}
+.kicker{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:#83d8ff;font-weight:900}
+.home h1{font-family:Georgia,serif;font-size:44px;line-height:.91;margin:8px 0 9px;max-width:620px;text-shadow:0 7px 30px #000}
+.home p{color:#c0d3de;max-width:570px;margin:0 0 13px;line-height:1.45}
+.status-row{display:flex;gap:7px;overflow:auto;margin-bottom:9px}.status-chip{white-space:nowrap;padding:6px 9px;border:1px solid #214d64;background:rgba(4,20,30,.78);border-radius:9px;font-size:10px;color:#b9d5e2}
+.profile{display:flex;align-items:center;gap:11px;padding:11px;border:1px solid #2d6682;background:rgba(3,18,28,.84);backdrop-filter:blur(12px);border-radius:17px;margin-bottom:9px;box-shadow:0 12px 30px rgba(0,0,0,.28)}
+.profile img{width:62px;height:62px;object-fit:cover;border-radius:13px;border:1px solid #579bb9}.profile b{display:block;font-size:17px}.profile span{display:block;font-size:12px;color:#9db5c2;margin-top:2px}
+.profile-stats{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.profile-stats i{font-style:normal;font-size:10px;padding:4px 7px;border-radius:7px;background:#0b2a3a;color:#cde7f2}
+.cta{width:100%;padding:15px;border-radius:15px;border:1px solid #68bee6;background:linear-gradient(180deg,#174e69,#0a2d40);color:#fff;font-weight:900;font-size:15px;box-shadow:0 8px 28px rgba(0,0,0,.28)}
+.home-panels{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:8px}.home-panels button{padding:10px 5px;border-radius:12px;border:1px solid #214b61;background:rgba(7,24,35,.9);color:#c8dce7;font-size:12px}
+.home-nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,720px);display:grid;grid-template-columns:repeat(5,1fr);background:rgba(2,10,16,.98);border-top:1px solid #173b4d;z-index:12;padding-bottom:env(safe-area-inset-bottom)}
 .home-nav button{border:0;border-radius:0;background:transparent;padding:9px 3px 8px;color:#8199a7;font-size:10px}.home-nav button span{display:block;font-size:19px;margin-bottom:2px}.home-nav button.active{color:#eaf7ff}
+.adventure{position:relative;min-height:100vh;background:linear-gradient(180deg,#071a27,#02070b)}
+.adventure-hero{padding:18px 16px 12px;border-bottom:1px solid #183b4d;background:radial-gradient(circle at 75% 0%,rgba(98,196,239,.15),transparent 30%)}
+.adventure-title{font:700 30px/1 Georgia,serif;margin:5px 0 7px}.scene-card{margin:12px 14px;border:1px solid #28536a;background:linear-gradient(145deg,#071b27,#041018);border-radius:18px;padding:15px}.scene-label{font-size:10px;letter-spacing:.15em;color:#75cef7;font-weight:900}.scene-text{font:16px/1.55 Georgia,serif;color:#d6e6ee;margin:8px 0}.dm-quote{border-left:3px solid #65c7f4;padding-left:11px;color:#b8d8e5;font:14px/1.45 Georgia,serif}
+.quest{display:flex;gap:10px;align-items:flex-start}.quest-icon{font-size:25px}.quest b{font-size:14px}.quest span{display:block;color:#93aab7;font-size:11px;margin-top:3px}
+.freeform{position:fixed;left:50%;bottom:66px;transform:translateX(-50%);width:min(100%,720px);padding:8px 10px;background:rgba(2,9,14,.97);border-top:1px solid #173b4d;z-index:11;display:flex;gap:7px}.freeform input{flex:1;min-width:0;background:#071923;border:1px solid #28546a;color:#fff;border-radius:12px;padding:11px}.freeform button{padding:10px 14px}
 :root{--bg:#020a10;--panel:#071824;--panel2:#0b2230;--line:#1b5876;--text:#eef7ff;--muted:#91a9b8;--accent:#69c7ff;--danger:#ff5570;--good:#63e6a6;--gold:#e8c66a}
 .top{padding:16px 16px 10px;border-bottom:1px solid #123342;position:sticky;top:0;background:rgba(2,10,16,.94);backdrop-filter:blur(10px);z-index:5}
 .eyebrow{font-size:12px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase}
@@ -62,29 +67,29 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 <div class="home-content">
 <div class="kicker">D&D AI DM • CAMPAIGN I</div>
 <h1>The Frozen Passage</h1>
-<p>Salju turun tanpa suara. Di balik gerbang batu kuno, sesuatu yang seharusnya tetap beku sedang menunggu.</p>
-<div class="profile">
-<img src="ilgar.png" alt="Ilgar Zamani">
-<div style="flex:1"><b>Ilgar Zamani</b><span>Human • Wizard Lv.3 • Sage</span>
-<div class="profile-stats"><i>HP 16/16</i><i>AC 12</i><i>INT 16</i><i>Staff of Frost</i></div>
-</div>
-</div>
-<button class="cta" onclick="showCombat()">⚔️ MASUK KE PETUALANGAN</button>
-<div class="home-panels">
-<button onclick="showCombat()">⚔️ Combat</button>
-<button onclick="alert('Character Sheet akan terhubung ke database karakter.')">♙ Character</button>
-<button onclick="alert('Bestiary akan terhubung ke database monster.')">👹 Bestiary</button>
-</div>
+<p>Salju turun tanpa suara. Gerbang batu kuno berdiri di hadapanmu, dan hawa dingin dari baliknya terasa terlalu hidup.</p>
+<div class="status-row"><span class="status-chip">❄ Snowfall</span><span class="status-chip">📍 Old Snowy Stone Gate</span><span class="status-chip">🌙 Night</span></div>
+<div class="profile"><img src="ilgar.png" alt="Ilgar Zamani"><div style="flex:1"><b>Ilgar Zamani</b><span>Human • Wizard Lv.3 • Sage</span><div class="profile-stats"><i>HP 16/16</i><i>AC 12</i><i>INT +3</i><i>Staff of Frost</i></div></div></div>
+<button class="cta" onclick="showAdventure()">✦ LANJUTKAN PETUALANGAN</button>
+<div class="home-panels"><button onclick="showAdventure()">📖 Adventure</button><button onclick="showCombat()">⚔ Combat</button><button onclick="alert('Bestiary akan diaktifkan bersama database monster.')">👹 Bestiary</button></div>
 </div>
 <nav class="home-nav">
 <button class="active" onclick="showHome()"><span>⌂</span>Home</button>
-<button onclick="showCombat()"><span>✦</span>Adventure</button>
+<button onclick="showAdventure()"><span>✦</span>Adventure</button>
 <button onclick="showCombat()"><span>⚔</span>Combat</button>
 <button onclick="alert('Character Sheet akan terhubung ke database karakter.')"><span>♙</span>Character</button>
 <button onclick="alert('Bestiary akan terhubung ke database monster.')"><span>☠</span>Bestiary</button>
 </nav>
 </section>
-<section id="combatScreen" class="screen hidden">
+<section id="adventureScreen" class="screen adventure hidden">
+<div class="adventure-hero"><div class="eyebrow">ADVENTURE MODE • CHAPTER I</div><div class="adventure-title">Gerbang yang Membeku</div><div class="sub">Old Snowy Stone Gate • Malam • Salju</div></div>
+<div class="scene-card"><div class="scene-label">DUNGEON MASTER</div><p class="scene-text">Angin dingin menyapu halaman reruntuhan. Salju berputar di antara pilar batu. Di balik gerbang, terdengar bunyi retakan es yang perlahan mendekat.</p><p class="dm-quote">“Ilgar… akhirnya kau datang.” Suara itu tidak berasal dari satu arah. Seolah-olah seluruh gerbang sedang berbicara.</p></div>
+<div class="scene-card quest"><div class="quest-icon">❄️</div><div><b>Jejak dari Plane of Ice</b><span>Temukan sumber energi dingin di balik gerbang.</span><span style="color:#69c7ff;margin-top:7px">Quest aktif • Belum terselesaikan</span></div></div>
+<div class="scene-card"><div class="scene-label">APA YANG KAMU LAKUKAN?</div><p class="scene-text" style="font-size:14px">Kamu bebas bertindak. Tidak ada pilihan A/B/C yang memaksamu.</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><button onclick="showCombat()">⚔️ Hadapi apa pun di balik gerbang</button><button onclick="adventureLog('Ilgar mengamati gerbang dengan teliti.')">🔎 Periksa gerbang</button><button onclick="adventureLog('Ilgar memanggil kekuatan Staff of Frost.')">❄️ Rasakan Staff of Frost</button><button onclick="adventureLog('Ilgar mencoba berbicara kepada suara di gerbang.')">💬 Bicara</button></div></div>
+<div class="scene-card"><div class="scene-label">ADVENTURE LOG</div><div id="adventureLog" class="log"><p>Petualangan dimulai di Old Snowy Stone Gate.</p></div></div>
+<div class="freeform"><input id="freeformInput" placeholder="Katakan atau lakukan apa pun…"><button onclick="submitFreeform()">➤</button></div>
+<nav class="home-nav"><button onclick="showHome()"><span>⌂</span>Home</button><button class="active" onclick="showAdventure()"><span>✦</span>Adventure</button><button onclick="showCombat()"><span>⚔</span>Combat</button><button onclick="alert('Character Sheet akan terhubung ke database karakter.')"><span>♙</span>Character</button><button onclick="alert('Bestiary akan terhubung ke database monster.')"><span>☠</span>Bestiary</button></nav>
+</section><section id="combatScreen" class="screen hidden">
 <div class="app">
 <header class="top"><div class="eyebrow">The Frozen Passage • Combat</div><h1>⚔️ Pertempuran</h1></header>
 <main class="content">
@@ -105,7 +110,12 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 <nav class="bottom"><button onclick="showHome()">⌂<br>Home</button><button class="active">⚔<br>Combat</button><button>✦<br>Petualangan</button><button>♙<br>Karakter</button></nav>
 </div>
 <div id="toast" class="toast"></div>
-<script type="module">
+<script>
+function showHome(){document.querySelectorAll('.screen').forEach(x=>x.classList.add('hidden'));document.querySelector('#homeScreen').classList.remove('hidden');scrollTo(0,0)}
+function showAdventure(){document.querySelectorAll('.screen').forEach(x=>x.classList.add('hidden'));document.querySelector('#adventureScreen').classList.remove('hidden');scrollTo(0,0)}
+function adventureLog(text){const el=document.querySelector('#adventureLog');const p=document.createElement('p');p.textContent=text;el.prepend(p)}
+function submitFreeform(){const input=document.querySelector('#freeformInput');const text=input.value.trim();if(!text)return;adventureLog('Ilgar: '+text);input.value='';}
+</script><script type="module">
 import * as Game from "./game-core.js";
 const player=Game.cloneCharacter("ilgar-zamani");let selectedEnemy="goblin",combat=null;const enemyIds=["goblin","kobold","wolf"];
 function init(){const enemies=enemyIds.map(id=>Game.spawnMonster(id));combat=Game.createCombat([player],enemies);render();log("Pertempuran dimulai.");log("Pilih musuh lalu gunakan aksi.")}
