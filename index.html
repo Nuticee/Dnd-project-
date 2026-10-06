@@ -5,80 +5,103 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>D&D AI DM — The Frozen Passage</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#02070d;color:#eef7ff;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-button{font:inherit}.app{min-height:100vh}.screen{display:none;min-height:100vh}.screen.active{display:flex}
-.home{position:relative;flex-direction:column;justify-content:flex-end;padding:26px 18px 90px;overflow:hidden;
-background:radial-gradient(circle at 72% 18%,#e8fbff 0 2%,#75b8d8 3%,transparent 13%),linear-gradient(#061522,#081b2b 50%,#02080e)}
-.home:before{content:"";position:absolute;inset:0;background-image:radial-gradient(#d9f4ff 1px,transparent 1px);background-size:47px 47px;opacity:.28}
-.moon{position:absolute;right:13%;top:11%;width:96px;height:96px;border-radius:50%;background:#e7f8ff;box-shadow:0 0 45px #8edbff}
-.gate{position:absolute;left:50%;bottom:25%;transform:translateX(-50%);width:65%;height:27%;border:7px solid #4d7b91;border-bottom:0;border-radius:45% 45% 0 0;box-shadow:0 0 30px #5bc5ef}
-.content{position:relative;z-index:2;width:100%;max-width:540px;margin:auto}
-.eyebrow{letter-spacing:.18em;color:#9ddfff;font-weight:800;font-size:11px}.home h1{font:700 clamp(42px,11vw,68px)/.9 Georgia,serif;margin:9px 0 14px}.tag{color:#c8d9e5;line-height:1.5}
-.btn{width:100%;border:1px solid #72c9f3;border-radius:15px;padding:15px;margin-top:16px;background:linear-gradient(#1e5875,#0a2b3d);color:#fff;font-weight:900;letter-spacing:.07em}.btn.secondary{background:#071723d9;border-color:#38586c}
-.card{margin-top:14px;border:1px solid #2b4e63;background:#04111bd9;border-radius:17px;padding:12px;display:flex;gap:12px;align-items:center}.avatar{width:68px;height:68px;object-fit:cover;border-radius:12px}.muted{color:#99adbb;font-size:12px}.name{font-weight:900;font-size:18px}.pills{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}.pill{background:#0c2939;padding:5px 8px;border-radius:8px;font-size:11px}
-.nav{position:fixed;z-index:30;bottom:0;left:0;right:0;display:flex;justify-content:space-around;background:#020910f5;border-top:1px solid #183345;padding:9px 4px calc(9px + env(safe-area-inset-bottom))}.nav button{background:none;border:0;color:#7f94a3;font-size:10px}.nav span{display:block;font-size:20px}.nav .on{color:#d1f2ff}
-
-.panel{padding:25px 18px 95px;background:linear-gradient(#06131e,#02070d);overflow:auto}.panel .content{margin:0 auto}.panel h2{font:700 32px Georgia,serif;margin:4px 0 8px}.scene{margin-top:18px;border:1px solid #294a5d;background:#071722;border-radius:17px;padding:18px}.dm{font:16px/1.6 Georgia,serif;color:#cfe0e9}.quote{border-left:3px solid #7ed4f5;padding-left:12px;color:#eaf8ff}
-.combat{position:relative;display:block;padding:0 0 88px;overflow:hidden;background:#02070c}
-.arena{position:relative;height:66vh;min-height:500px;background:#061522 url("combat-bg.png") center/cover no-repeat;background-blend-mode:screen}
-.arena:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#02101a22 20%,#02070ce0 96%)}
-.topbar{position:absolute;z-index:4;top:0;left:0;right:0;padding:13px 14px;background:linear-gradient(#02070dcc,transparent);display:flex;justify-content:space-between;align-items:center}.back{font-size:25px}.title{font:700 20px Georgia,serif}.sub{font-size:10px;color:#9db2bf}
-.narr{position:absolute;z-index:4;top:78px;left:14px;right:14px;padding:12px 14px;border:1px solid #2b6684;background:#03111ddd;border-radius:14px;font:14px/1.45 Georgia,serif}
-.enemy{position:absolute;z-index:4;text-align:center;font-weight:800}.enemy .hp{display:block;background:#d93648;border-radius:8px;height:8px;margin-top:5px;border:1px solid #ff7480}.boss{left:50%;top:47%;transform:translate(-50%,-50%);font-size:14px}.arch1{left:21%;top:53%;font-size:11px}.arch2{right:18%;top:53%;font-size:11px}.enemy b{background:#06121dcc;padding:4px 7px;border-radius:7px}
-.turn{position:absolute;z-index:5;right:14px;bottom:16px;border:1px solid #73c8ef;background:#061c2ad9;border-radius:13px;padding:10px 13px;font-weight:900}
-.actions{position:relative;z-index:8;margin-top:-2px;padding:10px 10px 8px;background:#030b12;border-top:1px solid #24475b;display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.action{border:1px solid #28516a;background:#061724;border-radius:12px;color:#eef7ff;padding:10px 5px;text-align:center;min-height:78px}.action.active{border-color:#4abaff;box-shadow:0 0 16px #138dce66}.ico{font-size:25px}.action small{display:block;color:#9fb4c1;margin-top:3px}
-.combatcard{margin:0 10px;padding:12px;border:1px solid #274a5e;border-radius:16px;background:#04101adf;display:flex;gap:10px;align-items:center}.combatcard img{width:64px;height:64px;border-radius:11px;object-fit:cover}.hpbar{height:8px;background:#172a35;border-radius:8px;overflow:hidden;margin-top:6px}.hpbar i{display:block;width:100%;height:100%;background:#e13d4c}.sheetline{display:flex;gap:9px;font-size:11px;margin-top:7px;color:#b8ccd7}.other{margin:9px 10px 0;width:calc(100% - 20px);border:1px dashed #3b667d;background:#06131d;color:#bcd1dc;border-radius:12px;padding:11px}.combatlog{margin:9px 10px 0;padding:12px;border:1px solid #1d3b4c;border-radius:14px;background:#030b12;color:#9fb5c2;font:12px/1.5 Georgia,serif}
-@media(min-width:700px){.home,.panel{padding-left:max(24px,calc((100% - 650px)/2));padding-right:max(24px,calc((100% - 650px)/2))}.arena{max-width:650px;margin:auto}}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#02070b;color:#eef7ff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+body{min-height:100vh}
+.app{width:min(100%,720px);min-height:100vh;margin:auto;position:relative;overflow:hidden;background:#02070b}
+.screen{min-height:100vh;padding-bottom:78px}
+.hidden{display:none!important}
+.home{position:relative;min-height:100vh;overflow:hidden;background:
+radial-gradient(circle at 50% 18%,rgba(90,180,255,.18),transparent 32%),
+linear-gradient(180deg,#061827 0%,#04111b 45%,#02070b 100%)}
+.moon{position:absolute;width:120px;height:120px;border-radius:50%;right:12%;top:9%;background:#dceeff;box-shadow:0 0 45px rgba(170,220,255,.5);opacity:.9}
+.mountains{position:absolute;inset:auto 0 0;height:58%;background:
+linear-gradient(145deg,transparent 0 28%,#0a202d 28% 42%,transparent 42%),
+linear-gradient(35deg,transparent 0 34%,#09202c 34% 50%,transparent 50%),
+linear-gradient(160deg,transparent 0 50%,#071722 50% 70%,transparent 70%);
+opacity:.95}
+.snow{position:absolute;inset:0;background-image:radial-gradient(#dff5ff 1px,transparent 1px);background-size:31px 31px;opacity:.12}
+.gate{position:absolute;left:50%;top:29%;transform:translateX(-50%);width:205px;height:170px;border:10px solid #28495b;border-bottom:0;border-radius:105px 105px 0 0;box-shadow:0 0 40px rgba(79,185,255,.13)}
+.gate:after{content:"";position:absolute;inset:18px 20px 0;background:linear-gradient(180deg,rgba(113,203,255,.25),rgba(11,33,47,.8));border-radius:75px 75px 0 0}
+.home-content{position:relative;z-index:2;padding:30px 18px 100px;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end}
+.kicker{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#7ccfff}
+.home h1{font-family:Georgia,serif;font-size:42px;line-height:.98;margin:7px 0 8px;text-shadow:0 5px 25px #000}
+.home p{color:#b8cbd6;max-width:510px;margin:0 0 18px}
+.profile{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid #24506a;background:rgba(3,18,28,.72);backdrop-filter:blur(9px);border-radius:16px;margin-bottom:12px}
+.profile img{width:58px;height:58px;object-fit:cover;border-radius:12px;border:1px solid #4e91b2}
+.profile b{display:block;font-size:16px}.profile span{font-size:12px;color:#9db5c2}
+.cta{width:100%;padding:14px;border-radius:14px;border:1px solid #4f9ac0;background:#0d3348;color:#fff;font-weight:800;font-size:15px}
+.home-panels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.home-panels button{padding:11px 6px;border-radius:12px;border:1px solid #173e50;background:rgba(7,24,35,.82);color:#c8dce7}
+:root{--bg:#020a10;--panel:#071824;--panel2:#0b2230;--line:#1b5876;--text:#eef7ff;--muted:#91a9b8;--accent:#69c7ff;--danger:#ff5570;--good:#63e6a6;--gold:#e8c66a}
+.top{padding:16px 16px 10px;border-bottom:1px solid #123342;position:sticky;top:0;background:rgba(2,10,16,.94);backdrop-filter:blur(10px);z-index:5}
+.eyebrow{font-size:12px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase}
+h1{font-size:22px;margin:4px 0 0}.content{padding:12px 14px 92px}
+.card{background:linear-gradient(145deg,#061722,#081d29);border:1px solid #1a526c;border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:0 8px 24px rgba(0,0,0,.22)}
+.combat-head{display:flex;gap:12px;align-items:center}.avatar{width:58px;height:58px;border-radius:14px;object-fit:cover;border:1px solid #3d7893;background:#0b2635}
+.enemy-avatar{display:grid;place-items:center;font-size:34px;background:#15101a}.name{font-weight:800;font-size:18px}.sub{font-size:12px;color:var(--muted);margin-top:2px}
+.hpbar{height:7px;background:#162c36;border-radius:99px;overflow:hidden;margin-top:9px}.hpbar>i{display:block;height:100%;background:var(--danger);width:100%;transition:.25s}
+.statline{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:#c2d5df;margin-top:7px}.statline b{color:#fff}
+.enemy-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.enemy{cursor:pointer;transition:.15s}.enemy.active{outline:2px solid var(--accent)}.enemy.dead{opacity:.45}.enemy .hpbar>i{background:var(--danger)}
+.rollbox{display:flex;align-items:center;justify-content:space-between;gap:12px}.die{font-size:42px;font-weight:900;line-height:1;color:var(--accent);min-width:72px;text-align:center}.roll-detail{font-size:12px;color:var(--muted)}
+button{border:1px solid #245b75;background:#0a2635;color:#fff;border-radius:13px;padding:11px 13px;font-weight:750;cursor:pointer}button:active{transform:scale(.98)}button.primary{background:#123d54;border-color:#4b9cc1}
+button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;justify-content:space-between}.spells{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.icon{font-size:24px;line-height:1;margin-bottom:3px}.spell-name{font-size:13px;line-height:1.12}.spell-meta{font-size:10px;color:var(--muted)}
+.actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.log{max-height:170px;overflow:auto;font-size:12px;color:#c2d5df}.log p{margin:6px 0;padding-bottom:6px;border-bottom:1px solid #102c3a}
+.bottom{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,720px);display:grid;grid-template-columns:repeat(4,1fr);background:rgba(2,10,16,.96);border-top:1px solid #153847;z-index:10}
+.bottom button{border:0;border-radius:0;background:transparent;padding:11px 4px;color:#8fa5b2;font-size:11px}.bottom button.active{color:#eaf7ff}
+.toast{position:fixed;left:50%;top:18px;transform:translateX(-50%) translateY(-20px);opacity:0;background:#0b2230;border:1px solid #3a7893;border-radius:12px;padding:10px 14px;z-index:20;transition:.2s;font-size:13px}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:390px){.spells{grid-template-columns:repeat(2,1fr)}.enemy-grid{grid-template-columns:1fr}.actions{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 <div class="app">
-
-<section id="home" class="screen active home">
-<div class="moon"></div><div class="gate"></div>
-<div class="content"><div class="eyebrow">D&D AI DM • CAMPAIGN I</div><h1>The Frozen Passage</h1>
-<div class="tag">Salju turun tanpa suara. Di balik gerbang batu kuno, sesuatu yang seharusnya tetap beku sedang menunggu.</div>
-<button class="btn" onclick="show('adventure')">MASUK KE PETUALANGAN</button>
-<button class="btn secondary" onclick="show('adventure')">PETUALANGAN BARU</button>
-<div class="card"><img class="avatar" src="ilgar.png"><div><div class="name">Ilgar Zamani</div><div class="muted">Human • Wizard Lv. 1 • Sage</div><div class="pills"><span class="pill">HP 8/8</span><span class="pill">AC 12</span><span class="pill">INT 16</span></div></div></div>
-</div></section>
-
-<section id="adventure" class="screen panel"><div class="content"><div class="eyebrow">ADVENTURE MODE</div><h2>The Frostbound Gate</h2>
-<div class="scene"><p class="dm">Angin dingin menyapu halaman reruntuhan. Tiga sosok bergerak dari balik gerbang.</p><p class="quote">“Mereka sudah menemukanmu.”</p><p class="dm">Kamu bebas menentukan tindakan Ilgar. Sistem akan meminta roll ketika diperlukan.</p></div>
-<button class="btn" onclick="show('combat')">⚔️ MULAI COMBAT</button><button class="btn secondary" onclick="show('home')">KEMBALI</button></div></section>
-
-<section id="combat" class="screen combat">
-<div class="arena">
-<div class="topbar"><button class="back" onclick="show('adventure')">‹</button><div><div class="title">The Frozen Passage</div><div class="sub">CHAPTER I • GERBANG BATU KUNO</div></div><div>⚙️</div></div>
-<div class="narr">Di balik gerbang batu kuno, tiga sosok berlapis es bergerak mendekat. Mata mereka menyala biru dalam kegelapan.</div>
-<div class="enemy boss"><b>❄ Frost Skeleton Warrior</b><span>HP 18/18</span><i class="hp" style="width:100%"></i></div>
-<div class="enemy arch1"><b>🏹 Skeleton Archer</b><span>HP 12/12</span><i class="hp"></i></div>
-<div class="enemy arch2"><b>🏹 Skeleton Archer</b><span>HP 12/12</span><i class="hp"></i></div>
-<button class="turn" onclick="endTurn()">⌛ Akhiri Giliran</button>
+<section id="homeScreen" class="screen home">
+<div class="moon"></div><div class="mountains"></div><div class="snow"></div><div class="gate"></div>
+<div class="home-content">
+<div class="kicker">The Frozen Passage</div><h1>Gerbang yang Membeku</h1>
+<p>Salju turun perlahan di depan gerbang batu tua. Sesuatu di baliknya sedang menunggu.</p>
+<div class="profile"><img src="ilgar.png" alt="Ilgar Zamani"><div><b>Ilgar Zamani</b><span>Human • Wizard Lv.3 • Staff of Frost</span></div></div>
+<button class="cta" onclick="showCombat()">⚔️ Lanjutkan Petualangan</button>
+<div class="home-panels"><button onclick="showCombat()">⚔️ Combat</button><button onclick="alert('Character Sheet menyusul pada batch berikutnya.')">♙ Character</button><button onclick="alert('Bestiary menyusul bersama visual monster.')">👹 Bestiary</button></div>
 </div>
-<div class="actions">
-<button class="action active" onclick="rollAction('Magic Missile')"><div class="ico">✦</div>Magic Missile<small>Lv.1 • 1 Action</small></button>
-<button class="action" onclick="rollAction('Ray of Frost')"><div class="ico">❄</div>Ray of Frost<small>Cantrip</small></button>
-<button class="action" onclick="rollAction('Staff of Frost')"><div class="ico">⚔</div>Staff of Frost<small>1 Action</small></button>
-<button class="action" onclick="rollAction('Mage Armor')"><div class="ico">🛡</div>Mage Armor<small>Spell</small></button>
-<button class="action" onclick="rollAction('Item')"><div class="ico">🧪</div>Item<small>Inventory</small></button>
-<button class="action" onclick="rollAction('Aksi Lainnya')"><div class="ico">•••</div>Aksi Lainnya<small>Freeform</small></button>
-</div>
-<div class="combatcard"><img src="ilgar.png"><div style="flex:1"><b>Ilgar Zamani</b><div class="muted">Human • Wizard Lv.1 • Sage</div><div class="hpbar"><i></i></div><div class="sheetline"><span>HP 8/8</span><span>AC 12</span><span>INT 16</span></div></div></div>
-<button class="other" onclick="rollAction('Freeform action')">✎ Katakan / lakukan apa pun…</button>
-<div id="log" class="combatlog">Combat dimulai. Giliran Ilgar. Pilih aksi atau lakukan tindakan bebas.</div>
-<nav class="nav"><button onclick="show('home')"><span>⌂</span>Home</button><button class="on" onclick="show('combat')"><span>⚔</span>Combat</button><button onclick="show('adventure')"><span>✦</span>Petualangan</button><button onclick="show('character')"><span>♙</span>Karakter</button><button onclick="show('menu')"><span>☰</span>Menu</button></nav>
 </section>
-
-<section id="character" class="screen panel"><div class="content"><div class="eyebrow">CHARACTER</div><h2>Ilgar Zamani</h2><div class="scene"><p>Human • Wizard 1 • Sage</p><div class="pills"><span class="pill">STR 9</span><span class="pill">DEX 13</span><span class="pill">CON 14</span><span class="pill">INT 16</span><span class="pill">WIS 14</span><span class="pill">CHA 12</span><span class="pill">HP 8/8</span><span class="pill">AC 12</span></div></div></div><nav class="nav"><button onclick="show('home')">⌂<br>Home</button><button onclick="show('combat')">⚔<br>Combat</button><button onclick="show('adventure')">✦<br>Petualangan</button><button class="on">♙<br>Karakter</button><button onclick="show('menu')">☰<br>Menu</button></nav></section>
-
-<section id="menu" class="screen panel"><div class="content"><div class="eyebrow">MENU</div><h2>D&D AI DM</h2><div class="scene"><p>Combat prototype • visual cinematic • freeform action</p><p class="muted">Next: real dice engine, initiative, movement/grid, spell slots, enemy AI, combat log, Supabase save state.</p></div></div><nav class="nav"><button onclick="show('home')">⌂<br>Home</button><button onclick="show('combat')">⚔<br>Combat</button><button onclick="show('adventure')">✦<br>Petualangan</button><button onclick="show('character')">♙<br>Karakter</button><button class="on">☰<br>Menu</button></nav></section>
+<section id="combatScreen" class="screen hidden">
+<div class="app">
+<header class="top"><div class="eyebrow">The Frozen Passage • Combat</div><h1>⚔️ Pertempuran</h1></header>
+<main class="content">
+<section class="card combat-head"><img class="avatar" src="ilgar.png" alt="Ilgar Zamani"><div style="flex:1"><div class="name">Ilgar Zamani</div><div class="sub">Human • Wizard Lv.3 • AC 12</div><div class="hpbar"><i id="playerHp"></i></div><div class="statline"><span>HP <b id="playerHpText">16/16</b></span><span>Initiative <b id="initText">—</b></span><span>Turn <b id="turnText">—</b></span></div></div></section>
+<section class="card"><div class="sub" style="margin-bottom:8px">MUSUH • PILIH TARGET</div><div id="enemies" class="enemy-grid"></div></section>
+<section class="card"><div class="rollbox"><div><div class="name">Dice</div><div id="rollDetail" class="roll-detail">Siap melakukan roll.</div></div><div id="die" class="die">—</div><button class="primary" onclick="rollTest()">🎲 d20</button></div></section>
+<section class="card"><div class="sub" style="margin-bottom:8px">SPELL & AKSI</div><div class="spells">
+<button class="spell primary" onclick="castSpell('Magic Missile')"><span class="icon">✦</span><span class="spell-name">Magic Missile</span><span class="spell-meta">Lv.1 • 1 Action</span></button>
+<button class="spell" onclick="castSpell('Ray of Frost')"><span class="icon">❄</span><span class="spell-name">Ray of Frost</span><span class="spell-meta">Cantrip • Attack</span></button>
+<button class="spell" onclick="castSpell('Staff of Frost')"><span class="icon">⚔</span><span class="spell-name">Staff of Frost</span><span class="spell-meta">1 Action</span></button>
+<button class="spell" onclick="castSpell('Mage Armor')"><span class="icon">🛡</span><span class="spell-name">Mage Armor</span><span class="spell-meta">Spell</span></button>
+<button class="spell" onclick="actionLog('Item')"><span class="icon">🧪</span><span class="spell-name">Item</span><span class="spell-meta">Inventory</span></button>
+<button class="spell" onclick="actionLog('Aksi Lainnya')"><span class="icon">•••</span><span class="spell-name">Aksi Lainnya</span><span class="spell-meta">Freeform</span></button>
+</div></section>
+<section class="card"><div class="actions"><button onclick="actionLog('Attack')">⚔️ Attack</button><button onclick="actionLog('Dodge')">🛡 Dodge</button><button onclick="actionLog('Dash')">🏃 Dash</button><button onclick="actionLog('Freeform')">💬 Freeform</button></div></section>
+<section class="card"><div class="sub">COMBAT LOG</div><div id="log" class="log"></div></section>
+</main>
+<nav class="bottom"><button onclick="showHome()">⌂<br>Home</button><button class="active">⚔<br>Combat</button><button>✦<br>Petualangan</button><button>♙<br>Karakter</button></nav>
 </div>
-<script>
-function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');scrollTo(0,0)}
-function rollAction(name){const log=document.getElementById('log');log.textContent='Ilgar memilih '+name+'. Dice/rules engine akan menangani roll dan konsekuensinya pada tahap berikutnya.'}
-function endTurn(){document.getElementById('log').textContent='Giliran berakhir. Pada engine berikutnya, monster akan mengambil turn secara otomatis.'}
+<div id="toast" class="toast"></div>
+<script type="module">
+import * as Game from "./game-core.js";
+const player=Game.cloneCharacter("ilgar-zamani");let selectedEnemy="goblin",combat=null;const enemyIds=["goblin","kobold","wolf"];
+function init(){const enemies=enemyIds.map(id=>Game.spawnMonster(id));combat=Game.createCombat([player],enemies);render();log("Pertempuran dimulai.");log("Pilih musuh lalu gunakan aksi.")}
+function render(){const list=document.querySelector("#enemies");list.innerHTML="";combat.combatants.filter(c=>c.side==="enemy").forEach(e=>{const d=document.createElement("div");d.className="enemy card "+(e.defeated?"dead ":"")+(e.id===selectedEnemy?"active":"");d.style.margin=0;d.innerHTML=`<div class="combat-head"><div class="avatar enemy-avatar">${e.defeated?"☠":"👹"}</div><div style="flex:1"><div class="name">${e.name}</div><div class="sub">AC ${e.ac} • CR ${enemyTemplate(e.id)?.challengeRating ?? "—"}</div><div class="hpbar"><i style="width:${Math.max(0,e.hp/e.maxHP*100)}%"></i></div><div class="statline"><span>HP <b>${e.hp}/${e.maxHP}</b></span></div></div></div>`;d.onclick=()=>{if(!e.defeated){selectedEnemy=e.id;render();}};list.appendChild(d)});const pc=combat.combatants.find(c=>c.side==="player");document.querySelector("#playerHp").style.width=`${Math.max(0,pc.hp/pc.maxHP*100)}%`;document.querySelector("#playerHpText").textContent=`${pc.hp}/${pc.maxHP}`;document.querySelector("#initText").textContent=pc.initiativeRoll?.total??"—";document.querySelector("#turnText").textContent=combat.status==="active"?`R${combat.round}`:combat.status}
+function enemyTemplate(id){return Game.MONSTERS[id]}
+function log(text){const el=document.querySelector("#log"),p=document.createElement("p");p.textContent=text;el.prepend(p)}
+function toast(text){const el=document.querySelector("#toast");el.textContent=text;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1200)}
+window.showCombat=()=>{document.querySelector("#homeScreen").classList.add("hidden");document.querySelector("#combatScreen").classList.remove("hidden");scrollTo(0,0)}
+window.showHome=()=>{document.querySelector("#combatScreen").classList.add("hidden");document.querySelector("#homeScreen").classList.remove("hidden");scrollTo(0,0)}
+window.rollTest=()=>{const r=Game.checkD20(5);document.querySelector("#die").textContent=r.kept;document.querySelector("#rollDetail").textContent=`d20 + 5 = ${r.total}${r.nat20?" • NAT 20!":r.nat1?" • NAT 1!":""}`;log(`Roll d20 +5 → ${r.total}`)}
+window.castSpell=(name)=>{if(combat.status!=="active"){toast("Combat sudah selesai.");return}const pc=combat.combatants.find(c=>c.side==="player"),target=combat.combatants.find(c=>c.id===selectedEnemy);if(!target||target.defeated){toast("Pilih target.");return}let attackData;if(name==="Ray of Frost")attackData={attackBonus:5,damage:"1d8"};else if(name==="Staff of Frost")attackData={attackBonus:5,damage:"1d8"};else if(name==="Magic Missile"){const dmg=Game.damage("1d4",false,1),next=Game.applyDamage(target,dmg.total);combat=Game.updateCombatant(combat,next);log(`Magic Missile → ${dmg.total} force damage ke ${target.name}.`);render();return}else{log(`${name} digunakan.`);return}const result=Game.performAttack(pc,target,attackData);combat=Game.updateCombatant(combat,result.defender);const r=result.attack;document.querySelector("#die").textContent=r.kept;document.querySelector("#rollDetail").textContent=`Attack d20 +5 = ${r.total} vs AC ${target.ac}`;if(r.hit)log(`${name}: HIT → ${result.damage.total} damage ke ${target.name}${r.critical?" • CRITICAL!":""}`);else log(`${name}: MISS.`);combat=Game.checkCombatEnd(combat);render()}
+window.actionLog=(name)=>{log(`${name}: aksi dicatat.`);toast(name)}
+init();
 </script>
+</section>
+</div>
 </body>
 </html>
