@@ -82,7 +82,7 @@ export const CHARACTERS = [
 
   {
     id: "four",
-    portrait: "four-v3.svg",
+    portrait: "four.svg",
     name: "Four",
     race: "Wood Elf",
     class: "Ranger",
@@ -144,8 +144,8 @@ export const CHARACTERS = [
   },
 
   {
-    id: "copy-of-yusss-character",
-    portrait: "yusss-v3.svg",
+    id: "yusss",
+    portrait: "yusss.svg",
     name: "Yusss",
     race: "Human",
     class: "Rogue",
