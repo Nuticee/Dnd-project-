@@ -1046,3 +1046,24 @@ export function createSupabaseGameStore(supabaseClient) {
     }
   };
 }
+
+// ============================================================
+// D&D 5e 2014 CHARACTER CREATION DATABASE
+// Open rules foundation: SRD 5.1 / 2014-compatible content.
+// This is a catalog for character creation; player characters
+// are stored separately in CHARACTERS and are never replaced by it.
+// ============================================================
+export const DND2014_DATABASE = {
+  ruleset: "D&D 5e 2014 / SRD 5.1",
+  races: ["Dwarf","Elf","Halfling","Human","Dragonborn","Gnome","Half-Elf","Half-Orc","Tiefling"],
+  classes: ["Barbarian","Bard","Cleric","Druid","Fighter","Monk","Paladin","Ranger","Rogue","Sorcerer","Warlock","Wizard"],
+  backgrounds: ["Acolyte","Charlatan","Criminal","Entertainer","Folk Hero","Guild Artisan","Hermit","Noble","Outlander","Sage","Sailor","Soldier","Urchin"],
+  abilityMethods: ["Standard Array","Point Buy","Roll 4d6 drop lowest"],
+  alignments: ["Lawful Good","Neutral Good","Chaotic Good","Lawful Neutral","Neutral","Chaotic Neutral","Lawful Evil","Neutral Evil","Chaotic Evil"],
+  armor: ["Padded","Leather","Studded Leather","Hide","Chain Shirt","Scale Mail","Breastplate","Half Plate","Ring Mail","Chain Mail","Splint","Plate","Shield"],
+  weapons: ["Club","Dagger","Greatclub","Handaxe","Javelin","Light Hammer","Mace","Quarterstaff","Sickle","Spear","Light Crossbow","Dart","Shortbow","Sling","Battleaxe","Flail","Glaive","Greataxe","Greatsword","Halberd","Lance","Longsword","Maul","Morningstar","Pike","Rapier","Scimitar","Shortsword","Trident","War Pick","Warhammer","Whip","Blowgun","Hand Crossbow","Heavy Crossbow","Longbow","Net"],
+  skills: ["Acrobatics","Animal Handling","Arcana","Athletics","Deception","History","Insight","Intimidation","Investigation","Medicine","Nature","Perception","Performance","Persuasion","Religion","Sleight of Hand","Stealth","Survival"],
+  abilities: ["STR","DEX","CON","INT","WIS","CHA"]
+};
+
+export function getDND2014Database(){ return structuredClone(DND2014_DATABASE); }
