@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>D&D AI DM — The Frozen Passage</title>
+<title>D&D AI DM — The Frozen Passage • V1.2.1</title>
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#02070b;color:#eef7ff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
@@ -99,6 +99,12 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 <nav class="bottom"><button onclick="showHome()">⌂<br>Home</button><button class="active">⚔<br>Combat</button><button>✦<br>Petualangan</button><button onclick="showCharacter()">♙<br>Karakter</button></nav>
 </div>
 <div id="toast" class="toast"></div>
+<script>
+// Navigation fallback: keeps Home/Combat/Character clickable even if the game module is still loading.
+window.showHome=function(){document.querySelectorAll('.screen').forEach(function(x){x.classList.add('hidden')});var x=document.querySelector('#homeScreen');if(x)x.classList.remove('hidden');window.scrollTo(0,0)};
+window.showCombat=function(){document.querySelectorAll('.screen').forEach(function(x){x.classList.add('hidden')});var x=document.querySelector('#combatScreen');if(x)x.classList.remove('hidden');window.scrollTo(0,0)};
+window.showCharacter=function(){document.querySelectorAll('.screen').forEach(function(x){x.classList.add('hidden')});var x=document.querySelector('#characterScreen');if(x)x.classList.remove('hidden');window.scrollTo(0,0)};
+</script>
 <script type="module">
 import * as Game from "./game-core.js";
 const player=Game.cloneCharacter("ilgar-zamani");let selectedEnemy="goblin",combat=null;const enemyIds=["goblin","kobold","wolf"];
