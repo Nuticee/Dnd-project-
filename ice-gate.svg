@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1600">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#020713"/><stop offset=".55" stop-color="#071d30"/><stop offset="1" stop-color="#02080f"/></linearGradient>
+ <linearGradient id="ice" x2="0" y2="1"><stop stop-color="#d9f7ff"/><stop offset=".35" stop-color="#69cfff"/><stop offset="1" stop-color="#0c4d72"/></linearGradient>
+ <linearGradient id="gold"><stop stop-color="#fff0ad"/><stop offset=".5" stop-color="#b88b39"/><stop offset="1" stop-color="#4b3515"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#dffbff" stop-opacity=".95"/><stop offset=".5" stop-color="#42bfff" stop-opacity=".35"/><stop offset="1" stop-color="#42bfff" stop-opacity="0"/></radialGradient>
+ <filter id="blur"><feGaussianBlur stdDeviation="18"/></filter>
+ <filter id="soft"><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+<rect width="900" height="1600" fill="url(#sky)"/>
+<circle cx="450" cy="440" r="260" fill="url(#glow)" filter="url(#blur)"/>
+<g opacity=".7" fill="#dff7ff">
+ <circle cx="90" cy="120" r="2"/><circle cx="180" cy="260" r="2"/><circle cx="760" cy="150" r="2"/><circle cx="820" cy="350" r="2"/><circle cx="55" cy="510" r="1.5"/><circle cx="690" cy="270" r="1.5"/><circle cx="320" cy="90" r="1.5"/>
+</g>
+<!-- distant ice mountains -->
+<g fill="#09283b"><path d="M0 650 150 400 250 620 360 330 500 650Z"/><path d="M430 650 590 350 690 560 810 300 900 650Z"/></g>
+<g fill="#154b68" opacity=".8"><path d="M0 720 190 500 300 720Z"/><path d="M600 720 780 470 900 720Z"/></g>
+<!-- colossal gate towers -->
+<g stroke="#2e7fa2" stroke-width="7" fill="url(#ice)">
+ <path d="M90 1120V420L150 250 210 420V1120Z"/>
+ <path d="M690 1120V420L750 250 810 420V1120Z"/>
+ <path d="M160 420 250 180 330 420V1100H160Z"/>
+ <path d="M570 420 650 180 740 420V1100H570Z"/>
+</g>
+<!-- crown -->
+<path d="M190 520 245 230 330 390 450 80 570 390 655 230 710 520 650 610 250 610Z" fill="url(#ice)" stroke="#9fe8ff" stroke-width="9"/>
+<path d="M250 610 Q450 350 650 610V1170H250Z" fill="#061a29" stroke="url(#gold)" stroke-width="10"/>
+<!-- giant doors -->
+<path d="M255 1170V620Q450 420 645 620V1170Z" fill="#08263a" stroke="#72d9ff" stroke-width="8"/>
+<path d="M450 470V1170M255 1170H645" stroke="url(#gold)" stroke-width="6"/>
+<path d="M275 650Q450 500 625 650M290 710Q450 585 610 710" fill="none" stroke="#43bdf1" stroke-width="4" opacity=".7"/>
+<!-- central rune -->
+<circle cx="450" cy="760" r="115" fill="none" stroke="#b8f2ff" stroke-width="4" opacity=".8"/>
+<circle cx="450" cy="760" r="82" fill="none" stroke="#d9fbff" stroke-width="3" stroke-dasharray="8 12"/>
+<path d="M450 670 480 735 550 760 480 785 450 850 420 785 350 760 420 735Z" fill="none" stroke="#dffbff" stroke-width="4"/>
+<!-- guardian statues -->
+<g fill="#071522" stroke="#8cdfff" stroke-width="4">
+ <path d="M60 1130V740Q75 690 105 670Q135 690 150 740V1130Z"/>
+ <path d="M750 1130V740Q765 690 795 670Q825 690 840 740V1130Z"/>
+</g>
+<!-- banners -->
+<g fill="#071728" stroke="url(#gold)" stroke-width="5"><path d="M35 500H125V980L80 1040 35 980Z"/><path d="M775 500H865V980L820 1040 775 980Z"/></g>
+<path d="M80 600 105 630 80 660 55 630Z M820 600 845 630 820 660 795 630Z" fill="#9feeff"/>
+<!-- bridge -->
+<path d="M0 1600V1160Q450 1080 900 1160V1600Z" fill="#06131e"/>
+<path d="M0 1320Q450 1190 900 1320M0 1460Q450 1330 900 1460" fill="none" stroke="#1c6686" stroke-width="6"/>
+<g fill="url(#gold)"><circle cx="450" cy="1280" r="18"/><circle cx="450" cy="1430" r="12"/></g>
+<!-- icy foreground shards -->
+<g fill="#69cfff" opacity=".5"><path d="M0 1450 90 1200 145 1600Z"/><path d="M900 1450 810 1200 755 1600Z"/><path d="M130 1600 200 1300 260 1600Z"/><path d="M770 1600 700 1300 640 1600Z"/></g>
+</svg>
