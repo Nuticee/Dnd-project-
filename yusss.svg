@@ -1,26 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
-<defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#241d2b"/><stop offset="1" stop-color="#09080d"/></linearGradient><linearGradient id="skin" x2="0" y2="1"><stop stop-color="#d9b79d"/><stop offset="1" stop-color="#b78e76"/></linearGradient></defs>
-<rect width="600" height="800" fill="url(#bg)"/><circle cx="470" cy="150" r="110" fill="#8060a5" opacity=".12"/>
-<!-- rogue body leather armor -->
-<path d="M105 800 Q120 560 190 475 Q230 430 300 430 Q370 430 410 475 Q480 560 495 800Z" fill="#17171b" stroke="#6c5a73" stroke-width="4"/>
-<path d="M165 800 Q175 570 220 495 L300 540 L380 495 Q425 570 435 800Z" fill="#29262d" stroke="#776a79" stroke-width="4"/>
-<path d="M220 560 L380 560 M210 640 L390 640 M205 720 L395 720" stroke="#514754" stroke-width="6"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800"><defs>
+<linearGradient id="bg" x2="0" y2="1"><stop stop-color="#30243a"/><stop offset=".5" stop-color="#15121c"/><stop offset="1" stop-color="#08090d"/></linearGradient>
+<radialGradient id="moon"><stop stop-color="#b69bd0" stop-opacity=".28"/><stop offset="1" stop-color="#b69bd0" stop-opacity="0"/></radialGradient>
+<linearGradient id="skin" x2="0" y2="1"><stop stop-color="#dcbda5"/><stop offset="1" stop-color="#ae826a"/></linearGradient>
+<linearGradient id="armor" x2="0" y2="1"><stop stop-color="#25242a"/><stop offset="1" stop-color="#101115"/></linearGradient>
+</defs>
+<rect width="600" height="800" fill="url(#bg)"/>
+<circle cx="455" cy="145" r="190" fill="url(#moon)"/>
+<g stroke="#6b5b75" stroke-width="4" opacity=".5"><path d="M40 480L40 180L135 180L135 480"/><path d="M465 480L465 140L560 140L560 480"/><path d="M65 245L110 210L110 480"/><path d="M490 205L535 175L535 480"/></g>
+<g fill="#d4a86d" opacity=".7"><circle cx="82" cy="215" r="7"/><circle cx="520" cy="175" r="6"/></g>
+<!-- rogue torso -->
+<path d="M95 800 Q110 545 190 475 Q245 430 300 430 Q355 430 410 475 Q490 545 505 800Z" fill="url(#armor)" stroke="#65596c" stroke-width="5"/>
+<path d="M180 505 L300 555 L420 505 L395 800 L205 800Z" fill="#1b1b21" stroke="#4f4755" stroke-width="4"/>
+<path d="M205 590 L395 590 M195 680 L405 680 M190 755 L410 755" stroke="#554b59" stroke-width="7"/>
+<g fill="#8d7895"><circle cx="220" cy="590" r="4"/><circle cx="380" cy="590" r="4"/><circle cx="210" cy="680" r="4"/><circle cx="390" cy="680" r="4"/></g>
 <!-- neck -->
-<path d="M260 420 L340 420 L350 500 Q300 530 250 500Z" fill="url(#skin)"/>
+<path d="M250 405 L350 405 L355 500 Q300 530 245 500Z" fill="url(#skin)" stroke="#8f6e5d" stroke-width="4"/>
 <!-- face -->
-<path d="M205 180 Q210 75 300 55 Q390 75 395 180 L370 350 Q350 420 300 445 Q250 420 230 350Z" fill="url(#skin)" stroke="#927361" stroke-width="3"/>
+<path d="M198 175 Q205 75 300 52 Q395 75 402 175 L375 350 Q350 420 300 444 Q250 420 225 350Z" fill="url(#skin)" stroke="#906e5c" stroke-width="4"/>
 <!-- black messy hair -->
-<path d="M195 195 Q185 95 250 55 Q330 10 405 85 L395 190 L365 145 L345 185 L315 120 L285 170 L255 120 L230 200Z" fill="#0b0b0e"/>
+<path d="M193 200 Q178 85 258 43 Q345 8 414 92 L404 210 L370 158 L350 198 L318 125 L285 180 L252 122 L220 210Z" fill="#0a0b0f"/>
+<path d="M220 105 Q280 45 360 65" fill="none" stroke="#2c2c34" stroke-width="9" opacity=".6"/>
 <!-- sleepy purple eyes -->
-<path d="M238 255 Q260 240 282 255" fill="none" stroke="#5c4b62" stroke-width="6"/><path d="M318 255 Q340 240 362 255" fill="none" stroke="#5c4b62" stroke-width="6"/>
-<ellipse cx="260" cy="260" rx="12" ry="7" fill="#eee7f3"/><ellipse cx="340" cy="260" rx="12" ry="7" fill="#eee7f3"/>
-<circle cx="260" cy="260" r="5" fill="#9b54c8"/><circle cx="340" cy="260" r="5" fill="#9b54c8"/>
+<path d="M235 255 Q260 242 283 256" fill="none" stroke="#654f6d" stroke-width="7"/><path d="M317 256 Q340 242 365 255" fill="none" stroke="#654f6d" stroke-width="7"/>
+<ellipse cx="260" cy="264" rx="14" ry="8" fill="#eee7f0"/><ellipse cx="340" cy="264" rx="14" ry="8" fill="#eee7f0"/>
+<circle cx="260" cy="264" r="6" fill="#9d52c8"/><circle cx="340" cy="264" r="6" fill="#9d52c8"/>
+<path d="M287 340 Q300 347 313 340" fill="none" stroke="#76594e" stroke-width="4"/>
 <!-- dagger -->
-<path d="M420 545 L545 405 L440 575Z" fill="#d8dbe1" stroke="#8b8f98" stroke-width="3"/><path d="M405 565 L455 535" stroke="#76552f" stroke-width="12"/>
+<path d="M435 510 L555 385 L462 545Z" fill="#d8dce4" stroke="#7d838d" stroke-width="4"/><path d="M420 535 L470 565" stroke="#8e6639" stroke-width="13"/>
 <!-- shortbow -->
-<path d="M130 520 Q45 620 135 700" fill="none" stroke="#805c39" stroke-width="11"/><path d="M135 520 L135 700" stroke="#ded6c7" stroke-width="2"/>
-<text x="30" y="50" fill="#e9d9f4" font-family="serif" font-size="28" font-weight="bold">YUSSS</text>
-<text x="30" y="82" fill="#c6b2d0" font-family="sans-serif" font-size="18">Human • Rogue • Lv.3</text>
-<text x="30" y="730" fill="#eadff0" font-family="sans-serif" font-size="17">20 • Light tan skin • Sleepy purple eyes</text>
-<text x="30" y="758" fill="#cbb8d4" font-family="sans-serif" font-size="17">Short, slightly messy jet-black hair</text>
+<path d="M150 470 Q55 580 150 690" fill="none" stroke="#815a37" stroke-width="12"/><path d="M150 470 L150 690" stroke="#ddd3c1" stroke-width="2"/>
+<rect x="25" y="25" width="550" height="750" rx="30" fill="none" stroke="#76568c" stroke-width="3" opacity=".65"/>
+<text x="34" y="62" fill="#e8d8f1" font-family="serif" font-size="30" font-weight="bold">YUSSS</text>
+<text x="34" y="91" fill="#c1aacd" font-family="sans-serif" font-size="17">HUMAN • ROGUE • LV.3</text>
 </svg>
