@@ -12,27 +12,29 @@ body{min-height:100vh}
 .screen{min-height:100vh;padding-bottom:78px}
 .hidden{display:none!important}
 .home{position:relative;min-height:100vh;overflow:hidden;background:
-radial-gradient(circle at 50% 18%,rgba(90,180,255,.18),transparent 32%),
-linear-gradient(180deg,#061827 0%,#04111b 45%,#02070b 100%)}
-.moon{position:absolute;width:120px;height:120px;border-radius:50%;right:12%;top:9%;background:#dceeff;box-shadow:0 0 45px rgba(170,220,255,.5);opacity:.9}
-.mountains{position:absolute;inset:auto 0 0;height:58%;background:
-linear-gradient(145deg,transparent 0 28%,#0a202d 28% 42%,transparent 42%),
-linear-gradient(35deg,transparent 0 34%,#09202c 34% 50%,transparent 50%),
-linear-gradient(160deg,transparent 0 50%,#071722 50% 70%,transparent 70%);
-opacity:.95}
-.snow{position:absolute;inset:0;background-image:radial-gradient(#dff5ff 1px,transparent 1px);background-size:31px 31px;opacity:.12}
-.gate{position:absolute;left:50%;top:29%;transform:translateX(-50%);width:205px;height:170px;border:10px solid #28495b;border-bottom:0;border-radius:105px 105px 0 0;box-shadow:0 0 40px rgba(79,185,255,.13)}
-.gate:after{content:"";position:absolute;inset:18px 20px 0;background:linear-gradient(180deg,rgba(113,203,255,.25),rgba(11,33,47,.8));border-radius:75px 75px 0 0}
-.home-content{position:relative;z-index:2;padding:30px 18px 100px;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end}
-.kicker{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#7ccfff}
-.home h1{font-family:Georgia,serif;font-size:42px;line-height:.98;margin:7px 0 8px;text-shadow:0 5px 25px #000}
-.home p{color:#b8cbd6;max-width:510px;margin:0 0 18px}
-.profile{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid #24506a;background:rgba(3,18,28,.72);backdrop-filter:blur(9px);border-radius:16px;margin-bottom:12px}
-.profile img{width:58px;height:58px;object-fit:cover;border-radius:12px;border:1px solid #4e91b2}
-.profile b{display:block;font-size:16px}.profile span{font-size:12px;color:#9db5c2}
-.cta{width:100%;padding:14px;border-radius:14px;border:1px solid #4f9ac0;background:#0d3348;color:#fff;font-weight:800;font-size:15px}
-.home-panels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.home-panels button{padding:11px 6px;border-radius:12px;border:1px solid #173e50;background:rgba(7,24,35,.82);color:#c8dce7}
+radial-gradient(circle at 72% 15%,rgba(126,210,255,.18),transparent 20%),
+linear-gradient(180deg,#061b2b 0%,#071827 46%,#02070b 100%)}
+.moon{position:absolute;width:116px;height:116px;border-radius:50%;right:12%;top:9%;background:#e5f5ff;box-shadow:0 0 52px rgba(160,220,255,.58);opacity:.94}
+.mountains{position:absolute;inset:auto 0 0;height:64%;background:
+linear-gradient(145deg,transparent 0 27%,#0b2736 27% 43%,transparent 43%),
+linear-gradient(35deg,transparent 0 31%,#092432 31% 49%,transparent 49%),
+linear-gradient(160deg,transparent 0 48%,#071722 48% 72%,transparent 72%);opacity:.98}
+.snow{position:absolute;inset:0;background-image:radial-gradient(#e4f7ff 1px,transparent 1px);background-size:29px 29px;opacity:.13}
+.gate{position:absolute;left:50%;top:28%;transform:translateX(-50%);width:224px;height:188px;border:10px solid #31566b;border-bottom:0;border-radius:112px 112px 0 0;box-shadow:0 0 45px rgba(79,185,255,.16)}
+.gate:after{content:"";position:absolute;inset:20px 22px 0;background:linear-gradient(180deg,rgba(120,211,255,.25),rgba(7,25,37,.92));border-radius:80px 80px 0 0}
+.home-content{position:relative;z-index:2;padding:28px 18px 102px;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end}
+.kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#86d8ff;font-weight:800}
+.home h1{font-family:Georgia,serif;font-size:44px;line-height:.94;margin:8px 0 10px;text-shadow:0 6px 28px #000;max-width:620px}
+.home p{color:#c0d3de;max-width:560px;margin:0 0 16px;line-height:1.5}
+.profile{display:flex;align-items:center;gap:12px;padding:11px;border:1px solid #2d6682;background:rgba(3,18,28,.78);backdrop-filter:blur(12px);border-radius:17px;margin-bottom:10px;box-shadow:0 10px 30px rgba(0,0,0,.24)}
+.profile img{width:62px;height:62px;object-fit:cover;border-radius:13px;border:1px solid #579bb9}
+.profile b{display:block;font-size:17px}.profile span{display:block;font-size:12px;color:#9db5c2;margin-top:3px}
+.profile-stats{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.profile-stats i{font-style:normal;font-size:10px;padding:4px 7px;border-radius:7px;background:#0b2a3a;color:#cde7f2}
+.cta{width:100%;padding:15px;border-radius:15px;border:1px solid #63b9e2;background:linear-gradient(180deg,#174c67,#0b2d40);color:#fff;font-weight:900;font-size:15px;letter-spacing:.02em;box-shadow:0 8px 26px rgba(0,0,0,.25)}
+.home-panels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}
+.home-panels button{padding:11px 6px;border-radius:12px;border:1px solid #204b61;background:rgba(7,24,35,.86);color:#c8dce7}
+.home-nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,720px);display:grid;grid-template-columns:repeat(5,1fr);background:rgba(2,10,16,.97);border-top:1px solid #173b4d;z-index:12;padding-bottom:env(safe-area-inset-bottom)}
+.home-nav button{border:0;border-radius:0;background:transparent;padding:9px 3px 8px;color:#8199a7;font-size:10px}.home-nav button span{display:block;font-size:19px;margin-bottom:2px}.home-nav button.active{color:#eaf7ff}
 :root{--bg:#020a10;--panel:#071824;--panel2:#0b2230;--line:#1b5876;--text:#eef7ff;--muted:#91a9b8;--accent:#69c7ff;--danger:#ff5570;--good:#63e6a6;--gold:#e8c66a}
 .top{padding:16px 16px 10px;border-bottom:1px solid #123342;position:sticky;top:0;background:rgba(2,10,16,.94);backdrop-filter:blur(10px);z-index:5}
 .eyebrow{font-size:12px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase}
@@ -58,12 +60,29 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 <section id="homeScreen" class="screen home">
 <div class="moon"></div><div class="mountains"></div><div class="snow"></div><div class="gate"></div>
 <div class="home-content">
-<div class="kicker">The Frozen Passage</div><h1>Gerbang yang Membeku</h1>
-<p>Salju turun perlahan di depan gerbang batu tua. Sesuatu di baliknya sedang menunggu.</p>
-<div class="profile"><img src="ilgar.png" alt="Ilgar Zamani"><div><b>Ilgar Zamani</b><span>Human • Wizard Lv.3 • Staff of Frost</span></div></div>
-<button class="cta" onclick="showCombat()">⚔️ Lanjutkan Petualangan</button>
-<div class="home-panels"><button onclick="showCombat()">⚔️ Combat</button><button onclick="alert('Character Sheet menyusul pada batch berikutnya.')">♙ Character</button><button onclick="alert('Bestiary menyusul bersama visual monster.')">👹 Bestiary</button></div>
+<div class="kicker">D&D AI DM • CAMPAIGN I</div>
+<h1>The Frozen Passage</h1>
+<p>Salju turun tanpa suara. Di balik gerbang batu kuno, sesuatu yang seharusnya tetap beku sedang menunggu.</p>
+<div class="profile">
+<img src="ilgar.png" alt="Ilgar Zamani">
+<div style="flex:1"><b>Ilgar Zamani</b><span>Human • Wizard Lv.3 • Sage</span>
+<div class="profile-stats"><i>HP 16/16</i><i>AC 12</i><i>INT 16</i><i>Staff of Frost</i></div>
 </div>
+</div>
+<button class="cta" onclick="showCombat()">⚔️ MASUK KE PETUALANGAN</button>
+<div class="home-panels">
+<button onclick="showCombat()">⚔️ Combat</button>
+<button onclick="alert('Character Sheet akan terhubung ke database karakter.')">♙ Character</button>
+<button onclick="alert('Bestiary akan terhubung ke database monster.')">👹 Bestiary</button>
+</div>
+</div>
+<nav class="home-nav">
+<button class="active" onclick="showHome()"><span>⌂</span>Home</button>
+<button onclick="showCombat()"><span>✦</span>Adventure</button>
+<button onclick="showCombat()"><span>⚔</span>Combat</button>
+<button onclick="alert('Character Sheet akan terhubung ke database karakter.')"><span>♙</span>Character</button>
+<button onclick="alert('Bestiary akan terhubung ke database monster.')"><span>☠</span>Bestiary</button>
+</nav>
 </section>
 <section id="combatScreen" class="screen hidden">
 <div class="app">
