@@ -791,3 +791,258 @@ export function listMonsters() {
     ac: m.ac
   }));
 }
+
+
+// ============================================================
+// ADVENTURE STATE v1 — world/session state for AI DM
+// ============================================================
+
+export function createAdventureState({
+  campaignId = "the-frozen-passage",
+  title = "The Frozen Passage",
+  characterIds = ["ilgar-zamani"],
+  location = "Old Snowy Stone Gate"
+} = {}) {
+  return {
+    version: 1,
+    campaignId,
+    title,
+    characterIds: [...characterIds],
+    scene: {
+      location,
+      description: "",
+      weather: "snow",
+      timeOfDay: "unknown"
+    },
+    world: {
+      flags: {},
+      discoveredLocations: [location],
+      knownNPCs: [],
+      quests: [],
+      inventory: [],
+      consequences: []
+    },
+    activeEncounter: null,
+    combat: null,
+    turn: 0,
+    status: "active",
+    dm: {
+      lastSummary: "",
+      pendingCheck: null,
+      pendingQuestion: null
+    },
+    history: []
+  };
+}
+
+export function appendAdventureEvent(state, event) {
+  return {
+    ...state,
+    turn: state.turn + 1,
+    history: [
+      ...state.history,
+      {
+        id: `evt-${Date.now()}-${state.turn + 1}`,
+        at: new Date().toISOString(),
+        ...event
+      }
+    ]
+  };
+}
+
+export function setScene(state, scenePatch) {
+  return {
+    ...state,
+    scene: { ...state.scene, ...scenePatch }
+  };
+}
+
+export function setWorldFlag(state, key, value) {
+  return {
+    ...state,
+    world: {
+      ...state.world,
+      flags: { ...state.world.flags, [key]: value }
+    }
+  };
+}
+
+export function addNPC(state, npc) {
+  const exists = state.world.knownNPCs.some(n => n.id === npc.id);
+  return exists ? state : {
+    ...state,
+    world: {
+      ...state.world,
+      knownNPCs: [...state.world.knownNPCs, npc]
+    }
+  };
+}
+
+export function addQuest(state, quest) {
+  const exists = state.world.quests.some(q => q.id === quest.id);
+  return exists ? state : {
+    ...state,
+    world: {
+      ...state.world,
+      quests: [...state.world.quests, quest]
+    }
+  };
+}
+
+export function setPendingDMCheck(state, check) {
+  return {
+    ...state,
+    dm: { ...state.dm, pendingCheck: check }
+  };
+}
+
+export function clearPendingDM(state) {
+  return {
+    ...state,
+    dm: { ...state.dm, pendingCheck: null, pendingQuestion: null }
+  };
+}
+
+export function summarizeAdventureState(state) {
+  return {
+    campaignId: state.campaignId,
+    title: state.title,
+    location: state.scene.location,
+    scene: state.scene.description,
+    characterIds: state.characterIds,
+    flags: state.world.flags,
+    knownNPCs: state.world.knownNPCs,
+    quests: state.world.quests,
+    activeEncounter: state.activeEncounter,
+    turn: state.turn,
+    status: state.status,
+    pendingCheck: state.dm.pendingCheck,
+    lastEvents: state.history.slice(-8)
+  };
+}
+
+// ============================================================
+// AI DM ADAPTER v1
+// IMPORTANT: model/API secret stays on a server/Edge Function.
+// The browser sends game state + player action to a safe endpoint.
+// ============================================================
+
+export function buildDMRequest(state, playerAction, {
+  character = null,
+  ruleset = RULESET
+} = {}) {
+  return {
+    ruleset: {
+      name: ruleset.name,
+      edition: ruleset.edition
+    },
+    role: "dungeon_master",
+    policy: {
+      freeformPlayerActions: true,
+      neverForceABCChoices: true,
+      rulesEngineOwnsDice: true,
+      rulesEngineOwnsState: true,
+      dmOwnsNarration: true,
+      dmMayRequestChecks: true,
+      dmMayDescribeConsequences: true
+    },
+    character,
+    adventure: summarizeAdventureState(state),
+    playerAction: String(playerAction).trim()
+  };
+}
+
+export async function askAIDM(state, playerAction, {
+  character = null,
+  endpoint = "/functions/v1/ai-dm",
+  fetchImpl = fetch
+} = {}) {
+  const payload = buildDMRequest(state, playerAction, { character });
+
+  const response = await fetchImpl(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(`AI DM request failed: HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+// Expected safe response shape from the server/Edge Function:
+// {
+//   narration: "...",
+//   statePatch: {...},
+//   requestCheck: null | {
+//      type: "skill" | "save" | "attack",
+//      abilityOrSkill: "Perception",
+//      modifier: 4,
+//      dc: 13,
+//      reason: "You search the gate..."
+//   },
+//   encounter: null | {...}
+// }
+//
+// The client/rules engine must validate and apply mechanical changes.
+// The AI DM response is not trusted as a source of dice/HP truth.
+
+// ============================================================
+// SUPABASE SAVE ADAPTER v1
+// Uses @supabase/supabase-js v2.
+// Put only the publishable key in browser code.
+// Never put a Supabase secret/service key here.
+// ============================================================
+
+export function createSupabaseGameStore(supabaseClient) {
+  if (!supabaseClient) throw new Error("Supabase client is required.");
+
+  return {
+    async saveSession(sessionId, userId, state) {
+      const row = {
+        id: sessionId,
+        user_id: userId,
+        campaign_id: state.campaignId,
+        state,
+        updated_at: new Date().toISOString()
+      };
+
+      const { data, error } = await supabaseClient
+        .from("game_sessions")
+        .upsert(row, { onConflict: "id" })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+
+    async loadSession(sessionId) {
+      const { data, error } = await supabaseClient
+        .from("game_sessions")
+        .select("*")
+        .eq("id", sessionId)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data?.state ?? null;
+    },
+
+    async saveEvent(sessionId, userId, event) {
+      const { data, error } = await supabaseClient
+        .from("game_events")
+        .insert({
+          session_id: sessionId,
+          user_id: userId,
+          event
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    }
+  };
+}
