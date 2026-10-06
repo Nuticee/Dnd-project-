@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>D&D AI DM — V1</title>
+<style>
+:root{--bg:#0b0f14;--panel:#121922;--panel2:#18222d;--text:#eef3f7;--muted:#9eabb7;--line:#293542;--accent:#8dd7ff;--danger:#ff7f7f}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button,textarea{font:inherit}button{cursor:pointer;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:12px;min-height:44px;padding:0 14px}
+button:hover{border-color:#526476}.app{max-width:1050px;margin:auto;padding:16px}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:14px}.brand{font-weight:800;letter-spacing:.04em}.sub{color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:1.5fr .8fr;gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+.scene{min-height:270px;border-radius:14px;border:1px solid #334353;background:radial-gradient(circle at 50% 30%,#263c4b 0,#15202a 42%,#0e141b 100%);display:flex;align-items:flex-end;padding:18px;position:relative;overflow:hidden}
+.scene:before,.scene:after{content:"";position:absolute;width:2px;height:2px;background:#d9f3ff;box-shadow:60px 35px #d9f3ff,130px 80px #d9f3ff,220px 25px #d9f3ff,310px 110px #d9f3ff,420px 55px #d9f3ff,520px 130px #d9f3ff,650px 45px #d9f3ff;opacity:.65}
+.scene:after{transform:translateY(25px) scale(.7);opacity:.4}.sceneText{position:relative;z-index:2;max-width:680px}.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:11px;color:var(--muted)}h1,h2,p{margin:0}.scene h1{font-size:25px;margin-top:5px}.scene p{color:#c8d2da;margin-top:8px;line-height:1.5}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:10px}.stat small{display:block;color:var(--muted)}.stat strong{font-size:18px}
+.chat{display:flex;flex-direction:column;gap:10px;min-height:270px;max-height:430px;overflow:auto;margin-top:12px}.msg{padding:12px;border-radius:14px;line-height:1.5}.dm{background:#18232d;border:1px solid #2d3d4c}.player{background:#15272d;border:1px solid #2d4a53;margin-left:10%}.label{font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.08em}
+textarea{width:100%;min-height:92px;resize:vertical;margin-top:10px;background:#0e151d;color:var(--text);border:1px solid var(--line);border-radius:14px;padding:12px;outline:none}textarea:focus{border-color:#52728a}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.primary{background:#203845;border-color:#496a7d}.danger{color:#ffb2b2}.sheet h2{font-size:17px;margin-bottom:10px}.abilities{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.ability{display:flex;justify-content:space-between;background:var(--panel2);border:1px solid var(--line);padding:9px;border-radius:10px}.inventory{margin-top:14px}.item{padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}.item:last-child{border-bottom:0}.dice{font-size:24px;font-weight:800;text-align:center;padding:14px;border:1px dashed #425464;border-radius:12px;margin-top:10px}.notice{color:var(--muted);font-size:12px;margin-top:8px;line-height:1.4}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}.app{padding:10px}.scene{min-height:230px}.player{margin-left:0}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <div><div class="brand">❄️ D&D AI DM</div><div class="sub">V1 — The Frozen Passage</div></div>
+    <button id="reset">Reset Scene</button>
+  </div>
+
+  <div class="grid">
+    <main>
+      <section class="card">
+        <div class="scene">
+          <div class="sceneText">
+            <div class="eyebrow">Current Scene</div>
+            <h1>The Frostbound Gate</h1>
+            <p>Gerbang batu tua berdiri di tengah lembah bersalju. Salju turun seperti helaian sutra. The Frostbound menunggumu di hadapan pintu yang belum sepenuhnya terbuka.</p>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><small>HP</small><strong id="hp">8 / 8</strong></div>
+          <div class="stat"><small>AC</small><strong>12</strong></div>
+          <div class="stat"><small>Level</small><strong>Wizard 1</strong></div>
+          <div class="stat"><small>Gold</small><strong>1 GP</strong></div>
+        </div>
+
+        <div id="chat" class="chat">
+          <div class="msg dm"><div class="label">AI Dungeon Master</div>The Frostbound menatapmu dengan mata biru pucat. “Tongkat itu bukan milikku, Ilgar. Ia memilihmu.” Gerbang batu di belakangnya bergetar pelan.</div>
+        </div>
+
+        <label class="sub" for="action">Apa yang dilakukan Ilgar?</label>
+        <textarea id="action" placeholder="Ketik bebas. Bicara, bergerak, menyerang, memeriksa, menipu, kabur — apa pun yang ingin Ilgar lakukan."></textarea>
+        <div class="actions">
+          <button class="primary" id="send">Kirim Aksi</button>
+          <button id="roll">🎲 Roll d20</button>
+        </div>
+        <div id="result" class="notice">V1 masih memakai respons lokal. AI DM + Supabase akan disambungkan setelah interface ini lolos testing.</div>
+      </section>
+    </main>
+
+    <aside class="card sheet">
+      <h2>📜 Ilgar Zamani</h2>
+      <div class="sub">Human • Sage • Wizard Lv.1</div>
+
+      <div class="abilities" style="margin-top:12px">
+        <div class="ability"><span>STR</span><b>9 (-1)</b></div><div class="ability"><span>DEX</span><b>13 (+1)</b></div>
+        <div class="ability"><span>CON</span><b>14 (+2)</b></div><div class="ability"><span>INT</span><b>16 (+3)</b></div>
+        <div class="ability"><span>WIS</span><b>14 (+2)</b></div><div class="ability"><span>CHA</span><b>12 (+1)</b></div>
+      </div>
+
+      <div class="dice" id="dice">d20 —</div>
+      <div class="inventory">
+        <div class="eyebrow">Inventory</div>
+        <div class="item">❄️ Staff of Frost <span class="sub">10/10 charges</span></div>
+        <div class="item">Quarterstaff</div>
+        <div class="item">Spellbook</div>
+        <div class="item">Arcane Focus</div>
+        <div class="item">Backpack & supplies</div>
+      </div>
+      <div class="notice">Karakter V1 mengikuti sheet Ilgar yang kamu punya. Jangan khawatir soal database dulu — kita kunci UI dan alur main terlebih dahulu.</div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+  const chat=document.querySelector('#chat'), action=document.querySelector('#action'), result=document.querySelector('#result'), dice=document.querySelector('#dice');
+  const add=(who,text,cls)=>{const el=document.createElement('div');el.className='msg '+cls;el.innerHTML='<div class="label">'+who+'</div>'+text.replace(/[<>&]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[m]));chat.appendChild(el);chat.scrollTop=chat.scrollHeight};
+  document.querySelector('#roll').addEventListener('click',()=>{const n=Math.floor(Math.random()*20)+1;dice.textContent='d20 = '+n;result.textContent='Roll lokal V1. Modifier belum diterapkan otomatis.'});
+  document.querySelector('#send').addEventListener('click',()=>{const v=action.value.trim();if(!v){result.textContent='Tulis tindakan Ilgar dulu.';return}add('Ilgar',v,'player');add('AI Dungeon Master','Aksi Ilgar diterima. Pada tahap berikutnya, AI DM akan memahami niat ini, menentukan apakah perlu check, lalu menjalankan konsekuensinya.','dm');action.value='';result.textContent='Aksi tersimpan di sesi lokal.'});
+  action.addEventListener('keydown',e=>{if(e.key==='Enter' && !e.shiftKey){e.preventDefault();document.querySelector('#send').click()}});
+  document.querySelector('#reset').addEventListener('click',()=>location.reload());
+})();
+</script>
+</body>
+</html>
