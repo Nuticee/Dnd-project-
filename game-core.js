@@ -904,20 +904,22 @@ export function clearPendingDM(state) {
 }
 
 export function summarizeAdventureState(state) {
+  // Accept both the canonical Adventure State and the lightweight UI state.
+  const canonical = state?.scene && typeof state.scene === "object";
   return {
-    campaignId: state.campaignId,
-    title: state.title,
-    location: state.scene.location,
-    scene: state.scene.description,
-    characterIds: state.characterIds,
-    flags: state.world.flags,
-    knownNPCs: state.world.knownNPCs,
-    quests: state.world.quests,
-    activeEncounter: state.activeEncounter,
-    turn: state.turn,
-    status: state.status,
-    pendingCheck: state.dm.pendingCheck,
-    lastEvents: state.history.slice(-8)
+    campaignId: state?.campaignId ?? "frozen-passage",
+    title: state?.title ?? "The Frozen Passage",
+    location: canonical ? state.scene.location : (state?.location ?? "Unknown"),
+    scene: canonical ? state.scene.description : (state?.scene ?? ""),
+    characterIds: canonical ? (state.characterIds ?? []) : [],
+    flags: canonical ? (state.world?.flags ?? {}) : (state?.flags ?? {}),
+    knownNPCs: canonical ? (state.world?.knownNPCs ?? []) : (state?.knownNPCs ?? []),
+    quests: canonical ? (state.world?.quests ?? []) : (state?.quests ?? []),
+    activeEncounter: state?.activeEncounter ?? null,
+    turn: state?.turn ?? null,
+    status: state?.status ?? "active",
+    pendingCheck: canonical ? (state.dm?.pendingCheck ?? null) : (state?.pendingCheck ?? null),
+    lastEvents: (canonical ? state.history : state?.events ?? []).slice(-8)
   };
 }
 
