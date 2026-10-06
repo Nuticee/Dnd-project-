@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800"><defs>
+<linearGradient id="bg" x2="0" y2="1"><stop stop-color="#30243a"/><stop offset=".5" stop-color="#15121c"/><stop offset="1" stop-color="#08090d"/></linearGradient>
+<radialGradient id="moon"><stop stop-color="#b69bd0" stop-opacity=".28"/><stop offset="1" stop-color="#b69bd0" stop-opacity="0"/></radialGradient>
+<linearGradient id="skin" x2="0" y2="1"><stop stop-color="#dcbda5"/><stop offset="1" stop-color="#ae826a"/></linearGradient>
+<linearGradient id="armor" x2="0" y2="1"><stop stop-color="#25242a"/><stop offset="1" stop-color="#101115"/></linearGradient>
+</defs>
+<rect width="600" height="800" fill="url(#bg)"/>
+<circle cx="455" cy="145" r="190" fill="url(#moon)"/>
+<g stroke="#6b5b75" stroke-width="4" opacity=".5"><path d="M40 480L40 180L135 180L135 480"/><path d="M465 480L465 140L560 140L560 480"/><path d="M65 245L110 210L110 480"/><path d="M490 205L535 175L535 480"/></g>
+<g fill="#d4a86d" opacity=".7"><circle cx="82" cy="215" r="7"/><circle cx="520" cy="175" r="6"/></g>
+<!-- rogue torso -->
+<path d="M95 800 Q110 545 190 475 Q245 430 300 430 Q355 430 410 475 Q490 545 505 800Z" fill="url(#armor)" stroke="#65596c" stroke-width="5"/>
+<path d="M180 505 L300 555 L420 505 L395 800 L205 800Z" fill="#1b1b21" stroke="#4f4755" stroke-width="4"/>
+<path d="M205 590 L395 590 M195 680 L405 680 M190 755 L410 755" stroke="#554b59" stroke-width="7"/>
+<g fill="#8d7895"><circle cx="220" cy="590" r="4"/><circle cx="380" cy="590" r="4"/><circle cx="210" cy="680" r="4"/><circle cx="390" cy="680" r="4"/></g>
+<!-- neck -->
+<path d="M250 405 L350 405 L355 500 Q300 530 245 500Z" fill="url(#skin)" stroke="#8f6e5d" stroke-width="4"/>
+<!-- face -->
+<path d="M198 175 Q205 75 300 52 Q395 75 402 175 L375 350 Q350 420 300 444 Q250 420 225 350Z" fill="url(#skin)" stroke="#906e5c" stroke-width="4"/>
+<!-- black messy hair -->
+<path d="M193 200 Q178 85 258 43 Q345 8 414 92 L404 210 L370 158 L350 198 L318 125 L285 180 L252 122 L220 210Z" fill="#0a0b0f"/>
+<path d="M220 105 Q280 45 360 65" fill="none" stroke="#2c2c34" stroke-width="9" opacity=".6"/>
+<!-- sleepy purple eyes -->
+<path d="M235 255 Q260 242 283 256" fill="none" stroke="#654f6d" stroke-width="7"/><path d="M317 256 Q340 242 365 255" fill="none" stroke="#654f6d" stroke-width="7"/>
+<ellipse cx="260" cy="264" rx="14" ry="8" fill="#eee7f0"/><ellipse cx="340" cy="264" rx="14" ry="8" fill="#eee7f0"/>
+<circle cx="260" cy="264" r="6" fill="#9d52c8"/><circle cx="340" cy="264" r="6" fill="#9d52c8"/>
+<path d="M287 340 Q300 347 313 340" fill="none" stroke="#76594e" stroke-width="4"/>
+<!-- dagger -->
+<path d="M435 510 L555 385 L462 545Z" fill="#d8dce4" stroke="#7d838d" stroke-width="4"/><path d="M420 535 L470 565" stroke="#8e6639" stroke-width="13"/>
+<!-- shortbow -->
+<path d="M150 470 Q55 580 150 690" fill="none" stroke="#815a37" stroke-width="12"/><path d="M150 470 L150 690" stroke="#ddd3c1" stroke-width="2"/>
+<rect x="25" y="25" width="550" height="750" rx="30" fill="none" stroke="#76568c" stroke-width="3" opacity=".65"/>
+<text x="34" y="62" fill="#e8d8f1" font-family="serif" font-size="30" font-weight="bold">YUSSS</text>
+<text x="34" y="91" fill="#c1aacd" font-family="sans-serif" font-size="17">HUMAN • ROGUE • LV.3</text>
+</svg>
