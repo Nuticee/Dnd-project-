@@ -1071,3 +1071,42 @@ export const DND2014_DATABASE = {
 };
 
 export function getDND2014Database(){ return structuredClone(DND2014_DATABASE); }
+
+
+// ============================================================
+// DM PLAYER CHARACTER — KAEL VEYR
+// Companion/player character created for the campaign party.
+// D&D 5e 2014 foundation. Keep separate from the user's 3 PCs.
+// ============================================================
+export const KAEL_VEYR = {
+  id: "kael-veyr",
+  name: "Kael Veyr",
+  race: "Half-Elf",
+  class: "Bard",
+  level: 3,
+  background: "Charlatan",
+  alignment: "Chaotic Good",
+  hp: { current: 21, max: 21 },
+  hitDie: "d8",
+  ac: 14,
+  speed: 30,
+  proficiencyBonus: 2,
+  abilityScores: { STR: 10, DEX: 16, CON: 12, INT: 10, WIS: 12, CHA: 16 },
+  abilityModifiers: { STR: 0, DEX: 3, CON: 1, INT: 0, WIS: 1, CHA: 3 },
+  savingThrows: { STR: 0, DEX: 3, CON: 1, INT: 0, WIS: 3, CHA: 5 },
+  attacks: [
+    { name: "Rapier", type: "weapon", attackBonus: 5, damage: "1d8+3 piercing" },
+    { name: "Vicious Mockery", type: "spell", attackBonus: 0, damage: "1d4 psychic" }
+  ],
+  spells: {
+    cantrips: ["Vicious Mockery", "Minor Illusion"],
+    level1: ["Healing Word", "Dissonant Whispers", "Faerie Fire", "Charm Person"],
+    level2: ["Suggestion", "Shatter"]
+  },
+  spellcasting: { ability: "CHA", saveDC: 13, attackBonus: 5 },
+  features: ["Bardic Inspiration (d6)", "Jack of All Trades", "Song of Rest (d6)", "Expertise", "College of Lore"],
+  equipment: ["Rapier", "Leather Armor", "Dagger", "Lute", "Disguise Kit", "Forgery Kit", "Charlatan's clothes"],
+  personality: "Banyak bicara, suka bercanda, sering improvisasi; serius ketika keadaan benar-benar genting.",
+  role: "Companion / Player character — controlled by the AI player when invited into the party.",
+  portrait: "kael-veyr.svg"
+};
