@@ -20,7 +20,7 @@ linear-gradient(145deg,transparent 0 28%,#0a202d 28% 42%,transparent 42%),
 linear-gradient(35deg,transparent 0 34%,#09202c 34% 50%,transparent 50%),
 linear-gradient(160deg,transparent 0 50%,#071722 50% 70%,transparent 70%);
 opacity:.95}
-.snow{position:absolute;inset:0;background-image:radial-gradient(#dff5ff 1px,transparent 1px);background-size:31px 31px;opacity:.12}
+.snow{position:absolute;inset:-40px 0 0;background-image:radial-gradient(circle,#dff5ff 1px,transparent 1.5px),radial-gradient(circle,#dff5ff 1px,transparent 1.5px),radial-gradient(circle,#dff5ff 1.2px,transparent 1.7px);background-size:31px 31px,47px 47px,73px 73px;background-position:0 0,12px 8px,25px 17px;opacity:.18;animation:snowfall 14s linear infinite;pointer-events:none}@keyframes snowfall{from{background-position:0 0,12px 8px,25px 17px}to{background-position:8px 420px,82px 500px,45px 620px}}
 .gate{position:absolute;left:50%;top:29%;transform:translateX(-50%);width:205px;height:170px;border:10px solid #28495b;border-bottom:0;border-radius:105px 105px 0 0;box-shadow:0 0 40px rgba(79,185,255,.13)}
 .gate:after{content:"";position:absolute;inset:18px 20px 0;background:linear-gradient(180deg,rgba(113,203,255,.25),rgba(11,33,47,.8));border-radius:75px 75px 0 0}
 .home-content{position:relative;z-index:2;padding:30px 18px 100px;min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end}
