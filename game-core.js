@@ -384,3 +384,410 @@ export function resetCharacterHP(id) {
   character.hp.current = character.hp.max;
   return character;
 }
+
+
+// ============================================================
+// COMBAT ENGINE v1 — D&D 5e CLASSIC (2014)
+// ============================================================
+
+export const ACTION_TYPES = {
+  ACTION: "action",
+  BONUS_ACTION: "bonus_action",
+  REACTION: "reaction",
+  MOVEMENT: "movement",
+  FREE: "free"
+};
+
+export function createCombatant(source, side = "player") {
+  return {
+    id: source.id ?? crypto.randomUUID(),
+    name: source.name,
+    side,
+    hp: source.hp?.current ?? source.hp ?? 1,
+    maxHP: source.hp?.max ?? source.maxHP ?? 1,
+    ac: source.ac ?? 10,
+    initiativeModifier: source.initiative ?? 0,
+    speed: source.speed ?? 30,
+    conditions: [],
+    defeated: false,
+    deathSaves: { successes: 0, failures: 0 },
+    resources: {
+      action: true,
+      bonusAction: true,
+      reaction: true,
+      movement: source.speed ?? 30
+    },
+    attacks: source.attacks ?? []
+  };
+}
+
+export function rollInitiativeForCombatants(combatants) {
+  return combatants
+    .map(c => ({
+      ...c,
+      initiativeRoll: initiative(c.initiativeModifier),
+    }))
+    .sort((a, b) => b.initiativeRoll.total - a.initiativeRoll.total)
+    .map((c, index) => ({ ...c, initiativeOrder: index + 1 }));
+}
+
+export function createCombat(playerSources, enemySources = []) {
+  const players = playerSources.map(c => createCombatant(c, "player"));
+  const enemies = enemySources.map(c => createCombatant(c, "enemy"));
+  const rolled = rollInitiativeForCombatants([...players, ...enemies]);
+
+  return {
+    id: `combat-${Date.now()}`,
+    round: 1,
+    turnIndex: 0,
+    status: "active",
+    combatants: rolled,
+    log: [],
+    startedAt: new Date().toISOString()
+  };
+}
+
+export function currentCombatant(combat) {
+  return combat.combatants[combat.turnIndex] ?? null;
+}
+
+export function resetTurnResources(combatant) {
+  return {
+    ...combatant,
+    resources: {
+      action: true,
+      bonusAction: true,
+      reaction: true,
+      movement: combatant.speed
+    }
+  };
+}
+
+export function startNextTurn(combat) {
+  if (!combat.combatants.length) return combat;
+
+  let nextIndex = combat.turnIndex;
+  let loops = 0;
+
+  do {
+    nextIndex = (nextIndex + 1) % combat.combatants.length;
+    loops++;
+    if (loops > combat.combatants.length) return combat;
+  } while (combat.combatants[nextIndex].defeated);
+
+  let round = combat.round;
+  if (nextIndex <= combat.turnIndex) round++;
+
+  const combatants = combat.combatants.map((c, i) =>
+    i === nextIndex ? resetTurnResources(c) : c
+  );
+
+  return {
+    ...combat,
+    round,
+    turnIndex: nextIndex,
+    combatants
+  };
+}
+
+export function spendAction(combatant, type = ACTION_TYPES.ACTION) {
+  const resources = { ...combatant.resources };
+
+  if (type === ACTION_TYPES.ACTION && !resources.action) {
+    throw new Error("Action already used this turn.");
+  }
+  if (type === ACTION_TYPES.BONUS_ACTION && !resources.bonusAction) {
+    throw new Error("Bonus action already used this turn.");
+  }
+  if (type === ACTION_TYPES.REACTION && !resources.reaction) {
+    throw new Error("Reaction already used.");
+  }
+
+  if (type === ACTION_TYPES.ACTION) resources.action = false;
+  if (type === ACTION_TYPES.BONUS_ACTION) resources.bonusAction = false;
+  if (type === ACTION_TYPES.REACTION) resources.reaction = false;
+
+  return { ...combatant, resources };
+}
+
+export function moveCombatant(combatant, distance) {
+  const amount = Math.max(0, Number(distance) || 0);
+  if (amount > combatant.resources.movement) {
+    throw new Error("Not enough movement.");
+  }
+
+  return {
+    ...combatant,
+    resources: {
+      ...combatant.resources,
+      movement: combatant.resources.movement - amount
+    }
+  };
+}
+
+export function performAttack(attacker, defender, attackData, mode = "normal") {
+  const attack = attackRoll(
+    attackData.attackBonus ?? 0,
+    defender.ac,
+    mode
+  );
+
+  let damageResult = null;
+  let nextDefender = defender;
+
+  if (attack.hit) {
+    damageResult = damage(
+      attackData.damage ?? "1d4",
+      attack.critical,
+      attackData.damageModifier ?? 0
+    );
+
+    nextDefender = applyDamage(defender, damageResult.total);
+  }
+
+  return {
+    attacker,
+    defender: nextDefender,
+    attack,
+    damage: damageResult
+  };
+}
+
+export function updateCombatant(combat, updated) {
+  return {
+    ...combat,
+    combatants: combat.combatants.map(c =>
+      c.id === updated.id ? updated : c
+    )
+  };
+}
+
+export function checkCombatEnd(combat) {
+  const playersAlive = combat.combatants.some(
+    c => c.side === "player" && !c.defeated
+  );
+  const enemiesAlive = combat.combatants.some(
+    c => c.side === "enemy" && !c.defeated
+  );
+
+  let status = "active";
+  if (!enemiesAlive) status = "victory";
+  else if (!playersAlive) status = "defeat";
+
+  return { ...combat, status };
+}
+
+export function playerAttack(combat, attackerId, defenderId, attackIndex = 0, mode = "normal") {
+  if (combat.status !== "active") throw new Error("Combat has ended.");
+
+  const attacker = combat.combatants.find(c => c.id === attackerId);
+  const defender = combat.combatants.find(c => c.id === defenderId);
+
+  if (!attacker || !defender) throw new Error("Combatant not found.");
+  if (attacker.defeated || defender.defeated) throw new Error("Invalid defeated combatant.");
+  if (currentCombatant(combat)?.id !== attackerId) throw new Error("It is not this combatant's turn.");
+  if (attacker.side !== "player") throw new Error("Only player attacks use this helper.");
+
+  const attackData = attacker.attacks[attackIndex];
+  if (!attackData) throw new Error("Attack not found.");
+
+  const spent = spendAction(attacker, ACTION_TYPES.ACTION);
+  let result = performAttack(spent, defender, attackData, mode);
+
+  let next = updateCombatant(combat, spent);
+  next = updateCombatant(next, result.defender);
+
+  next = {
+    ...next,
+    log: [
+      ...next.log,
+      {
+        type: "attack",
+        attackerId,
+        defenderId,
+        attack: result.attack,
+        damage: result.damage
+      }
+    ]
+  };
+
+  return checkCombatEnd(next);
+}
+
+// ------------------------------------------------------------
+// MONSTER DATABASE — SRD / 2014-style baseline
+// These are seed monsters for testing the combat engine.
+// ------------------------------------------------------------
+
+export const MONSTERS = {
+  goblin: {
+    id: "goblin",
+    name: "Goblin",
+    size: "Small",
+    type: "humanoid",
+    alignment: "neutral evil",
+    ac: 15,
+    hp: { current: 7, max: 7 },
+    speed: 30,
+    challengeRating: "1/4",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 8, DEX: 14, CON: 10, INT: 10, WIS: 8, CHA: 8 },
+    abilities: ["Nimble Escape"],
+    attacks: [
+      { name: "Scimitar", attackBonus: 4, damage: "1d6+2", damageType: "slashing" },
+      { name: "Shortbow", attackBonus: 4, damage: "1d6+2", damageType: "piercing", range: "80/320 ft" }
+    ]
+  },
+
+  kobold: {
+    id: "kobold",
+    name: "Kobold",
+    size: "Small",
+    type: "humanoid",
+    alignment: "lawful evil",
+    ac: 12,
+    hp: { current: 5, max: 5 },
+    speed: 30,
+    challengeRating: "1/8",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 7, DEX: 15, CON: 9, INT: 8, WIS: 7, CHA: 8 },
+    abilities: ["Sunlight Sensitivity", "Pack Tactics"],
+    attacks: [
+      { name: "Dagger", attackBonus: 4, damage: "1d4+2", damageType: "piercing" },
+      { name: "Sling", attackBonus: 4, damage: "1d4+2", damageType: "bludgeoning", range: "30/120 ft" }
+    ]
+  },
+
+  bandit: {
+    id: "bandit",
+    name: "Bandit",
+    size: "Medium",
+    type: "humanoid",
+    alignment: "any non-lawful",
+    ac: 12,
+    hp: { current: 11, max: 11 },
+    speed: 30,
+    challengeRating: "1/8",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 11, DEX: 12, CON: 12, INT: 10, WIS: 10, CHA: 10 },
+    abilities: [],
+    attacks: [
+      { name: "Scimitar", attackBonus: 3, damage: "1d6+1", damageType: "slashing" },
+      { name: "Light Crossbow", attackBonus: 3, damage: "1d8+1", damageType: "piercing", range: "80/320 ft" }
+    ]
+  },
+
+  wolf: {
+    id: "wolf",
+    name: "Wolf",
+    size: "Medium",
+    type: "beast",
+    alignment: "unaligned",
+    ac: 13,
+    hp: { current: 11, max: 11 },
+    speed: 40,
+    challengeRating: "1/4",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 12, DEX: 15, CON: 12, INT: 3, WIS: 12, CHA: 6 },
+    abilities: ["Keen Hearing and Smell", "Pack Tactics"],
+    attacks: [
+      { name: "Bite", attackBonus: 4, damage: "2d4+2", damageType: "piercing", special: "Target may be knocked prone on failed STR save." }
+    ]
+  },
+
+  skeleton: {
+    id: "skeleton",
+    name: "Skeleton",
+    size: "Medium",
+    type: "undead",
+    alignment: "lawful evil",
+    ac: 13,
+    hp: { current: 13, max: 13 },
+    speed: 30,
+    challengeRating: "1/4",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 10, DEX: 14, CON: 15, INT: 6, WIS: 8, CHA: 5 },
+    abilities: ["Damage Vulnerabilities: bludgeoning", "Poison Immunity"],
+    attacks: [
+      { name: "Shortsword", attackBonus: 4, damage: "1d6+2", damageType: "piercing" },
+      { name: "Shortbow", attackBonus: 4, damage: "1d6+2", damageType: "piercing", range: "80/320 ft" }
+    ]
+  },
+
+  orc: {
+    id: "orc",
+    name: "Orc",
+    size: "Medium",
+    type: "humanoid",
+    alignment: "chaotic evil",
+    ac: 13,
+    hp: { current: 15, max: 15 },
+    speed: 30,
+    challengeRating: "1/2",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 16, DEX: 12, CON: 16, INT: 7, WIS: 11, CHA: 10 },
+    abilities: ["Aggressive"],
+    attacks: [
+      { name: "Greataxe", attackBonus: 5, damage: "1d12+3", damageType: "slashing" },
+      { name: "Javelin", attackBonus: 5, damage: "1d6+3", damageType: "piercing", range: "30/120 ft" }
+    ]
+  },
+
+  cultist: {
+    id: "cultist",
+    name: "Cultist",
+    size: "Medium",
+    type: "humanoid",
+    alignment: "any non-good",
+    ac: 12,
+    hp: { current: 9, max: 9 },
+    speed: 30,
+    challengeRating: "1/8",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 11, DEX: 12, CON: 10, INT: 10, WIS: 11, CHA: 10 },
+    abilities: [],
+    attacks: [
+      { name: "Scimitar", attackBonus: 3, damage: "1d6+1", damageType: "slashing" }
+    ]
+  },
+
+  bugbear: {
+    id: "bugbear",
+    name: "Bugbear",
+    size: "Medium",
+    type: "humanoid",
+    alignment: "chaotic evil",
+    ac: 16,
+    hp: { current: 27, max: 27 },
+    speed: 30,
+    challengeRating: "1",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 15, DEX: 14, CON: 13, INT: 8, WIS: 11, CHA: 9 },
+    abilities: ["Brute", "Surprise Attack"],
+    attacks: [
+      { name: "Morningstar", attackBonus: 4, damage: "2d8+2", damageType: "piercing" },
+      { name: "Javelin", attackBonus: 4, damage: "1d6+2", damageType: "piercing", range: "30/120 ft" }
+    ]
+  }
+};
+
+export function getMonster(id) {
+  const template = MONSTERS[id];
+  return template ? structuredClone(template) : null;
+}
+
+export function spawnMonster(id, side = "enemy") {
+  const monster = getMonster(id);
+  if (!monster) throw new Error(`Monster not found: ${id}`);
+  return createCombatant(monster, side);
+}
+
+export function listMonsters() {
+  return Object.values(MONSTERS).map(m => ({
+    id: m.id,
+    name: m.name,
+    challengeRating: m.challengeRating,
+    hp: m.hp.max,
+    ac: m.ac
+  }));
+}
