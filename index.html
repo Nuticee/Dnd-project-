@@ -116,7 +116,7 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 </main>
 <div id="toast" class="toast"></div>
 </section><script type="module">
-import * as Game from "./game-core.js?v=202610070318";
+import * as Game from "./game-core.js?v=202610070407";
 let activeCharacter=Game.cloneCharacter("ilgar-zamani");let player=activeCharacter;let selectedEnemy="goblin",combat=null;const enemyIds=["goblin","kobold","wolf"];let activeTab="spell";
 function init(){startCombat(activeCharacter.id)}
 function startCombat(charId){activeCharacter=Game.cloneCharacter(charId);player=activeCharacter;const enemies=enemyIds.map(id=>Game.spawnMonster(id));combat=Game.createCombat([player],enemies);render();renderParty();renderCombatActions();log("Pertempuran dimulai.");log("🎲 Initiative semua combatant: d20 + Dexterity.");animateInitiative();}
