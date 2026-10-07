@@ -223,17 +223,17 @@ Deno.serve(async (req) => {
     }
   }
 
-  const apiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!apiKey) return json({ error: "OPENAI_API_KEY is not configured in Supabase secrets." }, 503);
+  const apiKey = Deno.env.get("GEMINI_API_KEY");
+  if (!apiKey) return json({ error: "GEMINI_API_KEY is not configured in Supabase secrets." }, 503);
 
   if (!payload?.playerAction || typeof payload.playerAction !== "string") {
     return json({ error: "playerAction is required." }, 400);
   }
 
-  const model = Deno.env.get("OPENAI_MODEL") || "gpt-6-luna";
+  const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.8-flash";
 
   // Keep the DM context compact. Sending the entire event log on every turn
-  // can consume the organization's token-per-minute limit very quickly.
+  // can consume the model's token budget quickly.
   const adventure = payload.adventure && typeof payload.adventure === "object"
     ? {
         ...payload.adventure,
@@ -246,68 +246,86 @@ Deno.serve(async (req) => {
       }
     : payload.adventure;
 
-  const input = [
-    { role: "system", content: SYSTEM },
-    {
-      role: "user",
-      content: JSON.stringify({
-        ruleset: payload.ruleset,
-        character: payload.character,
-        adventure,
-        playerAction: payload.playerAction
-      })
-    }
-  ];
+  const prompt = JSON.stringify({
+    ruleset: payload.ruleset,
+    character: payload.character,
+    adventure,
+    playerAction: payload.playerAction
+  });
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model,
-        input,
-        max_output_tokens: 1200,
-        text: {
-          format: {
-            type: "json_object"
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/" +
+      encodeURIComponent(model) +
+      ":generateContent",
+      {
+        method: "POST",
+        headers: {
+          "x-goog-api-key": apiKey,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [{ text: SYSTEM }]
+          },
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: prompt }]
+            }
+          ],
+          generationConfig: {
+            responseMimeType: "application/json",
+            responseSchema: OUTPUT_SCHEMA,
+            maxOutputTokens: 1200,
+            temperature: 0.8
           }
-        }
-      })
-    });
+        })
+      }
+    );
 
     const raw = await response.text();
     if (!response.ok) {
       let detail = raw.slice(0, 1500);
-      let status = 502;
 
       try {
         const parsed = JSON.parse(raw);
-        const code = parsed?.error?.code;
-        const message = parsed?.error?.message || "";
-        if (response.status === 429 || code === "rate_limit_exceeded") {
-          status = 429;
-          detail = "OpenAI sedang mencapai rate limit. Tunggu sebentar lalu coba lagi.";
+        const message =
+          parsed?.error?.message ||
+          parsed?.message ||
+          "";
+
+        if (response.status === 429) {
+          detail = "Gemini sedang mencapai rate limit. Tunggu sebentar lalu coba lagi.";
         } else if (message) {
-          detail = message.slice(0, 1500);
+          detail = String(message).slice(0, 1500);
         }
       } catch {}
 
-      return json({ error: "OpenAI request failed.", detail }, status);
+      return json({ error: "Gemini request failed.", detail }, response.status === 429 ? 429 : 502);
     }
 
     const data = JSON.parse(raw);
-    const text = data.output_text || "";
+    const text = data?.candidates?.[0]?.content?.parts
+      ?.map(part => part?.text || "")
+      .join("")
+      .trim();
+
+    if (!text) {
+      const finishReason = data?.candidates?.[0]?.finishReason || "unknown";
+      return json({
+        error: "Gemini returned no usable DM response.",
+        detail: "finishReason=" + finishReason
+      }, 502);
+    }
 
     let result;
     try {
       result = JSON.parse(text);
     } catch {
       return json({
-        error: "AI DM returned invalid JSON.",
-        detail: "The Responses API did not return JSON matching the DM schema."
+        error: "Gemini DM returned invalid JSON.",
+        detail: "The Gemini response did not match the DM JSON structure."
       }, 502);
     }
 
@@ -329,7 +347,4 @@ Deno.serve(async (req) => {
       requestCheck: validCheck,
       encounter: result.encounter ?? null
     });
-  } catch (error) {
-    return json({ error: error instanceof Error ? error.message : "AI DM error." }, 500);
-  }
-});
+  }});
