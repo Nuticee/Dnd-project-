@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#02050b"/><stop offset=".55" stop-color="#071727"/><stop offset="1" stop-color="#102f42"/></linearGradient>
+ <linearGradient id="ice" x2="0" y2="1"><stop stop-color="#b9f1ff"/><stop offset=".35" stop-color="#4fa9cf"/><stop offset="1" stop-color="#173d55"/></linearGradient>
+ <linearGradient id="stone" x2="0" y2="1"><stop stop-color="#172735"/><stop offset=".55" stop-color="#0b151f"/><stop offset="1" stop-color="#050b12"/></linearGradient>
+ <radialGradient id="portal"><stop stop-color="#e9ffff"/><stop offset=".18" stop-color="#69dcff" stop-opacity=".95"/><stop offset=".5" stop-color="#1976a5" stop-opacity=".55"/><stop offset="1" stop-color="#061522" stop-opacity="0"/></radialGradient>
+ <linearGradient id="snow" x2="0" y2="1"><stop stop-color="#dff9ff" stop-opacity=".8"/><stop offset="1" stop-color="#8ec9dc" stop-opacity=".15"/></linearGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="12"/></filter>
+ <filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
+ <pattern id="snowflakes" width="90" height="70" patternUnits="userSpaceOnUse"><circle cx="12" cy="18" r="1.5" fill="#fff"/><circle cx="54" cy="43" r="1" fill="#dff8ff"/><circle cx="78" cy="9" r="1.3" fill="#fff"/></pattern>
+</defs>
+<rect width="1200" height="800" fill="url(#sky)"/>
+<circle cx="930" cy="125" r="70" fill="#dff7ff" opacity=".7" filter="url(#soft)"/>
+<circle cx="930" cy="125" r="42" fill="#effcff" opacity=".88"/>
+<g fill="#bfefff" opacity=".65"><circle cx="95" cy="95" r="2"/><circle cx="180" cy="155" r="1.5"/><circle cx="1080" cy="210" r="1.8"/><circle cx="1010" cy="70" r="1.2"/><circle cx="410" cy="80" r="1.4"/><circle cx="720" cy="125" r="1.2"/></g>
+<!-- distant mountains -->
+<path d="M0 350 L170 170 285 300 420 120 575 300 735 150 890 315 1040 190 1200 350 V520 H0Z" fill="#07131e"/>
+<path d="M0 370 L170 215 285 315 420 170 575 320 735 195 890 330 1040 235 1200 370" fill="none" stroke="#2e6075" stroke-width="8" opacity=".35"/>
+<!-- massive side citadels -->
+<g fill="url(#stone)" stroke="#33566a" stroke-width="4">
+ <path d="M35 600 V270 L95 205 155 270 V600Z"/><path d="M145 600 V330 L205 265 265 330 V600Z"/>
+ <path d="M1165 600 V270 L1105 205 1045 270 V600Z"/><path d="M1055 600 V330 L995 265 935 330 V600Z"/>
+</g>
+<g fill="url(#ice)" opacity=".65">
+ <path d="M55 330 L95 225 135 330 118 315 95 260 72 315Z"/><path d="M1070 330 L1105 225 1140 330 1122 315 1105 260 1088 315Z"/>
+</g>
+<!-- central fortress -->
+<path d="M245 610 V320 L330 230 405 285 475 175 600 105 725 175 795 285 870 230 955 320 V610Z" fill="url(#stone)" stroke="#466d80" stroke-width="5"/>
+<!-- towers -->
+<g fill="#0a141e" stroke="#4a7487" stroke-width="4">
+ <path d="M275 470 V220 L335 145 395 220 V470Z"/><path d="M805 470 V220 L865 145 925 220 V470Z"/>
+ <path d="M455 440 V160 L515 90 575 160 V440Z"/><path d="M625 440 V160 L685 90 745 160 V440Z"/>
+</g>
+<!-- icy spires -->
+<g fill="url(#ice)" opacity=".8">
+ <path d="M290 230 L335 115 380 230Z"/><path d="M470 170 L515 55 560 170Z"/><path d="M640 170 L685 55 730 170Z"/><path d="M820 230 L865 115 910 230Z"/>
+</g>
+<!-- central gothic arch -->
+<path d="M390 610 V405 Q390 265 600 210 Q810 265 810 405 V610Z" fill="#050c14" stroke="#547c8e" stroke-width="7"/>
+<path d="M425 610 V414 Q425 305 600 260 Q775 305 775 414 V610Z" fill="#02080e" stroke="#2f5b70" stroke-width="4"/>
+<ellipse cx="600" cy="420" rx="235" ry="180" fill="url(#portal)" opacity=".9" filter="url(#glow)"/>
+<!-- rune door -->
+<path d="M500 610 V435 Q500 365 600 325 Q700 365 700 435 V610Z" fill="#071723" stroke="#75dfff" stroke-width="5"/>
+<circle cx="600" cy="440" r="70" fill="none" stroke="#9cf0ff" stroke-width="5" opacity=".9"/>
+<path d="M600 370 L620 420 675 430 630 465 640 520 600 490 560 520 570 465 525 430 580 420Z" fill="none" stroke="#bff7ff" stroke-width="4"/>
+<path d="M535 610 Q600 555 665 610" fill="none" stroke="#65d7f6" stroke-width="4"/>
+<!-- guardian statues -->
+<g fill="#101d28" stroke="#6d9aaa" stroke-width="4">
+ <path d="M285 610 V470 Q285 410 335 385 Q385 410 385 470 V610Z"/><path d="M815 610 V470 Q815 410 865 385 Q915 410 915 470 V610Z"/>
+</g>
+<g fill="#07101a" stroke="#7faebd" stroke-width="3">
+ <path d="M315 455 Q335 415 355 455 L350 505 320 505Z"/><path d="M845 455 Q865 415 885 455 L880 505 850 505Z"/>
+ <path d="M310 500 L280 600 M370 500 L400 600 M840 500 L810 600 M900 500 L930 600" stroke-width="10"/>
+</g>
+<!-- banners -->
+<path d="M330 285 L390 310 370 415 330 390Z" fill="#163f58" stroke="#75cbe5" stroke-width="3"/>
+<path d="M870 285 L810 310 830 415 870 390Z" fill="#163f58" stroke="#75cbe5" stroke-width="3"/>
+<!-- grand stairs -->
+<g fill="#274657" stroke="#6e9eaf" stroke-width="2">
+ <path d="M350 610 H850 L815 635 H385Z"/><path d="M330 635 H870 L835 660 H365Z"/><path d="M300 660 H900 L860 690 H340Z"/><path d="M260 690 H940 L895 725 H305Z"/>
+</g>
+<!-- foreground ice -->
+<path d="M0 800 V650 Q180 610 330 710 Q480 785 600 700 Q720 615 870 710 Q1020 790 1200 650 V800Z" fill="#071722"/>
+<path d="M0 760 Q190 700 330 770 M850 760 Q1020 700 1200 760" fill="none" stroke="#6ab1c7" stroke-width="5" opacity=".35"/>
+<rect width="1200" height="800" fill="url(#snowflakes)" opacity=".5"/>
+<!-- cinematic vignette -->
+<rect width="1200" height="800" fill="none" stroke="#000" stroke-width="80" opacity=".35"/>
+</svg>
