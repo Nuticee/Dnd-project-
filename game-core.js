@@ -984,11 +984,13 @@ function buildLocalTestDMReply(state, playerAction, character = null) {
   };
 }
 
+const SUPABASE_AI_DM_ENDPOINT = "https://qphfbqhejnexavhdsxay.supabase.co/functions/v1/ai-dm";
+
 export async function askAIDM(state, playerAction, {
   character = null,
-  endpoint = "/functions/v1/ai-dm",
+  endpoint = SUPABASE_AI_DM_ENDPOINT,
   fetchImpl = fetch,
-  testMode = true
+  testMode = false
 } = {}) {
   if (testMode) {
     return buildLocalTestDMReply(state, playerAction, character);
