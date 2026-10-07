@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+<defs>
+<linearGradient id="sky" x2="0" y2="1"><stop stop-color="#020718"/><stop offset=".48" stop-color="#0b3150"/><stop offset="1" stop-color="#061421"/></linearGradient>
+<linearGradient id="ice" x2="0" y2="1"><stop stop-color="#f5fdff"/><stop offset=".18" stop-color="#9eeaff"/><stop offset=".55" stop-color="#3b9fc9"/><stop offset="1" stop-color="#0b314b"/></linearGradient>
+<linearGradient id="stone" x2="0" y2="1"><stop stop-color="#173b54"/><stop offset=".5" stop-color="#0a2133"/><stop offset="1" stop-color="#030d17"/></linearGradient>
+<linearGradient id="gold" x2="0" y2="1"><stop stop-color="#fff0ad"/><stop offset=".45" stop-color="#c99b45"/><stop offset="1" stop-color="#634316"/></linearGradient>
+<radialGradient id="magic"><stop stop-color="#dffcff" stop-opacity=".9"/><stop offset=".25" stop-color="#55d9ff" stop-opacity=".55"/><stop offset="1" stop-color="#1685bd" stop-opacity="0"/></radialGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="7"/></filter>
+<filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1200" height="800" fill="url(#sky)"/>
+<!-- moon / aurora -->
+<circle cx="600" cy="205" r="185" fill="url(#magic)" filter="url(#soft)"/>
+<path d="M0 170 Q160 20 320 150 T620 125 T900 150 T1200 80" fill="none" stroke="#65dfff" stroke-opacity=".18" stroke-width="55" filter="url(#soft)"/>
+<g fill="#dff9ff" opacity=".8">
+<circle cx="90" cy="80" r="2"/><circle cx="165" cy="145" r="1.5"/><circle cx="255" cy="55" r="2"/><circle cx="355" cy="120" r="1.5"/><circle cx="840" cy="65" r="2"/><circle cx="950" cy="150" r="1.5"/><circle cx="1080" cy="75" r="2"/><circle cx="1140" cy="210" r="1.5"/>
+</g>
+<!-- distant icy city -->
+<g fill="#0b2337" stroke="#285773" stroke-width="2" opacity=".95">
+<path d="M0 430V280L55 235 100 430Z"/><path d="M90 430V190L145 125 205 430Z"/><path d="M180 430V255L235 195 290 430Z"/>
+<path d="M910 430V250L965 190 1020 430Z"/><path d="M995 430V150L1050 85 1110 430Z"/><path d="M1080 430V230L1140 165 1200 430Z"/>
+</g>
+<!-- huge side citadels -->
+<g stroke="#63d8ff" stroke-width="4">
+<path d="M55 615V235L105 105 150 235V615Z" fill="url(#stone)"/>
+<path d="M1050 615V235L1095 105 1145 235V615Z" fill="url(#stone)"/>
+<path d="M125 610V285L195 55 260 285V610Z" fill="url(#ice)"/>
+<path d="M940 610V285L1005 55 1075 285V610Z" fill="url(#ice)"/>
+</g>
+<!-- crystalline spikes -->
+<g fill="url(#ice)" stroke="#b8f2ff" stroke-width="3">
+<path d="M25 350 75 115 125 350Z"/><path d="M145 310 195 20 245 310Z"/><path d="M255 300 300 90 345 300Z"/>
+<path d="M855 300 900 90 945 300Z"/><path d="M955 310 1005 20 1055 310Z"/><path d="M1075 350 1125 115 1175 350Z"/>
+</g>
+<!-- central gothic palace -->
+<path d="M285 610V280L350 170 405 245 600 25 795 245 850 170 915 280V610Z" fill="url(#stone)" stroke="#6ddcff" stroke-width="6"/>
+<path d="M350 610V330L410 265 470 330V610 M730 330L790 265 850 330V610" fill="#0a2639" stroke="url(#gold)" stroke-width="5"/>
+<!-- central icy crown -->
+<path d="M365 300 420 135 470 225 600 0 730 225 780 135 835 300 760 350 440 350Z" fill="url(#ice)" stroke="#c5f5ff" stroke-width="5"/>
+<!-- grand gate -->
+<path d="M405 610V360 Q600 145 795 360V610Z" fill="#041522" stroke="url(#gold)" stroke-width="8"/>
+<path d="M430 610V375 Q600 190 770 375V610" fill="none" stroke="#5edcff" stroke-width="5"/>
+<path d="M600 205V610" stroke="url(#gold)" stroke-width="4"/>
+<!-- glowing runic portal -->
+<ellipse cx="600" cy="425" rx="132" ry="155" fill="url(#magic)" opacity=".9"/>
+<ellipse cx="600" cy="425" rx="105" ry="125" fill="none" stroke="#d9fbff" stroke-width="4"/>
+<ellipse cx="600" cy="425" rx="78" ry="98" fill="none" stroke="#54d8ff" stroke-width="3" stroke-dasharray="9 12"/>
+<path d="M600 285 635 375 725 425 635 475 600 565 565 475 475 425 565 375Z" fill="none" stroke="#efffff" stroke-width="5"/>
+<circle cx="600" cy="425" r="17" fill="#eaffff" filter="url(#glow)"/>
+<!-- guardian statues -->
+<g fill="#071522" stroke="#83dcff" stroke-width="4">
+<path d="M225 610V355Q250 305 285 285Q320 305 345 355V610Z"/>
+<path d="M855 610V355Q880 305 915 285Q950 305 975 355V610Z"/>
+<path d="M250 375 285 295 320 375 305 470 265 470Z"/>
+<path d="M880 375 915 295 950 375 935 470 895 470Z"/>
+</g>
+<!-- swords held by guardians -->
+<g stroke="#bfefff" stroke-width="7"><path d="M285 325V520M255 420H315"/><path d="M915 325V520M885 420H945"/></g>
+<!-- banners -->
+<g fill="#071a2a" stroke="url(#gold)" stroke-width="4">
+<path d="M8 300H78V675L43 715 8 675Z"/><path d="M1122 300H1192V675L1157 715 1122 675Z"/>
+</g>
+<g fill="#62dfff"><path d="M43 390 63 412 43 434 23 412Z"/><path d="M1157 390 1177 412 1157 434 1137 412Z"/></g>
+<!-- stairs -->
+<g fill="#183b50" stroke="#6db9d4" stroke-width="2">
+<path d="M300 610H900L850 650H350Z"/><path d="M330 650H870L820 680H380Z"/><path d="M365 680H835L790 705H410Z"/><path d="M400 705H800L760 725H440Z"/>
+</g>
+<!-- foreground ceremonial bridge -->
+<path d="M0 800V660 Q600 555 1200 660V800Z" fill="#030c15"/>
+<path d="M0 710Q600 595 1200 710" fill="none" stroke="url(#gold)" stroke-width="4"/>
+<path d="M0 755Q600 640 1200 755" fill="none" stroke="#1b6686" stroke-width="7"/>
+<!-- lanterns -->
+<g stroke="url(#gold)" stroke-width="4" fill="#081622">
+<path d="M175 700V590H215V700Z"/><path d="M985 700V590H1025V700Z"/>
+</g>
+<g fill="#ffe7a0" filter="url(#glow)"><circle cx="195" cy="615" r="16"/><circle cx="1005" cy="615" r="16"/></g>
+<!-- foreground ice -->
+<g fill="#66dfff" opacity=".55"><path d="M0 800 95 610 150 800Z"/><path d="M1200 800 1105 610 1050 800Z"/><path d="M130 800 210 660 275 800Z"/><path d="M1070 800 990 660 925 800Z"/></g>
+</svg>
