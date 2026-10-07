@@ -33,24 +33,22 @@ Rules authority:
 `;
 
 const OUTPUT_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
+  type: "OBJECT",
   properties: {
-    narration: { type: "string" },
+    narration: { type: "STRING" },
     statePatch: {
-      type: "object",
-      additionalProperties: false,
+      type: "OBJECT",
       properties: {
-        scene: { type: ["string", "null"] },
-        location: { type: ["string", "null"] },
-        description: { type: ["string", "null"] },
-        weather: { type: ["string", "null"] },
-        timeOfDay: { type: ["string", "null"] },
-        flags: { type: "object", "additionalProperties": true },
-        quests: { type: "array", "items": {} },
-        knownNPCs: { type: "array", "items": {} },
-        inventory: { type: "array", "items": {} },
-        consequences: { type: "array", "items": {} }
+        scene: { type: "STRING", nullable: true },
+        location: { type: "STRING", nullable: true },
+        description: { type: "STRING", nullable: true },
+        weather: { type: "STRING", nullable: true },
+        timeOfDay: { type: "STRING", nullable: true },
+        flags: { type: "OBJECT", properties: {} },
+        quests: { type: "ARRAY", items: { type: "OBJECT" } },
+        knownNPCs: { type: "ARRAY", items: { type: "OBJECT" } },
+        inventory: { type: "ARRAY", items: { type: "OBJECT" } },
+        consequences: { type: "ARRAY", items: { type: "OBJECT" } }
       },
       required: [
         "scene",
@@ -66,34 +64,24 @@ const OUTPUT_SCHEMA = {
       ]
     },
     requestCheck: {
-      anyOf: [
-        { type: "null" },
-        {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            type: { type: "string", enum: ["skill", "save", "attack"] },
-            abilityOrSkill: { type: "string" },
-            dc: { type: ["number", "null"] },
-            reason: { type: "string" }
-          },
-          required: ["type", "abilityOrSkill", "dc", "reason"]
-        }
-      ]
+      type: "OBJECT",
+      nullable: true,
+      properties: {
+        type: { type: "STRING", enum: ["skill", "save", "attack"] },
+        abilityOrSkill: { type: "STRING" },
+        dc: { type: "NUMBER", nullable: true },
+        reason: { type: "STRING" }
+      },
+      required: ["type", "abilityOrSkill", "dc", "reason"]
     },
     encounter: {
-      anyOf: [
-        { type: "null" },
-        {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            monsterIds: { type: "array", items: { type: "string" } },
-            reason: { type: "string" }
-          },
-          required: ["monsterIds", "reason"]
-        }
-      ]
+      type: "OBJECT",
+      nullable: true,
+      properties: {
+        monsterIds: { type: "ARRAY", items: { type: "STRING" } },
+        reason: { type: "STRING" }
+      },
+      required: ["monsterIds", "reason"]
     }
   },
   required: ["narration", "statePatch", "requestCheck", "encounter"]
