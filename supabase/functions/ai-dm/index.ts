@@ -257,10 +257,7 @@ Deno.serve(async (req) => {
         max_output_tokens: 1200,
         text: {
           format: {
-            type: "json_schema",
-            name: "dnd_dm_response",
-            strict: true,
-            schema: OUTPUT_SCHEMA
+            type: "json_object"
           }
         }
       })
