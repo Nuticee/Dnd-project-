@@ -1005,7 +1005,22 @@ export async function askAIDM(state, playerAction, {
   });
 
   if (!response.ok) {
-    throw new Error(`AI DM request failed: HTTP ${response.status}`);
+    let detail = "";
+    try {
+      const errorBody = await response.json();
+      detail =
+        errorBody?.detail ||
+        errorBody?.error ||
+        "";
+    } catch {
+      try {
+        detail = await response.text();
+      } catch {}
+    }
+
+    throw new Error(
+      `AI DM request failed: HTTP ${response.status}${detail ? ` — ${detail}` : ""}`
+    );
   }
 
   return response.json();
