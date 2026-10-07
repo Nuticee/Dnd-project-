@@ -331,6 +331,19 @@ export function damage(expression, critical = false, modifier = 0) {
   };
 }
 
+export function adjustedDamage(target, amount, damageType = null) {
+  let damageAmount = Math.max(0, Number(amount) || 0);
+  const type = String(damageType || "").toLowerCase();
+  const resistances = (target.resistances || []).map(x => String(x).toLowerCase());
+  const vulnerabilities = (target.vulnerabilities || []).map(x => String(x).toLowerCase());
+  const immunities = (target.immunities || []).map(x => String(x).toLowerCase());
+
+  if (type && immunities.includes(type)) return 0;
+  if (type && resistances.includes(type)) damageAmount = Math.floor(damageAmount / 2);
+  if (type && vulnerabilities.includes(type)) damageAmount *= 2;
+  return damageAmount;
+}
+
 export function applyDamage(target, amount) {
   const damageAmount = Math.max(0, amount);
   const hp = Math.max(0, target.hp - damageAmount);
@@ -416,6 +429,15 @@ export function createCombatant(source, side = "player") {
     conditions: [],
     defeated: false,
     deathSaves: { successes: 0, failures: 0 },
+    resistances: source.resistances ?? [],
+    vulnerabilities: source.vulnerabilities ?? [],
+    immunities: source.immunities ?? [],
+    effects: {
+      hunterMarkTarget: null,
+      advantageNextAttack: false,
+      disengaged: false,
+      sneakAttackUsed: false
+    },
     resources: {
       action: true,
       bonusAction: true,
@@ -464,6 +486,12 @@ export function resetTurnResources(combatant) {
       bonusAction: true,
       reaction: true,
       movement: combatant.speed
+    },
+    effects: {
+      ...(combatant.effects || {}),
+      advantageNextAttack: false,
+      disengaged: false,
+      sneakAttackUsed: false
     }
   };
 }
@@ -547,7 +575,9 @@ export function performAttack(attacker, defender, attackData, mode = "normal") {
       attackData.damageModifier ?? 0
     );
 
-    nextDefender = applyDamage(defender, damageResult.total);
+    const appliedTotal = adjustedDamage(defender, damageResult.total, attackData.damageType);
+    damageResult = { ...damageResult, appliedTotal, damageType: attackData.damageType ?? null };
+    nextDefender = applyDamage(defender, appliedTotal);
   }
 
   return {
@@ -711,6 +741,7 @@ export const MONSTERS = {
     speed: 30,
     challengeRating: "1/4",
     proficiencyBonus: 2,
+    vulnerabilities: ["bludgeoning"],
     abilityScores: { STR: 10, DEX: 14, CON: 15, INT: 6, WIS: 8, CHA: 5 },
     abilities: ["Damage Vulnerabilities: bludgeoning", "Poison Immunity"],
     attacks: [
