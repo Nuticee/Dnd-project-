@@ -435,6 +435,7 @@ export function createCombatant(source, side = "player") {
     effects: {
       hunterMarkTarget: null,
       advantageNextAttack: false,
+      bonusActionSpellCast: false,
       disengaged: false,
       sneakAttackUsed: false
     },
@@ -491,6 +492,7 @@ export function resetTurnResources(combatant) {
     effects: {
       ...(combatant.effects || {}),
       advantageNextAttack: false,
+      bonusActionSpellCast: false,
       disengaged: false,
       sneakAttackUsed: false
     }
