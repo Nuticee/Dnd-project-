@@ -145,7 +145,7 @@ export const CHARACTERS = [
 
   {
     id: "yusss",
-    portrait: "yusss.jpg",
+    portrait: "yusss.svg",
     name: "Yusss",
     race: "Human",
     class: "Rogue",
