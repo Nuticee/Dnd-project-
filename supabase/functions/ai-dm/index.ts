@@ -218,7 +218,7 @@ Deno.serve(async (req) => {
     return json({ error: "playerAction is required." }, 400);
   }
 
-  const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.7-flash";
+  const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash";
 
   // Keep the DM context compact. Sending the entire event log on every turn
   // can consume the model's token budget quickly.
