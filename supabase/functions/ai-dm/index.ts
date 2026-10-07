@@ -29,34 +29,75 @@ Rules authority:
 - Preserve existing quests, NPCs, inventory, flags, and consequences unless the action changes them.
 - When starting combat, return encounter.monsterIds using only monster IDs already known to the application when possible.
 - Never claim an attack hit, damage amount, HP change, spell-slot expenditure, or condition as a mechanical result; request a check/attack and let the rules engine resolve it.
-
-Return ONLY valid JSON:
-{
-  "narration": "DM narration to show the player",
-  "statePatch": {
-    "scene": "optional new scene title",
-    "location": "optional new location",
-    "description": "optional scene description",
-    "weather": "optional weather",
-    "timeOfDay": "optional time of day",
-    "flags": {},
-    "quests": [],
-    "knownNPCs": [],
-    "inventory": [],
-    "consequences": []
-  },
-  "requestCheck": null | {
-    "type": "skill" | "save" | "attack",
-    "abilityOrSkill": "Perception",
-    "dc": 13,
-    "reason": "why the roll is needed"
-  },
-  "encounter": null | {
-    "monsterIds": ["goblin"],
-    "reason": "why combat starts"
-  }
-}
+- Return exactly the requested JSON structure. Do not add commentary or markdown.
 `;
+
+const OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  properties: {
+    narration: { type: "string" },
+    statePatch: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        scene: { type: ["string", "null"] },
+        location: { type: ["string", "null"] },
+        description: { type: ["string", "null"] },
+        weather: { type: ["string", "null"] },
+        timeOfDay: { type: ["string", "null"] },
+        flags: { type: "object", "additionalProperties": true },
+        quests: { type: "array", "items": {} },
+        knownNPCs: { type: "array", "items": {} },
+        inventory: { type: "array", "items": {} },
+        consequences: { type: "array", "items": {} }
+      },
+      required: [
+        "scene",
+        "location",
+        "description",
+        "weather",
+        "timeOfDay",
+        "flags",
+        "quests",
+        "knownNPCs",
+        "inventory",
+        "consequences"
+      ]
+    },
+    requestCheck: {
+      anyOf: [
+        { type: "null" },
+        {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            type: { type: "string", enum: ["skill", "save", "attack"] },
+            abilityOrSkill: { type: "string" },
+            dc: { type: ["number", "null"] },
+            reason: { type: "string" }
+          },
+          required: ["type", "abilityOrSkill", "dc", "reason"]
+        }
+      ]
+    },
+    encounter: {
+      anyOf: [
+        { type: "null" },
+        {
+          type: "object",
+          additionalProperties: false,
+          properties: {
+            monsterIds: { type: "array", items: { type: "string" } },
+            reason: { type: "string" }
+          },
+          required: ["monsterIds", "reason"]
+        }
+      ]
+    }
+  },
+  required: ["narration", "statePatch", "requestCheck", "encounter"]
+};
 
 function json(body, status=200) {
   return new Response(JSON.stringify(body), { status, headers: cors });
@@ -104,22 +145,34 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         model,
         input,
-        max_output_tokens: 900
+        max_output_tokens: 1200,
+        text: {
+          format: {
+            type: "json_schema",
+            name: "dnd_dm_response",
+            strict: true,
+            schema: OUTPUT_SCHEMA
+          }
+        }
       })
     });
 
     const raw = await response.text();
-    if (!response.ok) return json({ error: "OpenAI request failed.", detail: raw.slice(0, 1000) }, 502);
+    if (!response.ok) {
+      return json({ error: "OpenAI request failed.", detail: raw.slice(0, 1500) }, 502);
+    }
 
     const data = JSON.parse(raw);
     const text = data.output_text || "";
+
     let result;
     try {
       result = JSON.parse(text);
     } catch {
-      const match = text.match(/\{[\s\S]*\}/);
-      if (!match) return json({ error: "AI DM returned invalid JSON." }, 502);
-      result = JSON.parse(match[0]);
+      return json({
+        error: "AI DM returned invalid JSON.",
+        detail: "The Responses API did not return JSON matching the DM schema."
+      }, 502);
     }
 
     return json({
