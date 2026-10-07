@@ -99,6 +99,93 @@ const OUTPUT_SCHEMA = {
   required: ["narration", "statePatch", "requestCheck", "encounter"]
 };
 
+
+// ------------------------------------------------------------
+// CLOUD SAVE — shared campaign state across devices
+// The browser never receives a database secret.
+// ------------------------------------------------------------
+const SHARED_SESSION_ID = "frozen-passage-shared-v1";
+
+function getSupabaseServerKey() {
+  try {
+    const raw = Deno.env.get("SUPABASE_SECRET_KEYS");
+    if (raw) {
+      const keys = JSON.parse(raw);
+      if (keys?.default) return keys.default;
+    }
+  } catch {}
+  return Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+}
+
+async function dbRequest(path, options = {}) {
+  const base = Deno.env.get("SUPABASE_URL");
+  const key = getSupabaseServerKey();
+  if (!base || !key) throw new Error("Supabase server database key is unavailable.");
+
+  const response = await fetch(base + "/rest/v1/" + path, {
+    ...options,
+    headers: {
+      "apikey": key,
+      "Authorization": "Bearer " + key,
+      "Content-Type": "application/json",
+      ...(options.headers || {})
+    }
+  });
+
+  const raw = await response.text();
+  if (!response.ok) throw new Error("Supabase DB request failed: " + raw.slice(0, 1000));
+
+  return raw ? JSON.parse(raw) : null;
+}
+
+async function loadCloudState() {
+  const rows = await dbRequest(
+    "game_sessions?id=eq." + encodeURIComponent(SHARED_SESSION_ID) +
+    "&select=id,campaign_id,state,updated_at&limit=1"
+  );
+  const row = Array.isArray(rows) ? rows[0] : null;
+  return row
+    ? { state: row.state, updatedAt: row.updated_at }
+    : { state: null, updatedAt: null };
+}
+
+async function saveCloudState(state, clientUpdatedAt) {
+  const existing = await loadCloudState();
+
+  if (
+    existing.updatedAt &&
+    clientUpdatedAt &&
+    new Date(existing.updatedAt).getTime() > new Date(clientUpdatedAt).getTime()
+  ) {
+    return {
+      state: existing.state,
+      updatedAt: existing.updatedAt,
+      conflict: true
+    };
+  }
+
+  const updatedAt = clientUpdatedAt || new Date().toISOString();
+  const rows = await dbRequest("game_sessions?on_conflict=id", {
+    method: "POST",
+    headers: {
+      "Prefer": "resolution=merge-duplicates,return=representation"
+    },
+    body: JSON.stringify({
+      id: SHARED_SESSION_ID,
+      campaign_id: "the-frozen-passage",
+      state,
+      updated_at: updatedAt
+    })
+  });
+
+  const row = Array.isArray(rows) ? rows[0] : rows;
+  return {
+    state: row?.state ?? state,
+    updatedAt: row?.updated_at ?? updatedAt,
+    conflict: false
+  };
+}
+
 function json(body, status=200) {
   return new Response(JSON.stringify(body), { status, headers: cors });
 }
@@ -107,15 +194,38 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { status: 200, headers: cors });
   if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
-  const apiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!apiKey) return json({ error: "OPENAI_API_KEY is not configured in Supabase secrets." }, 503);
-
   let payload;
   try {
     payload = await req.json();
   } catch {
     return json({ error: "Invalid JSON body." }, 400);
   }
+
+  if (payload?.mode === "load") {
+    if (payload.sessionId !== SHARED_SESSION_ID) return json({ error: "Unknown session." }, 403);
+    try {
+      const cloud = await loadCloudState();
+      return json({ ok: true, ...cloud });
+    } catch (error) {
+      return json({ error: error instanceof Error ? error.message : "Cloud load failed." }, 500);
+    }
+  }
+
+  if (payload?.mode === "save") {
+    if (payload.sessionId !== SHARED_SESSION_ID) return json({ error: "Unknown session." }, 403);
+    if (!payload.state || typeof payload.state !== "object") {
+      return json({ error: "state is required." }, 400);
+    }
+    try {
+      const cloud = await saveCloudState(payload.state, payload.clientUpdatedAt || null);
+      return json({ ok: true, ...cloud });
+    } catch (error) {
+      return json({ error: error instanceof Error ? error.message : "Cloud save failed." }, 500);
+    }
+  }
+
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) return json({ error: "OPENAI_API_KEY is not configured in Supabase secrets." }, 503);
 
   if (!payload?.playerAction || typeof payload.playerAction !== "string") {
     return json({ error: "playerAction is required." }, 400);
