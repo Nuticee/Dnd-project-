@@ -281,7 +281,9 @@ export function checkD20(modifier = 0, { mode = "normal", dc = null } = {}) {
 
   let success = null;
   if (dc !== null) {
-    success = nat20 ? true : nat1 ? false : result.total >= dc;
+    // D&D 5e 2014: natural 20/1 are not automatic success/failure
+    // on ability checks or saving throws; compare the total to the DC.
+    success = result.total >= dc;
   }
 
   return { ...result, nat20, nat1, dc, success };
