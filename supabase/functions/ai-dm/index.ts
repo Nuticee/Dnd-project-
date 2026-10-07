@@ -347,4 +347,7 @@ Deno.serve(async (req) => {
       requestCheck: validCheck,
       encounter: result.encounter ?? null
     });
-  }});
+  } catch (error) {
+    return json({ error: error instanceof Error ? error.message : "Gemini DM error." }, 500);
+  }
+});
