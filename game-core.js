@@ -984,7 +984,7 @@ function buildLocalTestDMReply(state, playerAction, character = null) {
   };
 }
 
-const SUPABASE_AI_DM_ENDPOINT = "https://qphfbqhejnexavhdsxay.supabase.co/functions/v1/ai-dm";
+const SUPABASE_AI_DM_ENDPOINT = "https://qphfbqhejnexavhdsxay.supabase.co/functions/v1/clever-task";
 
 export async function askAIDM(state, playerAction, {
   character = null,
