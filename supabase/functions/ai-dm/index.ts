@@ -1,6 +1,6 @@
 // Supabase Edge Function: ai-dm
-// Server-side AI DM adapter. Keep OPENAI_API_KEY in Supabase secrets.
-// D&D 5e 2014 rules foundation; the model narrates and requests checks,
+// Server-side AI DM adapter. Keep GEMINI_API_KEY in Supabase secrets.
+// D&D 5e 2014 rules foundation; Gemini narrates and requests checks,
 // while the client/rules engine remains authoritative for dice and HP.
 
 const cors = {
