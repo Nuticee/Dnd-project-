@@ -63,10 +63,10 @@ export const CHARACTERS = [
     ],
     attacks: [
       { name: "Ray of Frost", type: "spell", attackBonus: 5, damage: "1d8", damageType: "cold" },
-      { name: "Quarterstaff", type: "weapon", attackBonus: 1, damage: "1d6-1", damageType: "bludgeoning" }
+      { name: "Staff of Frost", type: "weapon", attackBonus: 1, damage: "1d6-1", damageType: "bludgeoning", magicItem: true }
     ],
     equipment: [
-      "Staff of Frost", "Quarterstaff", "Leather Armor",
+      "Staff of Frost", "Leather Armor",
       "Spellbook", "Arcane Focus", "Backpack", "Parchment", "Ink Pen"
     ],
     gold: 1,
