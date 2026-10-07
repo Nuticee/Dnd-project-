@@ -231,6 +231,21 @@ Deno.serve(async (req) => {
   }
 
   const model = Deno.env.get("OPENAI_MODEL") || "gpt-6-luna";
+
+  // Keep the DM context compact. Sending the entire event log on every turn
+  // can consume the organization's token-per-minute limit very quickly.
+  const adventure = payload.adventure && typeof payload.adventure === "object"
+    ? {
+        ...payload.adventure,
+        events: Array.isArray(payload.adventure.events)
+          ? payload.adventure.events.slice(-12)
+          : [],
+        consequences: Array.isArray(payload.adventure.consequences)
+          ? payload.adventure.consequences.slice(-12)
+          : []
+      }
+    : payload.adventure;
+
   const input = [
     { role: "system", content: SYSTEM },
     {
@@ -238,7 +253,7 @@ Deno.serve(async (req) => {
       content: JSON.stringify({
         ruleset: payload.ruleset,
         character: payload.character,
-        adventure: payload.adventure,
+        adventure,
         playerAction: payload.playerAction
       })
     }
@@ -265,7 +280,22 @@ Deno.serve(async (req) => {
 
     const raw = await response.text();
     if (!response.ok) {
-      return json({ error: "OpenAI request failed.", detail: raw.slice(0, 1500) }, 502);
+      let detail = raw.slice(0, 1500);
+      let status = 502;
+
+      try {
+        const parsed = JSON.parse(raw);
+        const code = parsed?.error?.code;
+        const message = parsed?.error?.message || "";
+        if (response.status === 429 || code === "rate_limit_exceeded") {
+          status = 429;
+          detail = "OpenAI sedang mencapai rate limit. Tunggu sebentar lalu coba lagi.";
+        } else if (message) {
+          detail = message.slice(0, 1500);
+        }
+      } catch {}
+
+      return json({ error: "OpenAI request failed.", detail }, status);
     }
 
     const data = JSON.parse(raw);
@@ -281,10 +311,22 @@ Deno.serve(async (req) => {
       }, 502);
     }
 
+    const rawCheck = result.requestCheck;
+    const validCheck =
+      rawCheck &&
+      typeof rawCheck === "object" &&
+      rawCheck.abilityOrSkill &&
+      Number.isFinite(Number(rawCheck.dc))
+        ? {
+            ...rawCheck,
+            dc: Number(rawCheck.dc)
+          }
+        : null;
+
     return json({
       narration: String(result.narration || "The world waits..."),
       statePatch: result.statePatch && typeof result.statePatch === "object" ? result.statePatch : {},
-      requestCheck: result.requestCheck ?? null,
+      requestCheck: validCheck,
       encounter: result.encounter ?? null
     });
   } catch (error) {
