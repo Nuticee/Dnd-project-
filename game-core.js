@@ -959,11 +959,41 @@ export function buildDMRequest(state, playerAction, {
   };
 }
 
+function buildLocalTestDMReply(state, playerAction, character = null) {
+  const action = String(playerAction || "").trim();
+  const name = character?.name || "petualang";
+  const location = state?.location || "area sekitar gerbang";
+  const scene = state?.scene || "situasi yang sedang berlangsung";
+  const lower = action.toLowerCase();
+
+  let narration = `DM Master: ${name}, tindakanmu di ${location} dicatat. ${action} `;
+  if (lower.includes("periksa") || lower.includes("lihat") || lower.includes("cek") || lower.includes("teliti")) {
+    narration += "Kamu mengamati dengan hati-hati. Belum ada hasil mekanis yang diputuskan; jika pemeriksaan membutuhkan kemampuan khusus, DM akan meminta check.";
+  } else if (lower.includes("buka") || lower.includes("sentuh") || lower.includes("masuk")) {
+    narration += "Tindakan itu mengubah situasi. Kamu boleh melanjutkan secara bebas, dan DM akan menentukan konsekuensi berdasarkan keadaan yang sudah diketahui.";
+  } else {
+    narration += `Dunia merespons secara bertahap di tengah adegan "${scene}". Kamu tetap bebas menentukan tindakan berikutnya tanpa pilihan A/B/C.`;
+  }
+
+  return {
+    narration,
+    statePatch: {},
+    requestCheck: null,
+    encounter: null,
+    testMode: true
+  };
+}
+
 export async function askAIDM(state, playerAction, {
   character = null,
   endpoint = "/functions/v1/ai-dm",
-  fetchImpl = fetch
+  fetchImpl = fetch,
+  testMode = true
 } = {}) {
+  if (testMode) {
+    return buildLocalTestDMReply(state, playerAction, character);
+  }
+
   const payload = buildDMRequest(state, playerAction, { character });
 
   const response = await fetchImpl(endpoint, {
