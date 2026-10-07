@@ -231,17 +231,19 @@ export function rollDice(count, sides) {
 }
 
 export function roll(expression, modifier = 0) {
-  const match = String(expression).trim().match(/^(\d+)d(4|6|8|10|12|20)$/i);
-  if (!match) throw new Error("Use expressions like 1d20, 1d8, or 2d6.");
+  const match = String(expression).trim().match(/^(\d+)d(4|6|8|10|12|20)([+-]\d+)?$/i);
+  if (!match) throw new Error("Use expressions like 1d20, 1d8, 2d6, or 1d8+3.");
   const count = Number(match[1]);
   const sides = Number(match[2]);
+  const expressionModifier = match[3] ? Number(match[3]) : 0;
   const rolls = rollDice(count, sides);
+  const totalModifier = expressionModifier + modifier;
 
   return {
-    expression: `${count}d${sides}`,
+    expression: `${count}d${sides}${expressionModifier ? (expressionModifier > 0 ? "+" : "") + expressionModifier : ""}`,
     rolls,
-    modifier,
-    total: rolls.reduce((a, b) => a + b, 0) + modifier
+    modifier: totalModifier,
+    total: rolls.reduce((a, b) => a + b, 0) + totalModifier
   };
 }
 
@@ -309,24 +311,23 @@ export function attackRoll(attackBonus, targetAC, mode = "normal") {
 }
 
 export function damage(expression, critical = false, modifier = 0) {
-  const match = String(expression).trim().match(/^(\d+)d(4|6|8|10|12|20)$/i);
-  if (!match) throw new Error("Damage must look like 1d8 or 2d6.");
+  const match = String(expression).trim().match(/^(\d+)d(4|6|8|10|12|20)([+-]\d+)?$/i);
+  if (!match) throw new Error("Damage must look like 1d8, 1d8+3, or 2d6.");
 
   const count = Number(match[1]);
   const sides = Number(match[2]);
+  const expressionModifier = match[3] ? Number(match[3]) : 0;
 
-  // 2014 5e: critical hit doubles the number of damage dice.
+  // 2014 5e: critical hit doubles the number of damage dice, not static modifiers.
   const diceCount = critical ? count * 2 : count;
   const rolls = rollDice(diceCount, sides);
+  const totalModifier = expressionModifier + modifier;
 
   return {
-    expression: `${diceCount}d${sides}`,
+    expression: `${diceCount}d${sides}${totalModifier ? (totalModifier > 0 ? "+" : "") + totalModifier : ""}`,
     rolls,
-    modifier,
-    total: Math.max(
-      0,
-      rolls.reduce((a, b) => a + b, 0) + modifier
-    )
+    modifier: totalModifier,
+    total: Math.max(0, rolls.reduce((a, b) => a + b, 0) + totalModifier)
   };
 }
 
@@ -410,7 +411,7 @@ export function createCombatant(source, side = "player") {
     hp: source.hp?.current ?? source.hp ?? 1,
     maxHP: source.hp?.max ?? source.maxHP ?? 1,
     ac: source.ac ?? 10,
-    initiativeModifier: source.initiative ?? 0,
+    initiativeModifier: source.initiative ?? source.abilityModifiers?.DEX ?? (Number.isFinite(source.abilityScores?.DEX) ? Math.floor((source.abilityScores.DEX - 10) / 2) : 0),
     speed: source.speed ?? 30,
     conditions: [],
     defeated: false,
