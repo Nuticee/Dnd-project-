@@ -63,7 +63,7 @@ export const CHARACTERS = [
     ],
     attacks: [
       { name: "Ray of Frost", type: "spell", attackBonus: 5, damage: "1d8", damageType: "cold" },
-      { name: "Staff of Frost", type: "weapon", attackBonus: 1, damage: "1d6-1", damageType: "bludgeoning", magicItem: true }
+      { name: "Staff of Frost", type: "weapon", attackBonus: 1, damage: "1d6-1", damageType: "bludgeoning", properties: ["versatile"], magicItem: true }
     ],
     equipment: [
       "Staff of Frost", "Leather Armor",
@@ -131,9 +131,9 @@ export const CHARACTERS = [
       prepared: ["Hunter's Mark", "Cure Wounds"]
     },
     attacks: [
-      { name: "Longbow", type: "weapon", attackBonus: 7, damage: "1d8+3", damageType: "piercing", range: "150/600 ft" },
-      { name: "Shortsword", type: "weapon", attackBonus: 5, damage: "1d6+3", damageType: "piercing" },
-      { name: "Unarmed Strike", type: "weapon", attackBonus: 3, damage: "1d4+1", damageType: "bludgeoning" }
+      { name: "Longbow", type: "weapon", attackBonus: 7, damage: "1d8+3", damageType: "piercing", range: "150/600 ft", properties: ["ranged", "ammunition", "heavy", "two-handed"] },
+      { name: "Shortsword", type: "weapon", attackBonus: 5, damage: "1d6+3", damageType: "piercing", properties: ["finesse", "light"] },
+      { name: "Unarmed Strike", type: "weapon", attackBonus: 3, damage: "1d4+1", damageType: "bludgeoning", properties: [] }
     ],
     equipment: [
       "Studded Leather", "Shortsword", "Longbow", "17 Arrows",
@@ -187,8 +187,8 @@ export const CHARACTERS = [
       "Second-Story Work"
     ],
     attacks: [
-      { name: "Dagger", type: "weapon", attackBonus: 4, damage: "1d4+2", damageType: "piercing" },
-      { name: "Shortbow", type: "weapon", attackBonus: 4, damage: "1d6+2", damageType: "piercing", range: "80/320 ft" },
+      { name: "Dagger", type: "weapon", attackBonus: 4, damage: "1d4+2", damageType: "piercing", properties: ["finesse", "light", "thrown"] },
+      { name: "Shortbow", type: "weapon", attackBonus: 4, damage: "1d6+2", damageType: "piercing", range: "80/320 ft", properties: ["ranged", "ammunition", "two-handed"] },
       { name: "Shortsword", type: "weapon", attackBonus: 4, damage: "1d6+2", damageType: "piercing" }
     ],
     sneakAttack: "2d6",
