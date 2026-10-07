@@ -444,6 +444,7 @@ export function createCombatant(source, side = "player") {
       reaction: true,
       movement: source.speed ?? 30
     },
+    spellSlots: structuredClone(source.spellcasting?.spellSlots ?? {}),
     attacks: source.attacks ?? []
   };
 }
