@@ -166,7 +166,29 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 <section class="card compact-roll" style="padding:6px 9px"><div><div class="name" style="font-size:11px">Hasil dadu</div><div id="rollDetail" class="roll-detail" style="font-size:9px">Pilih aksi atau dadu manual.</div></div><div id="die" class="die" style="width:34px;height:34px;font-size:18px">—</div></section>
 </main>
 <div id="toast" class="toast"></div>
-</section><script type="module">
+</section><script>
+/* BOOT FALLBACK: keep title-screen navigation clickable even if the module is still loading. */
+(function(){
+  function show(id){
+    document.querySelectorAll('.screen').forEach(function(x){x.classList.add('hidden')});
+    var el=document.getElementById(id); if(el) el.classList.remove('hidden');
+    window.scrollTo(0,0);
+  }
+  window.openGate=function(){
+    var home=document.getElementById('homeScreen');
+    if(!home) return;
+    home.classList.add('gate-opening');
+    setTimeout(function(){ show('mainMenuScreen'); home.classList.remove('gate-opening'); }, 900);
+  };
+  window.showHome=function(){show('homeScreen')};
+  window.showMainMenu=function(){show('mainMenuScreen')};
+  window.showAdventure=function(){show('adventureScreen')};
+  window.showCharacter=function(){show('characterScreen')};
+  window.showBestiary=function(){show('bestiaryScreen')};
+  window.showCombat=function(){show('combatScreen')};
+})();
+</script>
+<script type="module">
 import * as Game from "./game-core.js?v=202610081500";
 let activeCharacter=Game.cloneCharacter("ilgar-zamani");let player=activeCharacter;let selectedEnemy="goblin",combat=null;const enemyIds=["goblin","kobold"];let activeTab="spell";let staffCharges=10;let playerActionBusy=false;const PORTRAIT_VERSION="202610071100";function portraitFor(c){if(c?.portrait)return c.portrait+"?v="+PORTRAIT_VERSION;return "ilgar.png?v="+PORTRAIT_VERSION;}
 function init(){startCombat(activeCharacter.id)}
