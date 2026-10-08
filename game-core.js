@@ -715,6 +715,25 @@ export const MONSTERS = {
     ]
   },
 
+  guard: {
+    id: "guard",
+    name: "Guard",
+    size: "Medium",
+    type: "humanoid",
+    alignment: "any alignment",
+    ac: 16,
+    hp: { current: 11, max: 11 },
+    speed: 30,
+    challengeRating: "1/8",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 13, DEX: 12, CON: 12, INT: 10, WIS: 11, CHA: 10 },
+    abilities: [],
+    attacks: [
+      { name: "Spear", attackBonus: 3, damage: "1d6+1", damageType: "piercing", range: "20/60 ft" },
+      { name: "Light Crossbow", attackBonus: 3, damage: "1d8+1", damageType: "piercing", range: "80/320 ft" }
+    ]
+  },
+
   wolf: {
     id: "wolf",
     name: "Wolf",
