@@ -826,7 +826,7 @@ export const MONSTERS = {
       { name: "Morningstar", attackBonus: 4, damage: "2d8+2", damageType: "piercing" },
       { name: "Javelin", attackBonus: 4, damage: "1d6+2", damageType: "piercing", range: "30/120 ft" }
     ]
-  }
+  },
 
   zombie: {
     id: "zombie",
@@ -917,7 +917,6 @@ export const MONSTERS = {
     abilities: ["Spider Climb", "Web Sense", "Web Walker"],
     attacks: [
       { name: "Bite", attackBonus: 5, damage: "1d8+3", damageType: "piercing", special: "Target may be poisoned." },
-      { name: "Web", attackBonus: 5, damage: "0", damageType: "restraining", range: "30/60 ft", special: "Target may be restrained." }
     ]
   },
 
@@ -1009,8 +1008,8 @@ export const MONSTERS = {
     challengeRating: "3",
     proficiencyBonus: 2,
     abilityScores: { STR: 18, DEX: 13, CON: 16, INT: 8, WIS: 12, CHA: 7 },
-    resistances: ["cold"],
-    abilities: ["Fear of Fire", "Chilling Gaze", "Cold immunity"],
+    immunities: ["cold"],
+    abilities: ["Fear of Fire", "Chilling Gaze"],
     attacks: [
       { name: "Claw", attackBonus: 6, damage: "1d6+4", damageType: "slashing" },
       { name: "Claw", attackBonus: 6, damage: "1d6+4", damageType: "slashing" }
