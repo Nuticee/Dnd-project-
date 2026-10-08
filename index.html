@@ -444,29 +444,23 @@ function detectPlayerDialogueTargets(text,speakerId){
   const raw=String(text||"").trim();
   if(!raw)return [];
   const chars=Game.CHARACTERS.filter(c=>c.id!==speakerId);
-  const norm=value=>String(value||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\\s+/g," ").trim();
+  const norm=value=>String(value||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
   const normalized=norm(raw);
   const tokens=normalized.split(" ").filter(Boolean);
   const hasToken=token=>tokens.includes(token);
-  const escapeRegex=value=>String(value||"").replace(/[.*+?^$\\{}()|[\\]\\]/g,"\\$&");
   const hasName=(name)=>{
     const n=norm(name);
     if(!n)return false;
     if(n.includes(" "))return (" "+normalized+" ").includes(" "+n+" ");
     return hasToken(n);
   };
+  const question=/[?？]/.test(raw)||/\b(gimana|bagaimana|menurutmu|menurut kalian|setuju|pendapat|apakah|boleh|bisakah|bisa|mau|siapa|kenapa|mengapa|kapan|dimana|di mana|jawab|jawaban|ceritakan|cerita)\b/i.test(normalized);
+  const addressCue=/\b(tolong|bisa|bisakah|boleh|mau|jawab|jawaban|menurutmu|pendapatmu|ceritakan|cerita|bilang|dengar|lihat|bantu)\b/i.test(normalized);
+  const groupAddress=/\b(kalian|semua|masing-masing|siapa di antara kalian|pendapat kalian|menurut kalian)\b/i.test(normalized);
+  if(groupAddress&&question)return chars.map(c=>c.id);
   const targets=chars.filter(c=>hasName(c.name));
   if(!targets.length)return [];
-  const question=/[?？]/.test(raw)||/\\b(gimana|bagaimana|menurutmu|menurut kalian|setuju|pendapat|apakah|boleh|bisakah|bisa|mau|siapa|kenapa|mengapa|kapan|dimana|di mana|jawab|jawaban|ceritakan|cerita)\\b/i.test(normalized);
-  const addressCue=/\\b(tolong|bisa|bisakah|boleh|mau|jawab|jawaban|menurutmu|pendapatmu|ceritakan|cerita|bilang|dengar|lihat|bantu)\\b/i.test(normalized);
-  const directAddress=targets.some(c=>{
-    const first=norm(c.name).split(" ")[0];
-    const namePattern=new RegExp("\\b"+escapeRegex(first)+"\\b(?:\\s*[,.:;-])?\\s+(tolong|bisa|bisakah|boleh|mau|jawab|ceritakan|cerita|menurut|pendapat|gimana|bagaimana)\\b","i");
-    return namePattern.test(raw);
-  });
-  const groupAddress=/\\b(kalian|semua|masing-masing|siapa di antara kalian|pendapat kalian|menurut kalian)\\b/i.test(normalized);
-  if(question||addressCue||directAddress)return targets.map(c=>c.id);
-  if(groupAddress)return chars.map(c=>c.id);
+  if(question||addressCue)return targets.map(c=>c.id);
   return [];
 }
 function pendingPlayerResponseFor(characterId){const pq=adventureState.pendingPlayerQuestion;if(!pq)return null;return (pq.responses||[]).find(r=>r.characterId===characterId)||null}
