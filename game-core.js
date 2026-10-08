@@ -205,6 +205,7 @@ export const CHARACTERS = [
   {
     id: "dersa",
     name: "Dersa",
+    gender: "female",
     race: "Halfling",
     class: "Fighter",
     level: 1,
@@ -214,7 +215,10 @@ export const CHARACTERS = [
     xpMode: "Milestone",
     hp: { current: 9, max: 9 },
     hitDie: "d10",
-    ac: 11,
+    ac: 16,
+    equippedArmor: "Chain Mail",
+    equippedWeapon: "Greataxe",
+    equippedShield: false,
     speed: 25,
     proficiencyBonus: 2,
     abilityScores: { STR: 14, DEX: 13, CON: 8, INT: 13, WIS: 11, CHA: 16 },
@@ -233,7 +237,7 @@ export const CHARACTERS = [
     },
     defenses: ["Advantage on saving throws against being frightened"],
     proficiencies: [
-      "Heavy Armor", "Light Armor", "Medium Armor", "Shields",
+      "All Armor", "Shields",
       "Martial Weapons", "Simple Weapons",
       "Monster Harvesting Tools", "Vehicles (Land)"
     ],
