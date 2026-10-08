@@ -441,20 +441,32 @@ function renderAdventure(){const p=document.querySelector("#adventureParty");if(
 function handleDMReply(reply,options={}){if(reply?.statePatch)applyAdventurePatch(reply.statePatch);const allowNewCheck=options.allowNewCheck!==false;if(allowNewCheck&&reply?.requestCheck&&Number.isFinite(Number(reply.requestCheck.dc))&&reply.requestCheck.abilityOrSkill){adventureState.pendingCheck={...reply.requestCheck,dc:Number(reply.requestCheck.dc)};addAdventureEvent("DM AI","Check diperlukan: "+adventureState.pendingCheck.abilityOrSkill+" DC "+adventureState.pendingCheck.dc+".",{type:"check-request",check:adventureState.pendingCheck})}else{adventureState.pendingCheck=null;if(reply?.requestCheck&&!Number.isFinite(Number(reply.requestCheck.dc))){addAdventureEvent("DM AI","DM menerima hasil check dan melanjutkan tanpa meminta roll tambahan.",{type:"check-followup"})}}if(reply?.encounter?.monsterIds?.length){const ids=reply.encounter.monsterIds.filter(id=>Game.MONSTERS[id]);if(ids.length){addAdventureEvent("DM AI",reply.encounter.reason||"Encounter dimulai.",{type:"encounter",monsterIds:ids});startCombat(activeCharacter.id,ids);showCombat();return true}}return false}
 function normalizePlayerName(value){return String(value||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
 function detectPlayerDialogueTargets(text,speakerId){
-  const raw=String(text||"");
-  const lower=raw.toLowerCase();
+  const raw=String(text||"").trim();
+  if(!raw)return [];
   const chars=Game.CHARACTERS.filter(c=>c.id!==speakerId);
-  const norm=v=>String(v||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/ +/g," ").trim();
-  const tokens=norm(lower).split(" ").filter(Boolean);
-  const targets=chars.filter(c=>{
+  const norm=value=>String(value||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/\\s+/g," ").trim();
+  const normalized=norm(raw);
+  const tokens=normalized.split(" ").filter(Boolean);
+  const hasToken=token=>tokens.includes(token);
+  const escapeRegex=value=>String(value||"").replace(/[.*+?^$\\{}()|[\\]\\]/g,"\\$&");
+  const hasName=(name)=>{
+    const n=norm(name);
+    if(!n)return false;
+    if(n.includes(" "))return (" "+normalized+" ").includes(" "+n+" ");
+    return hasToken(n);
+  };
+  const targets=chars.filter(c=>hasName(c.name));
+  if(!targets.length)return [];
+  const question=/[?？]/.test(raw)||/\\b(gimana|bagaimana|menurutmu|menurut kalian|setuju|pendapat|apakah|boleh|bisakah|bisa|mau|siapa|kenapa|mengapa|kapan|dimana|di mana|jawab|jawaban|ceritakan|cerita)\\b/i.test(normalized);
+  const addressCue=/\\b(tolong|bisa|bisakah|boleh|mau|jawab|jawaban|menurutmu|pendapatmu|ceritakan|cerita|bilang|dengar|lihat|bantu)\\b/i.test(normalized);
+  const directAddress=targets.some(c=>{
     const first=norm(c.name).split(" ")[0];
-    const full=norm(c.name);
-    return (full&&norm(lower).includes(full)) || (first&&tokens.some(t=>t.length>=3&&(t===first||t.startsWith(first)||first.startsWith(t))));
+    const namePattern=new RegExp("\\b"+escapeRegex(first)+"\\b(?:\\s*[,.:;-])?\\s+(tolong|bisa|bisakah|boleh|mau|jawab|ceritakan|cerita|menurut|pendapat|gimana|bagaimana)\\b","i");
+    return namePattern.test(raw);
   });
-  const dialogue=/[?？]/.test(raw)||/(gimana|bagaimana|menurutmu|menurut kalian|setuju|pendapat|mau|apakah|tanya|bertanya|jawab|menjawab|cerita|ceritakan|bilang|bicara|ngobrol|kepada|ke)/i.test(lower);
-  const group=/(kalian|kita|semua|menurut kalian|pendapat kalian)/i.test(lower);
-  if(targets.length&&(dialogue||targets.length>1))return targets.map(c=>c.id);
-  if(group&&dialogue)return chars.map(c=>c.id);
+  const groupAddress=/\\b(kalian|semua|masing-masing|siapa di antara kalian|pendapat kalian|menurut kalian)\\b/i.test(normalized);
+  if(question||addressCue||directAddress)return targets.map(c=>c.id);
+  if(groupAddress)return chars.map(c=>c.id);
   return [];
 }
 function pendingPlayerResponseFor(characterId){const pq=adventureState.pendingPlayerQuestion;if(!pq)return null;return (pq.responses||[]).find(r=>r.characterId===characterId)||null}
