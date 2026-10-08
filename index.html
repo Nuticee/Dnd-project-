@@ -381,39 +381,25 @@ function renderAdventure(){const p=document.querySelector("#adventureParty");if(
 function handleDMReply(reply,options={}){if(reply?.statePatch)applyAdventurePatch(reply.statePatch);const allowNewCheck=options.allowNewCheck!==false;if(allowNewCheck&&reply?.requestCheck&&Number.isFinite(Number(reply.requestCheck.dc))&&reply.requestCheck.abilityOrSkill){adventureState.pendingCheck={...reply.requestCheck,dc:Number(reply.requestCheck.dc)};addAdventureEvent("DM AI","Check diperlukan: "+adventureState.pendingCheck.abilityOrSkill+" DC "+adventureState.pendingCheck.dc+".",{type:"check-request",check:adventureState.pendingCheck})}else{adventureState.pendingCheck=null;if(reply?.requestCheck&&!Number.isFinite(Number(reply.requestCheck.dc))){addAdventureEvent("DM AI","DM menerima hasil check dan melanjutkan tanpa meminta roll tambahan.",{type:"check-followup"})}}if(reply?.encounter?.monsterIds?.length){const ids=reply.encounter.monsterIds.filter(id=>Game.MONSTERS[id]);if(ids.length){addAdventureEvent("DM AI",reply.encounter.reason||"Encounter dimulai.",{type:"encounter",monsterIds:ids});startCombat(activeCharacter.id,ids);showCombat();return true}}return false}
 function normalizePlayerName(value){return String(value||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim()}
 function detectPlayerDialogueTargets(text,speakerId){
-  const raw=String(text||"").toLowerCase();
-  const compact=(v)=>String(v||"").toLowerCase().normalize("NFKD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9\\s]/g," ").replace(/(.)\\1{1,}/g,"$1").replace(/\\s+/g," ").trim();
-  const lower=compact(raw);
-  const tokens=lower.split(/[^a-z0-9]+/).filter(Boolean);
+  const raw=String(text||"");
+  const lower=raw.toLowerCase();
   const chars=Game.CHARACTERS.filter(c=>c.id!==speakerId);
-  const similarity=(a,b)=>{
-    if(!a||!b)return 0;
-    if(a===b)return 1;
-    if(a.length>=4&&(a.startsWith(b)||b.startsWith(a)))return Math.min(a.length,b.length)/Math.max(a.length,b.length);
-    let prev=Array.from({length:b.length+1},(_,i)=>i);
-    for(let i=1;i<=a.length;i++){
-      const cur=[i];
-      for(let j=1;j<=b.length;j++)cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
-      prev=cur;
-    }
-    return 1-prev[b.length]/Math.max(a.length,b.length);
-  };
-  const matches=chars.filter(c=>{
-    const name=compact(normalizePlayerName(c.name));
-    const first=name.split(" ")[0];
-    return lower.includes(name)||tokens.includes(first)||tokens.some(t=>t.length>=4&&similarity(t,first)>=0.75);
+  const normalizeLoose=(v)=>String(v||"").toLowerCase().replace(/[^a-z0-9 ]/g," ").replace(/(.)\\1+/g,"$1").replace(/ +/g," ").trim();
+  const compact=normalizeLoose(lower);
+  const tokens=compact.split(" ").filter(Boolean);
+  const targets=[];
+  chars.forEach(c=>{
+    const first=normalizeLoose(c.name).split(" ")[0];
+    const full=normalizeLoose(c.name);
+    const foundFull=full&&compact.includes(full);
+    const foundLoose=first&&tokens.some(t=>t.length>=3&&(t===first||t.startsWith(first)||first.startsWith(t)));
+    if(foundFull||foundLoose)targets.push(c.id);
   });
-  if(!matches.length){
-    const groupQuestion=/\\b(kalian|kita|semua|kamu semua|menurut kalian|pendapat kalian)\\b/i.test(lower);
-    const conversationalQuestion=/[?？]/.test(raw)||/\\b(gimana|bagaimana|menurutmu|menurut kalian|setuju|pendapat|mau|apakah|tanya|bertanya|jawab|menjawab|cerita|ceritakan|bilang|ngobrol|bicara)\\b/i.test(lower);
-    return groupQuestion&&conversationalQuestion?chars.map(c=>c.id):[];
-  }
-  const conversationalQuestion=/[?？]/.test(raw)||/\\b(gimana|bagaimana|menurutmu|menurut kalian|setuju|pendapat|mau|apakah|tanya|bertanya|jawab|menjawab|cerita|ceritakan|bilang|ngobrol|bicara|pendapatmu|jawaban)\\b/i.test(lower);
-  const directAddress=matches.some(c=>{
-    const name=compact(normalizePlayerName(c.name));
-    return lower.includes(name+",")||lower.includes("kepada "+name)||lower.includes("ke "+name)||lower.includes("dengan "+name);
-  });
-  return conversationalQuestion||directAddress||matches.length>1?matches.map(c=>c.id):[];
+  const dialogue=/[?？]/.test(raw)||/(gimana|bagaimana|menurutmu|menurut kalian|setuju|pendapat|mau|apakah|tanya|bertanya|jawab|menjawab|cerita|ceritakan|bilang|bicara|ngobrol|kepada|ke)/i.test(compact);
+  const group=/(kalian|kita|semua|menurut kalian|pendapat kalian)/i.test(compact);
+  if(targets.length&&(dialogue||targets.length>1))return targets;
+  if(group&&dialogue)return chars.map(c=>c.id);
+  return [];
 }
 function pendingPlayerResponseFor(characterId){const pq=adventureState.pendingPlayerQuestion;if(!pq)return null;return (pq.responses||[]).find(r=>r.characterId===characterId)||null}
 async function submitPlayerDialogueResponse(textValue){const pq=adventureState.pendingPlayerQuestion;if(!pq)return false;if(!pq.targetIds.includes(activeCharacter.id))return false;if(pendingPlayerResponseFor(activeCharacter.id))return true;addAdventureEvent(activeCharacter.name,textValue,{type:"player-response",questionId:pq.id});pq.responses=[...(pq.responses||[]),{characterId:activeCharacter.id,name:activeCharacter.name,text:textValue,turn:adventureState.turn+1}];const waiting=pq.targetIds.filter(id=>!pq.responses.some(r=>r.characterId===id));if(waiting.length){saveAdventureState();renderAdventure();return true}const responses=pq.responses.map(r=>r.name+": "+r.text).join("\\n");const original=pq.questionText;adventureState.pendingPlayerQuestion=null;saveAdventureState();const status=document.querySelector("#dmStatus");status.textContent="Semua jawaban sudah masuk. DM sedang menarasikan reaksi kelompok…";const action="[PLAYER-TO-PLAYER DIALOGUE COMPLETE] Pertanyaan awal: "+original+"\\nJawaban pemain yang sudah diberikan:\\n"+responses+"\\nSemua karakter yang dituju sudah menjawab. Sekarang DM boleh menarasikan reaksi dunia/NPC dan konsekuensi dari percakapan ini. Jangan membuat dialog atau keputusan baru atas nama player characters di luar jawaban yang sudah diberikan.";try{const reply=await Game.askAIDM(adventureState,action,{character:activeCharacter});if(reply?.narration){addAdventureEvent("DM AI",reply.narration,{type:"dm-narration-after-player-dialogue",questionId:pq.id});speakDM(reply.narration)}else addAdventureEvent("DM AI","Semua jawaban sudah diterima. Dunia menunggu tindakan kalian berikutnya.",{type:"dm-fallback-after-player-dialogue"});handleDMReply(reply||{});saveAdventureState();renderAdventure()}catch(err){addAdventureEvent("DM AI","Semua jawaban sudah diterima. DM belum sempat menarasikan kelanjutannya.",{type:"dm-fallback-after-player-dialogue",error:String(err?.message||err)});saveAdventureState();renderAdventure()}return true}
