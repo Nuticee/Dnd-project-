@@ -499,6 +499,7 @@ export function createCombatant(source, side = "player") {
   return {
     id: source.id ?? crypto.randomUUID(),
     name: source.name,
+    monsterId: source.monsterId ?? null,
     side,
     hp: source.hp?.current ?? source.hp ?? 1,
     maxHP: source.hp?.max ?? source.maxHP ?? 1,
@@ -544,7 +545,15 @@ export function rollInitiativeForCombatants(combatants) {
 
 export function createCombat(playerSources, enemySources = []) {
   const players = playerSources.map(c => createCombatant(c, "player"));
-  const enemies = enemySources.map(c => createCombatant(c, "enemy"));
+  // Give every enemy instance a unique combatant ID while preserving the
+  // shared monster stat-block ID for rules/effects lookups.
+  const enemies = enemySources.map((c, index) =>
+    createCombatant({
+      ...c,
+      id: c.id + "-" + (index + 1),
+      monsterId: c.monsterId ?? c.id
+    }, "enemy")
+  );
   const rolled = rollInitiativeForCombatants([...players, ...enemies]);
 
   return {
@@ -1164,7 +1173,10 @@ export function getMonster(id) {
 export function spawnMonster(id, side = "enemy") {
   const monster = getMonster(id);
   if (!monster) throw new Error(`Monster not found: ${id}`);
-  return createCombatant(monster, side);
+  return createCombatant({
+    ...monster,
+    monsterId: monster.id
+  }, side);
 }
 
 export function listMonsters() {
