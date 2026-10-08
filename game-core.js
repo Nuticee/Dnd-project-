@@ -208,12 +208,13 @@ export const CHARACTERS = [
     gender: "female",
     race: "Halfling",
     class: "Fighter",
-    level: 1,
+    level: 3,
     background: "Folk Hero",
     alignment: "Neutral",
-    xp: 0,
+    xp: 2700,
     xpMode: "Milestone",
-    hp: { current: 9, max: 9 },
+    subclass: "Champion",
+    hp: { current: 19, max: 19 },
     hitDie: "d10",
     ac: 16,
     equippedArmor: "Chain Mail",
@@ -245,6 +246,9 @@ export const CHARACTERS = [
     features: [
       "Fighting Style: Great Weapon Fighting",
       "Second Wind",
+      "Action Surge",
+      "Martial Archetype: Champion",
+      "Improved Critical",
       "Halfling: Lucky",
       "Halfling: Brave",
       "Halfling: Halfling Nimbleness"
@@ -256,9 +260,10 @@ export const CHARACTERS = [
     ],
     equipment: [
       "Chain Mail", "Greataxe", "Shield", "Handaxe", "Handaxe",
-      "Backpack", "Crowbar", "Hammer", "10 Pitons", "10 Torches",
-      "Tinderbox", "10 Rations", "Waterskin", "50 ft Hemp Rope",
-      "Cook's Utensils", "Shovel", "Pot, Iron", "Common Clothes"
+      "Explorer's Pack", "Bedroll", "Mess Kit", "Tinderbox", "10 Torches",
+      "10 Rations", "Waterskin", "50 ft Hemp Rope", "Crowbar", "Hammer",
+      "10 Pitons", "Cook's Utensils", "Shovel", "Pot, Iron", "Common Clothes",
+      "Healing Potion", "Healing Potion"
     ],
     gold: 10
   }
