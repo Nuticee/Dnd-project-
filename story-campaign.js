@@ -122,6 +122,7 @@
   function init(){
     if(!window.adventureState) return;
     ensureStory();
+    if(typeof window.saveAdventureState==="function") window.saveAdventureState();
     injectStyles();
     injectPanel();
 
