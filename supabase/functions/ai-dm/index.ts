@@ -1,6 +1,6 @@
 // Supabase Edge Function: ai-dm
-// Server-side AI DM adapter. Keep OPENAI_API_KEY in Supabase secrets.
-// D&D 5e 2014 rules foundation; the model narrates and requests checks,
+// Server-side AI DM adapter. Keep GEMINI_API_KEY in Supabase secrets.
+// D&D 5e 2014 rules foundation; Gemini narrates and requests checks,
 // while the client/rules engine remains authoritative for dice and HP.
 
 const cors = {
@@ -33,24 +33,22 @@ Rules authority:
 `;
 
 const OUTPUT_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
+  type: "OBJECT",
   properties: {
-    narration: { type: "string" },
+    narration: { type: "STRING" },
     statePatch: {
-      type: "object",
-      additionalProperties: false,
+      type: "OBJECT",
       properties: {
-        scene: { type: ["string", "null"] },
-        location: { type: ["string", "null"] },
-        description: { type: ["string", "null"] },
-        weather: { type: ["string", "null"] },
-        timeOfDay: { type: ["string", "null"] },
-        flags: { type: "object", "additionalProperties": true },
-        quests: { type: "array", "items": {} },
-        knownNPCs: { type: "array", "items": {} },
-        inventory: { type: "array", "items": {} },
-        consequences: { type: "array", "items": {} }
+        scene: { type: "STRING", nullable: true },
+        location: { type: "STRING", nullable: true },
+        description: { type: "STRING", nullable: true },
+        weather: { type: "STRING", nullable: true },
+        timeOfDay: { type: "STRING", nullable: true },
+        flags: { type: "OBJECT", properties: {} },
+        quests: { type: "ARRAY", items: { type: "OBJECT" } },
+        knownNPCs: { type: "ARRAY", items: { type: "OBJECT" } },
+        inventory: { type: "ARRAY", items: { type: "OBJECT" } },
+        consequences: { type: "ARRAY", items: { type: "OBJECT" } }
       },
       required: [
         "scene",
@@ -66,34 +64,24 @@ const OUTPUT_SCHEMA = {
       ]
     },
     requestCheck: {
-      anyOf: [
-        { type: "null" },
-        {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            type: { type: "string", enum: ["skill", "save", "attack"] },
-            abilityOrSkill: { type: "string" },
-            dc: { type: ["number", "null"] },
-            reason: { type: "string" }
-          },
-          required: ["type", "abilityOrSkill", "dc", "reason"]
-        }
-      ]
+      type: "OBJECT",
+      nullable: true,
+      properties: {
+        type: { type: "STRING", enum: ["skill", "save", "attack"] },
+        abilityOrSkill: { type: "STRING" },
+        dc: { type: "NUMBER", nullable: true },
+        reason: { type: "STRING" }
+      },
+      required: ["type", "abilityOrSkill", "dc", "reason"]
     },
     encounter: {
-      anyOf: [
-        { type: "null" },
-        {
-          type: "object",
-          additionalProperties: false,
-          properties: {
-            monsterIds: { type: "array", items: { type: "string" } },
-            reason: { type: "string" }
-          },
-          required: ["monsterIds", "reason"]
-        }
-      ]
+      type: "OBJECT",
+      nullable: true,
+      properties: {
+        monsterIds: { type: "ARRAY", items: { type: "STRING" } },
+        reason: { type: "STRING" }
+      },
+      required: ["monsterIds", "reason"]
     }
   },
   required: ["narration", "statePatch", "requestCheck", "encounter"]
@@ -223,17 +211,17 @@ Deno.serve(async (req) => {
     }
   }
 
-  const apiKey = Deno.env.get("OPENAI_API_KEY");
-  if (!apiKey) return json({ error: "OPENAI_API_KEY is not configured in Supabase secrets." }, 503);
+  const apiKey = Deno.env.get("GEMINI_API_KEY");
+  if (!apiKey) return json({ error: "GEMINI_API_KEY is not configured in Supabase secrets." }, 503);
 
   if (!payload?.playerAction || typeof payload.playerAction !== "string") {
     return json({ error: "playerAction is required." }, 400);
   }
 
-  const model = Deno.env.get("OPENAI_MODEL") || "gpt-6-luna";
+  const model = Deno.env.get("GEMINI_MODEL") || "gemini-3.6-flash";
 
   // Keep the DM context compact. Sending the entire event log on every turn
-  // can consume the organization's token-per-minute limit very quickly.
+  // can consume the model's token budget quickly.
   const adventure = payload.adventure && typeof payload.adventure === "object"
     ? {
         ...payload.adventure,
@@ -246,68 +234,107 @@ Deno.serve(async (req) => {
       }
     : payload.adventure;
 
-  const input = [
-    { role: "system", content: SYSTEM },
-    {
-      role: "user",
-      content: JSON.stringify({
-        ruleset: payload.ruleset,
-        character: payload.character,
-        adventure,
-        playerAction: payload.playerAction
-      })
-    }
-  ];
+  const prompt = JSON.stringify({
+    ruleset: payload.ruleset,
+    character: payload.character,
+    adventure,
+    playerAction: payload.playerAction
+  });
 
   try {
-    const response = await fetch("https://api.openai.com/v1/responses", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model,
-        input,
-        max_output_tokens: 1200,
-        text: {
-          format: {
-            type: "json_object"
+    const models = [model, "gemini-3.5-flash-lite"].filter((value, index, list) => list.indexOf(value) === index);
+    let response = null;
+    let raw = "";
+    let lastStatus = 502;
+    let lastDetail = "";
+
+    for (let modelIndex = 0; modelIndex < models.length; modelIndex++) {
+      const candidateModel = models[modelIndex];
+
+      // One short retry for transient backend overload on the primary model.
+      for (let attempt = 0; attempt < (modelIndex === 0 ? 2 : 1); attempt++) {
+        if (attempt > 0) await new Promise(resolve => setTimeout(resolve, 800));
+
+        response = await fetch(
+          "https://generativelanguage.googleapis.com/v1beta/models/" +
+          encodeURIComponent(candidateModel) +
+          ":generateContent",
+          {
+            method: "POST",
+            headers: {
+              "x-goog-api-key": apiKey,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              system_instruction: {
+                parts: [{ text: SYSTEM }]
+              },
+              contents: [
+                {
+                  role: "user",
+                  parts: [{ text: prompt }]
+                }
+              ],
+              generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: OUTPUT_SCHEMA,
+                maxOutputTokens: 1200
+              }
+            })
           }
-        }
-      })
-    });
+        );
 
-    const raw = await response.text();
-    if (!response.ok) {
-      let detail = raw.slice(0, 1500);
-      let status = 502;
+        raw = await response.text();
+        lastStatus = response.status;
 
-      try {
-        const parsed = JSON.parse(raw);
-        const code = parsed?.error?.code;
-        const message = parsed?.error?.message || "";
-        if (response.status === 429 || code === "rate_limit_exceeded") {
-          status = 429;
-          detail = "OpenAI sedang mencapai rate limit. Tunggu sebentar lalu coba lagi.";
-        } else if (message) {
-          detail = message.slice(0, 1500);
-        }
-      } catch {}
+        if (response.ok) break;
 
-      return json({ error: "OpenAI request failed.", detail }, status);
+        lastDetail = raw.slice(0, 1500);
+        try {
+          const parsed = JSON.parse(raw);
+          const message = parsed?.error?.message || parsed?.message || "";
+          if (message) lastDetail = String(message).slice(0, 1500);
+        } catch {}
+
+        // Retry/fallback only for transient demand/rate-limit failures.
+        if (response.status !== 429 && response.status !== 503) break;
+      }
+
+      if (response?.ok) break;
+    }
+
+    if (!response?.ok) {
+      const detail =
+        lastStatus === 429
+          ? "Gemini sedang mencapai rate limit. Backend sudah mencoba model cadangan."
+          : lastStatus === 503
+            ? "Gemini sedang mengalami demand tinggi. Backend sudah mencoba ulang dan model cadangan."
+            : (lastDetail || "Gemini request failed.");
+
+      return json({ error: "Gemini request failed.", detail }, lastStatus === 429 ? 429 : 502);
     }
 
     const data = JSON.parse(raw);
-    const text = data.output_text || "";
+    const text = data?.candidates?.[0]?.content?.parts
+      ?.map(part => part?.text || "")
+      .join("")
+      .trim();
+
+    if (!text) {
+      const finishReason = data?.candidates?.[0]?.finishReason || "unknown";
+      return json({
+        error: "Gemini returned no usable DM response.",
+        detail: "finishReason=" + finishReason
+      }, 502);
+    }
 
     let result;
     try {
       result = JSON.parse(text);
     } catch {
       return json({
-        error: "AI DM returned invalid JSON.",
-        detail: "The Responses API did not return JSON matching the DM schema."
+        error: "Gemini DM returned invalid JSON.",
+        detail: "The Gemini response did not match the DM JSON structure."
       }, 502);
     }
 
@@ -330,6 +357,6 @@ Deno.serve(async (req) => {
       encounter: result.encounter ?? null
     });
   } catch (error) {
-    return json({ error: error instanceof Error ? error.message : "AI DM error." }, 500);
+    return json({ error: error instanceof Error ? error.message : "Gemini DM error." }, 500);
   }
 });
