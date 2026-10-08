@@ -255,8 +255,8 @@ export const CHARACTERS = [
       "Halfling: Halfling Nimbleness"
     ],
     attacks: [
-      { name: "Greataxe", type: "weapon", attackBonus: 4, damage: "1d12+2", damageType: "slashing", properties: ["heavy", "two-handed"] },
-      { name: "Handaxe", type: "weapon", attackBonus: 4, damage: "1d6+2", damageType: "slashing", range: "20/60 ft", properties: ["light", "thrown"] },
+      { name: "Greataxe", type: "weapon", attackBonus: 4, damage: "1d12+2", damageType: "slashing", properties: ["heavy", "two-handed"], criticalThreshold: 19, rerollLowDamage: true },
+      { name: "Handaxe", type: "weapon", attackBonus: 4, damage: "1d6+2", damageType: "slashing", range: "20/60 ft", properties: ["light", "thrown"], criticalThreshold: 19 },
       { name: "Unarmed Strike", type: "weapon", attackBonus: 4, damage: "3", damageType: "bludgeoning", properties: [] }
     ],
     equipment: [
