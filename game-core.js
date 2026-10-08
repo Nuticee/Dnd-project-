@@ -827,6 +827,195 @@ export const MONSTERS = {
       { name: "Javelin", attackBonus: 4, damage: "1d6+2", damageType: "piercing", range: "30/120 ft" }
     ]
   }
+
+  zombie: {
+    id: "zombie",
+    name: "Zombie",
+    size: "Medium",
+    type: "undead",
+    alignment: "neutral evil",
+    ac: 8,
+    hp: { current: 22, max: 22 },
+    speed: 20,
+    challengeRating: "1/4",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 13, DEX: 6, CON: 16, INT: 3, WIS: 6, CHA: 5 },
+    abilities: ["Undead Fortitude"],
+    attacks: [
+      { name: "Slam", attackBonus: 3, damage: "1d6+1", damageType: "bludgeoning" }
+    ]
+  },
+
+  ghoul: {
+    id: "ghoul",
+    name: "Ghoul",
+    size: "Medium",
+    type: "undead",
+    alignment: "chaotic evil",
+    ac: 12,
+    hp: { current: 22, max: 22 },
+    speed: 30,
+    challengeRating: "1",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 13, DEX: 15, CON: 10, INT: 7, WIS: 10, CHA: 6 },
+    abilities: ["Undead", "Claws can paralyze humanoids"],
+    attacks: [
+      { name: "Bite", attackBonus: 2, damage: "2d6+2", damageType: "piercing" },
+      { name: "Claws", attackBonus: 4, damage: "2d4+2", damageType: "slashing", special: "Humanoid target may be paralyzed on failed CON save." }
+    ]
+  },
+
+  hobgoblin: {
+    id: "hobgoblin",
+    name: "Hobgoblin",
+    size: "Medium",
+    type: "humanoid",
+    alignment: "lawful evil",
+    ac: 18,
+    hp: { current: 11, max: 11 },
+    speed: 30,
+    challengeRating: "1/2",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 13, DEX: 12, CON: 12, INT: 10, WIS: 10, CHA: 9 },
+    abilities: ["Martial Advantage"],
+    attacks: [
+      { name: "Longsword", attackBonus: 3, damage: "1d8+1", damageType: "slashing" },
+      { name: "Longbow", attackBonus: 3, damage: "1d8+1", damageType: "piercing", range: "150/600 ft" }
+    ]
+  },
+
+  giant_rat: {
+    id: "giant_rat",
+    name: "Giant Rat",
+    size: "Small",
+    type: "beast",
+    alignment: "unaligned",
+    ac: 12,
+    hp: { current: 7, max: 7 },
+    speed: 30,
+    challengeRating: "1/8",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 7, DEX: 15, CON: 11, INT: 2, WIS: 10, CHA: 4 },
+    abilities: ["Keen Smell", "Pack Tactics"],
+    attacks: [
+      { name: "Bite", attackBonus: 4, damage: "1d4+2", damageType: "piercing" }
+    ]
+  },
+
+  giant_spider: {
+    id: "giant_spider",
+    name: "Giant Spider",
+    size: "Large",
+    type: "beast",
+    alignment: "unaligned",
+    ac: 14,
+    hp: { current: 26, max: 26 },
+    speed: 30,
+    challengeRating: "1",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 14, DEX: 16, CON: 12, INT: 2, WIS: 11, CHA: 4 },
+    abilities: ["Spider Climb", "Web Sense", "Web Walker"],
+    attacks: [
+      { name: "Bite", attackBonus: 5, damage: "1d8+3", damageType: "piercing", special: "Target may be poisoned." },
+      { name: "Web", attackBonus: 5, damage: "0", damageType: "restraining", range: "30/60 ft", special: "Target may be restrained." }
+    ]
+  },
+
+  dire_wolf: {
+    id: "dire_wolf",
+    name: "Dire Wolf",
+    size: "Large",
+    type: "beast",
+    alignment: "unaligned",
+    ac: 14,
+    hp: { current: 37, max: 37 },
+    speed: 50,
+    challengeRating: "1",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 17, DEX: 15, CON: 15, INT: 3, WIS: 12, CHA: 7 },
+    abilities: ["Keen Hearing and Smell", "Pack Tactics"],
+    attacks: [
+      { name: "Bite", attackBonus: 5, damage: "2d6+3", damageType: "piercing", special: "Target may be knocked prone on failed STR save." }
+    ]
+  },
+
+  brown_bear: {
+    id: "brown_bear",
+    name: "Brown Bear",
+    size: "Large",
+    type: "beast",
+    alignment: "unaligned",
+    ac: 11,
+    hp: { current: 34, max: 34 },
+    speed: 40,
+    challengeRating: "1",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 19, DEX: 10, CON: 16, INT: 2, WIS: 13, CHA: 7 },
+    abilities: ["Keen Smell"],
+    attacks: [
+      { name: "Bite", attackBonus: 5, damage: "1d8+4", damageType: "piercing" },
+      { name: "Claws", attackBonus: 5, damage: "2d6+4", damageType: "slashing" }
+    ]
+  },
+
+  ice_mephit: {
+    id: "ice_mephit",
+    name: "Ice Mephit",
+    size: "Small",
+    type: "elemental",
+    alignment: "neutral evil",
+    ac: 11,
+    hp: { current: 21, max: 21 },
+    speed: 30,
+    challengeRating: "1/2",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 7, DEX: 13, CON: 10, INT: 6, WIS: 10, CHA: 12 },
+    resistances: ["cold"],
+    immunities: ["poison"],
+    abilities: ["Death Burst", "False Appearance", "Cold Breath"],
+    attacks: [
+      { name: "Claws", attackBonus: 3, damage: "1d4+1", damageType: "slashing" }
+    ]
+  },
+
+  ogre: {
+    id: "ogre",
+    name: "Ogre",
+    size: "Large",
+    type: "giant",
+    alignment: "chaotic evil",
+    ac: 11,
+    hp: { current: 59, max: 59 },
+    speed: 40,
+    challengeRating: "2",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 19, DEX: 8, CON: 16, INT: 5, WIS: 7, CHA: 7 },
+    abilities: [],
+    attacks: [
+      { name: "Greatclub", attackBonus: 6, damage: "2d8+4", damageType: "bludgeoning" },
+      { name: "Javelin", attackBonus: 6, damage: "2d6+4", damageType: "piercing", range: "30/120 ft" }
+    ]
+  },
+
+  yeti: {
+    id: "yeti",
+    name: "Yeti",
+    size: "Large",
+    type: "monstrosity",
+    alignment: "chaotic evil",
+    ac: 12,
+    hp: { current: 51, max: 51 },
+    speed: 40,
+    challengeRating: "3",
+    proficiencyBonus: 2,
+    abilityScores: { STR: 18, DEX: 13, CON: 16, INT: 8, WIS: 12, CHA: 7 },
+    resistances: ["cold"],
+    abilities: ["Fear of Fire", "Chilling Gaze", "Cold immunity"],
+    attacks: [
+      { name: "Claw", attackBonus: 6, damage: "1d6+4", damageType: "slashing" },
+      { name: "Claw", attackBonus: 6, damage: "1d6+4", damageType: "slashing" }
+    ]
+  }
 };
 
 export function getMonster(id) {
