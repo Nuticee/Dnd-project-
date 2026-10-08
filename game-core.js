@@ -200,6 +200,63 @@ export const CHARACTERS = [
       "Hooded Lantern", "10 Candles"
     ],
     gold: 23
+  },
+
+  {
+    id: "dersa",
+    name: "Dersa",
+    race: "Halfling",
+    class: "Fighter",
+    level: 1,
+    background: "Folk Hero",
+    alignment: "Neutral",
+    xp: 0,
+    xpMode: "Milestone",
+    hp: { current: 9, max: 9 },
+    hitDie: "d10",
+    ac: 11,
+    speed: 25,
+    proficiencyBonus: 2,
+    abilityScores: { STR: 14, DEX: 13, CON: 8, INT: 13, WIS: 11, CHA: 16 },
+    abilityModifiers: { STR: 2, DEX: 1, CON: -1, INT: 1, WIS: 0, CHA: 3 },
+    savingThrows: { STR: 4, DEX: 1, CON: 1, INT: 1, WIS: 0, CHA: 3 },
+    initiative: 1,
+    passivePerception: 10,
+    passiveInsight: 10,
+    passiveInvestigation: 11,
+    skills: {
+      Acrobatics: 1, AnimalHandling: 2, Arcana: 1, Athletics: 4,
+      Deception: 3, History: 1, Insight: 0, Intimidation: 5,
+      Investigation: 1, Medicine: 0, Nature: 1, Perception: 0,
+      Performance: 3, Persuasion: 3, Religion: 1, SleightOfHand: 1,
+      Stealth: 1, Survival: 2
+    },
+    defenses: ["Advantage on saving throws against being frightened"],
+    proficiencies: [
+      "Heavy Armor", "Light Armor", "Medium Armor", "Shields",
+      "Martial Weapons", "Simple Weapons",
+      "Monster Harvesting Tools", "Vehicles (Land)"
+    ],
+    languages: ["Common", "Common Sign Language", "Halfling"],
+    features: [
+      "Fighting Style: Great Weapon Fighting",
+      "Second Wind",
+      "Halfling: Lucky",
+      "Halfling: Brave",
+      "Halfling: Halfling Nimbleness"
+    ],
+    attacks: [
+      { name: "Greataxe", type: "weapon", attackBonus: 4, damage: "1d12+2", damageType: "slashing", properties: ["heavy", "two-handed"] },
+      { name: "Handaxe", type: "weapon", attackBonus: 4, damage: "1d6+2", damageType: "slashing", range: "20/60 ft", properties: ["light", "thrown"] },
+      { name: "Unarmed Strike", type: "weapon", attackBonus: 4, damage: "3", damageType: "bludgeoning", properties: [] }
+    ],
+    equipment: [
+      "Chain Mail", "Greataxe", "Shield", "Handaxe", "Handaxe",
+      "Backpack", "Crowbar", "Hammer", "10 Pitons", "10 Torches",
+      "Tinderbox", "10 Rations", "Waterskin", "50 ft Hemp Rope",
+      "Cook's Utensils", "Shovel", "Pot, Iron", "Common Clothes"
+    ],
+    gold: 10
   }
 ];
 
