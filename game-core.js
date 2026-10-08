@@ -358,10 +358,11 @@ export function checkD20(modifier = 0, { mode = "normal", dc = null } = {}) {
   return { ...result, nat20, nat1, dc, success };
 }
 
-export function attackRoll(attackBonus, targetAC, mode = "normal") {
+export function attackRoll(attackBonus, targetAC, mode = "normal", criticalThreshold = 20) {
   const result = d20(attackBonus, mode);
 
-  const critical = result.kept === 20;
+  const threshold = Math.max(2, Number(criticalThreshold) || 20);
+  const critical = result.kept >= threshold;
   const criticalMiss = result.kept === 1;
 
   const hit =
@@ -377,7 +378,7 @@ export function attackRoll(attackBonus, targetAC, mode = "normal") {
   };
 }
 
-export function damage(expression, critical = false, modifier = 0) {
+export function damage(expression, critical = false, modifier = 0, options = {}) {
   const match = String(expression).trim().match(/^(\d+)d(4|6|8|10|12|20)([+-]\d+)?$/i);
   if (!match) throw new Error("Damage must look like 1d8, 1d8+3, or 2d6.");
 
@@ -387,12 +388,23 @@ export function damage(expression, critical = false, modifier = 0) {
 
   // 2014 5e: critical hit doubles the number of damage dice, not static modifiers.
   const diceCount = critical ? count * 2 : count;
-  const rolls = rollDice(diceCount, sides);
+  const rerollLowDamage = options.rerollLowDamage === true;
+  const rolls = [];
+  let rerolled = 0;
+  for (let i = 0; i < diceCount; i++) {
+    let value = rollDie(sides);
+    if (rerollLowDamage && (value === 1 || value === 2)) {
+      value = rollDie(sides);
+      rerolled++;
+    }
+    rolls.push(value);
+  }
   const totalModifier = expressionModifier + modifier;
 
   return {
     expression: `${diceCount}d${sides}${totalModifier ? (totalModifier > 0 ? "+" : "") + totalModifier : ""}`,
     rolls,
+    rerolled,
     modifier: totalModifier,
     total: Math.max(0, rolls.reduce((a, b) => a + b, 0) + totalModifier)
   };
@@ -510,7 +522,10 @@ export function createCombatant(source, side = "player") {
       action: true,
       bonusAction: true,
       reaction: true,
-      movement: source.speed ?? 30
+      movement: source.speed ?? 30,
+      actionSurge: (source.features || []).includes("Action Surge"),
+      secondWind: (source.features || []).includes("Second Wind"),
+      extraActions: 0
     },
     spellSlots: structuredClone(source.spellcasting?.spellSlots ?? {}),
     attacks: source.attacks ?? []
@@ -554,7 +569,10 @@ export function resetTurnResources(combatant) {
       action: true,
       bonusAction: true,
       reaction: true,
-      movement: combatant.speed
+      movement: combatant.speed,
+      actionSurge: combatant.resources?.actionSurge ?? false,
+      secondWind: combatant.resources?.secondWind ?? false,
+      extraActions: 0
     },
     effects: {
       ...(combatant.effects || {}),
@@ -632,7 +650,8 @@ export function performAttack(attacker, defender, attackData, mode = "normal") {
   const attack = attackRoll(
     attackData.attackBonus ?? 0,
     defender.ac,
-    mode
+    mode,
+    attackData.criticalThreshold ?? 20
   );
 
   let damageResult = null;
@@ -642,7 +661,8 @@ export function performAttack(attacker, defender, attackData, mode = "normal") {
     damageResult = damage(
       attackData.damage ?? "1d4",
       attack.critical,
-      attackData.damageModifier ?? 0
+      attackData.damageModifier ?? 0,
+      { rerollLowDamage: attackData.rerollLowDamage === true }
     );
 
     const appliedTotal = adjustedDamage(defender, damageResult.total, attackData.damageType);
