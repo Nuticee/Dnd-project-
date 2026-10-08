@@ -657,6 +657,58 @@ export function playerAttack(combat, attackerId, defenderId, attackIndex = 0, mo
 // These are seed monsters for testing the combat engine.
 // ------------------------------------------------------------
 
+export const MONSTER_XP_BY_CR = Object.freeze({
+  "0": 10,
+  "1/8": 25,
+  "1/4": 50,
+  "1/2": 100,
+  "1": 200,
+  "2": 450,
+  "3": 700,
+  "4": 1100,
+  "5": 1800,
+  "6": 2300,
+  "7": 2900,
+  "8": 3900,
+  "9": 5000,
+  "10": 5900,
+  "11": 7200,
+  "12": 8400,
+  "13": 10000,
+  "14": 11500,
+  "15": 13000,
+  "16": 15000,
+  "17": 18000,
+  "18": 20000,
+  "19": 22000,
+  "20": 25000
+});
+
+export const CHARACTER_XP_THRESHOLDS_2014 = Object.freeze([
+  0, 300, 900, 2700, 6500, 14000, 23000, 34000, 48000, 64000,
+  85000, 100000, 120000, 140000, 165000, 195000, 225000, 265000, 305000, 355000
+]);
+
+export function getMonsterXP(monsterOrId) {
+  const monster = typeof monsterOrId === "string" ? MONSTERS[monsterOrId] : monsterOrId;
+  if (!monster) return 0;
+  return MONSTER_XP_BY_CR[monster.challengeRating] ?? 0;
+}
+
+export function getLevelForXP(xp) {
+  const value = Math.max(0, Number(xp) || 0);
+  let level = 1;
+  for (let i = 0; i < CHARACTER_XP_THRESHOLDS_2014.length; i++) {
+    if (value >= CHARACTER_XP_THRESHOLDS_2014[i]) level = i + 1;
+  }
+  return Math.min(20, level);
+}
+
+export function getNextLevelXP(level) {
+  const next = Math.min(20, Math.max(1, Number(level) || 1) + 1);
+  return next > 20 ? null : CHARACTER_XP_THRESHOLDS_2014[next - 1] ?? null;
+}
+
 export const MONSTERS = {
   goblin: {
     id: "goblin",
