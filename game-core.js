@@ -204,6 +204,7 @@ export const CHARACTERS = [
 
   {
     id: "dersa",
+    portrait: "dersa.png",
     name: "Dersa",
     gender: "female",
     race: "Halfling",
