@@ -92,11 +92,58 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
   transform:none;
   transform-origin:top left;
 }
+/* Location-based illustrated tabletop battle maps. Keep the tactical grid and unit layer above the scenery. */
 .combat-v2 .arena{
-  background-color:#071722;
+  isolation:isolate;
+  background-color:#243323;
   background-image:
-    radial-gradient(circle at 50% 40%,rgba(26,57,71,.85),rgba(3,11,18,.95));
+    radial-gradient(ellipse at 48% 52%,rgba(148,142,83,.28) 0 13%,transparent 39%),
+    linear-gradient(132deg,transparent 0 36%,rgba(106,78,48,.68) 37% 43%,rgba(174,139,85,.42) 44% 47%,transparent 48%),
+    radial-gradient(ellipse at 14% 20%,#344a2c 0 10%,transparent 25%),
+    radial-gradient(ellipse at 82% 18%,#263f2a 0 13%,transparent 27%),
+    radial-gradient(ellipse at 15% 78%,#3d542e 0 13%,transparent 28%),
+    radial-gradient(ellipse at 88% 78%,#344b2b 0 14%,transparent 29%),
+    radial-gradient(ellipse at 50% 50%,#68754a 0,#37492f 52%,#17291e 100%);
+  transition:background .35s ease;
 }
+.combat-v2 .arena:after{
+  content:"🌲 WHISPERWOOD CLEARING 🌲";
+  top:10px;
+  z-index:1;
+  padding:4px 9px;
+  left:50%;
+  right:auto;
+  transform:translateX(-50%);
+  width:max-content;
+  max-width:90%;
+  border:1px solid rgba(223,211,160,.28);
+  border-radius:5px;
+  background:rgba(12,20,12,.68);
+  color:#e0d7b0;
+  font-size:10px;
+  text-shadow:0 1px 3px #000;
+  pointer-events:none;
+}
+.combat-v2 .arena.location-cave{
+  background-color:#211e1b;
+  background-image:
+    radial-gradient(ellipse at 50% 58%,rgba(190,113,45,.32) 0 7%,transparent 30%),
+    radial-gradient(ellipse at 18% 18%,#49423a 0 13%,transparent 29%),
+    radial-gradient(ellipse at 85% 20%,#39342f 0 17%,transparent 33%),
+    radial-gradient(ellipse at 8% 74%,#38332d 0 17%,transparent 32%),
+    radial-gradient(ellipse at 94% 78%,#454039 0 18%,transparent 34%),
+    repeating-linear-gradient(128deg,rgba(15,14,13,.28) 0 12px,transparent 12px 31px),
+    radial-gradient(ellipse at 50% 50%,#66594a 0,#3b342d 55%,#171615 100%);
+}
+.combat-v2 .arena.location-cave:after{
+  content:"🕳️ GUA BATU";
+  color:#ffd39a;
+  border-color:rgba(255,190,113,.3);
+  background:rgba(18,13,10,.76);
+}
+.combat-v2 .arena:before{z-index:1;pointer-events:none}
+.combat-v2 .arena .unit{z-index:2}
+@media(prefers-reduced-motion:reduce){.combat-v2 .arena{transition:none}}
 
 
 /* Phase 2 movement mode feedback */
@@ -249,8 +296,16 @@ function describeMonsterLoadout(monsters){
   });
   return "Ancaman yang terlihat: "+descriptions.join(" ")+" Perhatikan jangkauan serangan sebelum menentukan posisi. Informasi ini berdasarkan opsi serangan yang tercatat pada data monster.";
 }
+function setCombatEnvironment(monsterIds=[]){
+  const arena=document.querySelector(".combat-v2 .arena");
+  if(!arena)return;
+  const ids=(Array.isArray(monsterIds)?monsterIds:[]).map(x=>String(x).toLowerCase());
+  const isCave=ids.some(id=>id.includes("orc")||id.includes("cave")||id.includes("goblin-cave"));
+  arena.classList.toggle("location-cave",isCave);
+  arena.dataset.location=isCave?"cave":"forest";
+}
 function init(){startCombat(activeCharacter.id)}
-function startCombat(charId,monsterList=null){const ids=Array.isArray(monsterList)&&monsterList.length?monsterList:enemyIds;const sameCombat=!!combat&&combat.status==="active"&&Array.isArray(adventureState.activeEncounter?.monsterIds)&&adventureState.activeEncounter.monsterIds.join(",")===ids.join(",");if(sameCombat){const stateChar=combat.combatants.find(x=>x.id===charId&&x.side==="player");const base=Game.cloneCharacter(charId)||activeCharacter;if(stateChar)base.hp.current=Math.max(0,stateChar.hp);activeCharacter=base;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;saveAdventureState();render();renderParty();renderCombatActions();return;}activeCharacter=Game.cloneCharacter(charId)||activeCharacter;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;staffCharges=activeCharacter.id==="ilgar-zamani"?10:0;const partySources=Game.CHARACTERS;const enemies=ids.map(id=>Game.spawnMonster(id)).filter(Boolean);const loadoutText=describeMonsterLoadout(enemies);const scene=document.querySelector("#sceneText");if(scene&&loadoutText)scene.textContent=loadoutText;combat=Game.createCombat(partySources,enemies);selectedEnemy=combat.combatants.find(x=>x.side==="enemy")?.id||"";const firstTurn=Game.currentCombatant(combat);if(firstTurn?.side==="player"){activeCharacter=Game.cloneCharacter(firstTurn.id)||activeCharacter;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;}adventureState.activeEncounter={monsterIds:ids,startedAt:new Date().toISOString(),status:"active"};adventureState.combat={status:"active",monsterIds:ids};saveAdventureState();render();renderParty();renderCombatActions();log("Pertempuran dimulai.");log("🎲 Initiative seluruh party dan musuh sudah di-roll sekali.");animateInitiative();setTimeout(processEnemyTurns,1000);}
+function startCombat(charId,monsterList=null){const ids=Array.isArray(monsterList)&&monsterList.length?monsterList:enemyIds;setCombatEnvironment(ids);const sameCombat=!!combat&&combat.status==="active"&&Array.isArray(adventureState.activeEncounter?.monsterIds)&&adventureState.activeEncounter.monsterIds.join(",")===ids.join(",");if(sameCombat){const stateChar=combat.combatants.find(x=>x.id===charId&&x.side==="player");const base=Game.cloneCharacter(charId)||activeCharacter;if(stateChar)base.hp.current=Math.max(0,stateChar.hp);activeCharacter=base;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;saveAdventureState();render();renderParty();renderCombatActions();return;}activeCharacter=Game.cloneCharacter(charId)||activeCharacter;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;staffCharges=activeCharacter.id==="ilgar-zamani"?10:0;const partySources=Game.CHARACTERS;const enemies=ids.map(id=>Game.spawnMonster(id)).filter(Boolean);const loadoutText=describeMonsterLoadout(enemies);const scene=document.querySelector("#sceneText");if(scene&&loadoutText)scene.textContent=loadoutText;combat=Game.createCombat(partySources,enemies);selectedEnemy=combat.combatants.find(x=>x.side==="enemy")?.id||"";const firstTurn=Game.currentCombatant(combat);if(firstTurn?.side==="player"){activeCharacter=Game.cloneCharacter(firstTurn.id)||activeCharacter;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;}adventureState.activeEncounter={monsterIds:ids,startedAt:new Date().toISOString(),status:"active"};adventureState.combat={status:"active",monsterIds:ids};saveAdventureState();render();renderParty();renderCombatActions();log("Pertempuran dimulai.");log("🎲 Initiative seluruh party dan musuh sudah di-roll sekali.");animateInitiative();setTimeout(processEnemyTurns,1000);}
 function renderEnemies(){if(!combat)return;const enemies=combat.combatants.filter(c=>c.side==="enemy");enemies.slice(0,2).forEach((e,i)=>{const hp=Math.max(0,e.hp);const pct=e.maxHP?Math.max(0,Math.min(100,hp/e.maxHP*100)):0;const name=document.querySelector("#enemyName"+i),hpEl=document.querySelector("#enemyHp"+i),bar=document.querySelector("#enemyBar"+i),unit=document.querySelectorAll(".unit.enemy")[i];if(name)name.textContent=e.name;if(hpEl)hpEl.textContent=hp+"/"+e.maxHP;if(bar)bar.style.width=pct+"%";if(unit){unit.classList.toggle("dead",!!e.defeated);unit.classList.toggle("active",e.id===selectedEnemy);unit.onclick=()=>{selectedEnemy=e.id;renderEnemies();toast("Target: "+e.name)}}});}
 function flashCombatTarget(targetId,damage){const arena=document.querySelector(".combat-v2 .arena");if(!arena)return;const enemies=combat?.combatants?.filter(c=>c.side==="enemy")||[];const target=combat?.combatants?.find(c=>c.id===targetId);let unit=null;if(target?.side==="enemy"){const slot=enemies.findIndex(c=>c.id===targetId);unit=arena.querySelector('.unit.enemy[data-enemy-slot="'+slot+'"]')||arena.querySelectorAll(".unit.enemy")[slot]}else if(target?.side==="player"){unit=arena.querySelector('[data-player-id="'+targetId+'"]')}if(!unit)return;unit.classList.remove("damage-flash");void unit.offsetWidth;unit.classList.add("damage-flash");setTimeout(()=>unit.classList.remove("damage-flash"),460);if(Number(damage)>0){const pop=document.createElement("span");pop.className="damage-float";pop.textContent="−"+Math.round(Number(damage));unit.appendChild(pop);setTimeout(()=>pop.remove(),900)}}
 function animateDieResult(sides,result,label){const die=document.querySelector("#die"),detail=document.querySelector("#rollDetail");if(!die)return;if(die.classList.contains("rolling"))return;die.classList.remove("rolling");void die.offsetWidth;die.textContent="⚄";die.classList.add("rolling");detail.textContent=label+" • d"+sides+" menggelinding…";setTimeout(()=>{die.textContent=result;detail.textContent=label+" • d"+sides+" → "+result},900);setTimeout(()=>die.classList.remove("rolling"),960)}
