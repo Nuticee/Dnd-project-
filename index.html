@@ -100,22 +100,23 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 
 
 /* Phase 2 movement mode feedback */
-.combat-v2 .arena.move-mode{outline:2px solid #63e6a6;outline-offset:-3px;cursor:crosshair}
+.combat-v2 .arena.move-mode{outline:1px solid rgba(99,230,166,.48);outline-offset:-2px;cursor:crosshair}
 .combat-v2 .arena.move-mode:after{pointer-events:none}
-.combat-v2 .arena.move-mode:before{background-image:linear-gradient(rgba(130,230,166,.23) 1px,transparent 1px),linear-gradient(90deg,rgba(130,230,166,.23) 1px,transparent 1px)}
+.combat-v2 .arena.move-mode:before{background-image:linear-gradient(rgba(130,230,166,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(130,230,166,.10) 1px,transparent 1px)}
 
 /* Phase 3 range feedback: existing target selection remains unchanged. */
-.combat-v2 .unit.enemy.active .unit-token{box-shadow:0 0 0 2px rgba(255,104,120,.3),0 0 12px rgba(255,104,120,.35)}
+.combat-v2 .unit.enemy.active .unit-token{border-color:#ff9b9f;box-shadow:0 0 0 1px rgba(255,104,120,.2),0 0 10px rgba(255,104,120,.28)}
+.combat-v2 .unit.enemy.active .unit-name{color:#ffe3e4;text-shadow:0 0 8px rgba(255,104,120,.38)}
 
 /* Combat feedback: lightweight physical-button feel and battlefield dice overlay. */
 .combat-v2 #combatActions .tiny-action,.combat-v2 #combatActions .turn-end{transform:translateY(0) scale(1);transition:transform 85ms ease,box-shadow 85ms ease,filter 85ms ease;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .combat-v2 #combatActions .tiny-action.pressing,.combat-v2 #combatActions .turn-end.pressing,.combat-v2 #combatActions .tiny-action:active,.combat-v2 #combatActions .turn-end:active{transform:translateY(2px) scale(.965);filter:brightness(1.18);box-shadow:inset 0 3px 7px rgba(0,0,0,.42),0 0 0 1px rgba(107,211,255,.28)}
 .battle-dice-overlay{position:absolute;z-index:8;left:50%;top:48%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:7px;max-width:85%;padding:11px 16px;border:1px solid rgba(131,218,255,.75);border-radius:15px;background:rgba(2,13,22,.88);box-shadow:0 0 28px rgba(61,178,255,.28);pointer-events:none;animation:battleDiceIn 160ms ease-out;backdrop-filter:blur(4px)}
-.battle-dice-overlay .battle-die-face{width:56px;height:56px;display:grid;place-items:center;border:2px solid #a9e8ff;border-radius:13px;background:linear-gradient(145deg,#17394c,#07131f);color:#f1fbff;font-size:25px;font-weight:900;text-shadow:0 0 12px rgba(112,218,255,.65);box-shadow:inset 0 0 12px rgba(94,193,255,.16)}
-.battle-dice-overlay.rolling .battle-die-face{animation:battleDieRoll 170ms linear infinite}
+.battle-dice-overlay .battle-die-face{width:62px;height:62px;display:grid;place-items:center;clip-path:polygon(50% 0%,82% 10%,100% 38%,91% 72%,67% 100%,33% 100%,9% 72%,0% 38%,18% 10%);border:0;background:linear-gradient(145deg,#8be4ff 0%,#276c94 18%,#102c42 48%,#06121f 100%);color:#f1fbff;font-size:25px;font-weight:900;text-shadow:0 2px 5px #00101b,0 0 12px rgba(112,218,255,.65);filter:drop-shadow(0 5px 5px rgba(0,0,0,.48));position:relative;transform-style:preserve-3d}
+.battle-dice-overlay.rolling .battle-die-face{animation:battleDieRoll 360ms cubic-bezier(.35,.05,.55,.95) infinite;filter:drop-shadow(0 8px 8px rgba(0,0,0,.5))}
 .battle-dice-overlay .battle-dice-label{font-size:10px;font-weight:750;line-height:1.25;text-align:center;color:#cceeff;overflow-wrap:anywhere}
 @keyframes battleDiceIn{from{opacity:0;transform:translate(-50%,-44%) scale(.88)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
-@keyframes battleDieRoll{0%{transform:rotate(-8deg) scale(.94)}50%{transform:rotate(8deg) scale(1.05)}100%{transform:rotate(-8deg) scale(.94)}}
+@keyframes battleDieRoll{0%{transform:translate3d(-7px,2px,0) rotateX(0deg) rotateY(0deg) rotateZ(0deg) scale(.88)}22%{transform:translate3d(5px,-9px,0) rotateX(130deg) rotateY(115deg) rotateZ(75deg) scale(1.08)}48%{transform:translate3d(-3px,-13px,0) rotateX(260deg) rotateY(250deg) rotateZ(170deg) scale(.96)}73%{transform:translate3d(4px,-4px,0) rotateX(390deg) rotateY(385deg) rotateZ(265deg) scale(1.04)}100%{transform:translate3d(0,0,0) rotateX(520deg) rotateY(540deg) rotateZ(360deg) scale(1)}}
 .combat-v2 .unit.damage-flash .unit-token{animation:combatDamageFlash 420ms ease-out}
 @keyframes combatDamageFlash{0%,100%{filter:none;transform:scale(1)}25%{filter:brightness(2.4) saturate(1.7);transform:scale(1.12)}55%{filter:brightness(1.5);transform:scale(.96)}}
 .combat-v2 .damage-float{position:absolute;z-index:9;left:50%;top:-8px;transform:translate(-50%,-100%);color:#ffe1a6;font-size:17px;font-weight:900;text-shadow:0 2px 4px #000,0 0 10px rgba(255,155,65,.65);pointer-events:none;animation:damageFloatUp 850ms ease-out forwards;white-space:nowrap}
