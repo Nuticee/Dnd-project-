@@ -92,25 +92,27 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
   transform:none;
   transform-origin:top left;
 }
-/* Slightly zoomed-out tactical POV: show more of the battlefield on mobile. */
+/* Further zoomed-out tactical POV: widen the visible battlefield without changing rules. */
 .combat-v2 .arena{
-  min-height:340px;
+  min-height:400px;
 }
 .combat-v2 .arena .unit-token{
-  width:38px;
-  height:38px;
-  font-size:19px;
+  width:34px;
+  height:34px;
+  font-size:17px;
 }
 .combat-v2 .arena .unit{
-  min-width:64px;
+  min-width:56px;
 }
 .combat-v2 .arena .unit-name{font-size:8px}
 .combat-v2 .arena .unit-hp{font-size:7px}
-.combat-v2 .arena .unit-hpbar{width:48px}
+.combat-v2 .arena .unit-hpbar{width:44px}
 @media(max-width:420px){
-  .combat-v2 .arena{min-height:360px}
-  .combat-v2 .arena .unit-token{width:34px;height:34px;font-size:17px}
-  .combat-v2 .arena .unit{min-width:56px}
+  .combat-v2 .arena{min-height:420px}
+  .combat-v2 .arena .unit-token{width:30px;height:30px;font-size:15px}
+  .combat-v2 .arena .unit{min-width:50px}
+  .combat-v2 .arena .unit-name{font-size:7px}
+  .combat-v2 .arena .unit-hpbar{width:40px}
 }
 /* Location-based illustrated tabletop battle maps. Keep the tactical grid and unit layer above the scenery. */
 .combat-v2 .arena{
