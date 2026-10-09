@@ -82,6 +82,22 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 .main-menu-grid button{min-height:88px;padding:10px 5px;background:rgba(4,18,28,.82);border:1px solid #315c70;border-radius:14px;color:#e9f6fb;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 .main-menu-grid button span{font-size:24px;color:#bfefff}.main-menu-grid button b{font-size:12px}.main-menu-grid button small{font-size:8px;color:#8faab7}
 .bestiary-screen{background:linear-gradient(180deg,#061722,#02070b);min-height:100vh}.bestiary-row{display:flex;align-items:center;gap:12px}.bestiary-icon{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background:#0b2432;border:1px solid #285a70;font-size:25px}.bestiary-meta{margin-left:auto;text-align:right;font-size:10px;color:#91a9b8}.bestiary-meta b{display:block;color:#fff;font-size:12px}
+
+/* Tactical Combat Phase 1: clear top-down grid only; mechanics remain unchanged. */
+.combat-v2 .arena:before{
+  background-image:
+    linear-gradient(rgba(130,190,210,.18) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(130,190,210,.18) 1px,transparent 1px);
+  background-size:42px 42px;
+  transform:none;
+  transform-origin:top left;
+}
+.combat-v2 .arena{
+  background-color:#071722;
+  background-image:
+    radial-gradient(circle at 50% 40%,rgba(26,57,71,.85),rgba(3,11,18,.95));
+}
+
 </style>
 </head>
 <body>
