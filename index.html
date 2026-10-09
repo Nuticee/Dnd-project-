@@ -213,7 +213,7 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 })();
 </script>
 <script type="module">
-import * as Game from "./game-core.js?v=202610091900";
+import * as Game from "./game-core.js?v=202610092100";
 let activeCharacter=Game.cloneCharacter("ilgar-zamani");let player=activeCharacter;let selectedEnemy="goblin",combat=null;const enemyIds=["goblin","kobold"];let activeTab="spell";let staffCharges=10;let playerActionBusy=false;let movementMode=false;const MOVE_TILE_FT=5;const MOVE_TILE_PX=42;const PORTRAIT_VERSION="202610071100";function portraitFor(c){if(c?.portrait)return c.portrait+"?v="+PORTRAIT_VERSION;return "ilgar.png?v="+PORTRAIT_VERSION;}
 function init(){startCombat(activeCharacter.id)}
 function startCombat(charId,monsterList=null){const ids=Array.isArray(monsterList)&&monsterList.length?monsterList:enemyIds;const sameCombat=!!combat&&combat.status==="active"&&Array.isArray(adventureState.activeEncounter?.monsterIds)&&adventureState.activeEncounter.monsterIds.join(",")===ids.join(",");if(sameCombat){const stateChar=combat.combatants.find(x=>x.id===charId&&x.side==="player");const base=Game.cloneCharacter(charId)||activeCharacter;if(stateChar)base.hp.current=Math.max(0,stateChar.hp);activeCharacter=base;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;saveAdventureState();render();renderParty();renderCombatActions();return;}activeCharacter=Game.cloneCharacter(charId)||activeCharacter;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;staffCharges=activeCharacter.id==="ilgar-zamani"?10:0;const partySources=Game.CHARACTERS;const enemies=ids.map(id=>Game.spawnMonster(id)).filter(Boolean);combat=Game.createCombat(partySources,enemies);selectedEnemy=combat.combatants.find(x=>x.side==="enemy")?.id||"";const firstTurn=Game.currentCombatant(combat);if(firstTurn?.side==="player"){activeCharacter=Game.cloneCharacter(firstTurn.id)||activeCharacter;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;}adventureState.activeEncounter={monsterIds:ids,startedAt:new Date().toISOString(),status:"active"};adventureState.combat={status:"active",monsterIds:ids};saveAdventureState();render();renderParty();renderCombatActions();log("Pertempuran dimulai.");log("🎲 Initiative seluruh party dan musuh sudah di-roll sekali.");animateInitiative();setTimeout(processEnemyTurns,1000);}
@@ -234,36 +234,39 @@ function moveEnemyTowardTarget(enemy,target,desiredRange=5){
   ensureCombatGridPositions();
   const live=combat.combatants.find(c=>c.id===enemy.id);
   const foe=combat.combatants.find(c=>c.id===target.id);
-  if(!live?.gridPos||!foe?.gridPos)return live||enemy;
-  let pos={...live.gridPos};
-  let remaining=Math.max(0,Number(live.resources?.movement??live.speed??30));
-  let spent=0;
-  const occupied=()=>gridVisibleUnits().some(({combatant})=>combatant.id!==live.id&&combatant.id!==foe.id&&combatant.gridPos?.x===pos.x&&combatant.gridPos?.y===pos.y);
-  while(remaining>=MOVE_TILE_FT){
-    const distance=Math.max(Math.abs(pos.x-foe.gridPos.x),Math.abs(pos.y-foe.gridPos.y))*MOVE_TILE_FT;
-    if(distance<=desiredRange)break;
-    const sx=Math.sign(foe.gridPos.x-pos.x),sy=Math.sign(foe.gridPos.y-pos.y);
-    const candidates=[
-      {x:pos.x+sx,y:pos.y+sy},
-      {x:pos.x+sx,y:pos.y},
-      {x:pos.x,y:pos.y+sy}
-    ].filter((p,i,a)=>a.findIndex(q=>q.x===p.x&&q.y===p.y)===i);
-    let next=null;
-    for(const candidate of candidates){
-      if(candidate.x<0||candidate.y<0)continue;
-      const cols=Math.floor(document.querySelector(".combat-v2 .arena").clientWidth/MOVE_TILE_PX);
-      const rows=Math.floor(document.querySelector(".combat-v2 .arena").clientHeight/MOVE_TILE_PX);
-      if(candidate.x>=cols||candidate.y>=rows)continue;
-      const blocked=combat.combatants.some(c=>c.id!==live.id&&!c.defeated&&c.gridPos?.x===candidate.x&&c.gridPos?.y===candidate.y);
-      if(!blocked){next=candidate;break}
+  const arena=document.querySelector(".combat-v2 .arena");
+  if(!live?.gridPos||!foe?.gridPos||!arena)return live||enemy;
+  const cols=Math.max(1,Math.floor(arena.clientWidth/MOVE_TILE_PX));
+  const rows=Math.max(1,Math.floor(arena.clientHeight/MOVE_TILE_PX));
+  const start={...live.gridPos};
+  const key=p=>p.x+","+p.y;
+  const isGoal=p=>Math.max(Math.abs(p.x-foe.gridPos.x),Math.abs(p.y-foe.gridPos.y))*MOVE_TILE_FT<=desiredRange;
+  const blocked=new Set(combat.combatants.filter(c=>c.id!==live.id&&c.id!==foe.id&&!c.defeated&&c.gridPos).map(c=>key(c.gridPos)));
+  const queue=[{pos:start,path:[]}],seen=new Set([key(start)]);
+  let route=null;
+  while(queue.length){
+    const node=queue.shift();
+    if(isGoal(node.pos)){route=node.path;break}
+    const nexts=[
+      {x:node.pos.x+1,y:node.pos.y},{x:node.pos.x-1,y:node.pos.y},
+      {x:node.pos.x,y:node.pos.y+1},{x:node.pos.x,y:node.pos.y-1},
+      {x:node.pos.x+1,y:node.pos.y+1},{x:node.pos.x-1,y:node.pos.y+1},
+      {x:node.pos.x+1,y:node.pos.y-1},{x:node.pos.x-1,y:node.pos.y-1}
+    ];
+    for(const p of nexts){
+      const k=key(p);
+      if(p.x<0||p.y<0||p.x>=cols||p.y>=rows||seen.has(k)||blocked.has(k))continue;
+      seen.add(k);queue.push({pos:p,path:[...node.path,p]});
     }
-    if(!next)break;
-    pos=next;remaining-=MOVE_TILE_FT;spent+=MOVE_TILE_FT;
   }
-  if(!spent)return live;
-  const moved={...live,gridPos:pos,resources:{...live.resources,movement:remaining}};
+  if(!route||!route.length){log("👹 "+live.name+" tidak menemukan jalur untuk mendekati "+foe.name+".");return live}
+  const speed=Math.max(0,Number(live.resources?.movement??live.speed??30));
+  const steps=Math.min(route.length,Math.floor(speed/MOVE_TILE_FT));
+  if(!steps){log("👹 "+live.name+" tidak memiliki sisa gerakan.");return live}
+  const pos=route[steps-1],spent=steps*MOVE_TILE_FT;
+  const moved={...live,gridPos:{x:pos.x,y:pos.y},resources:{...live.resources,movement:speed-spent}};
   combat=Game.updateCombatant(combat,moved);
-  log("👹 "+live.name+" bergerak "+spent+" ft untuk mendekati "+foe.name+".");
+  log("👹 "+live.name+" bergerak "+spent+" ft mendekati "+foe.name+".");
   renderGridPositions();
   return moved;
 }
@@ -658,13 +661,32 @@ function initializeGridPositions(){
   const arena=document.querySelector(".combat-v2 .arena");
   if(!arena||!combat)return;
   ensurePartyTokens();
+  const cols=Math.max(1,Math.floor(arena.clientWidth/MOVE_TILE_PX));
+  const rows=Math.max(1,Math.floor(arena.clientHeight/MOVE_TILE_PX));
+  const enemies=combat.combatants.filter(c=>c.side==="enemy"&&!c.defeated);
+  // Give enemies deterministic top-side spawn cells instead of inferring cells from transformed DOM coordinates.
+  enemies.forEach((enemy,i)=>{
+    if(enemy.gridPos)return;
+    const occupied=new Set(combat.combatants.filter(c=>c.id!==enemy.id&&!c.defeated&&c.gridPos).map(c=>c.gridPos.x+","+c.gridPos.y));
+    const preferredY=Math.min(rows-1,1+Math.floor(i/Math.max(1,cols-2)));
+    const preferredX=Math.max(0,Math.min(cols-1,Math.floor(cols*(i+1)/(enemies.length+1))));
+    let chosen=null;
+    for(let radius=0;radius<Math.max(cols,rows)&&!chosen;radius++){
+      for(let y=Math.max(0,preferredY-radius);y<=Math.min(rows-1,preferredY+radius)&&!chosen;y++){
+        for(let x=Math.max(0,preferredX-radius);x<=Math.min(cols-1,preferredX+radius);x++){
+          if(!occupied.has(x+","+y)){chosen={x,y};break}
+        }
+      }
+    }
+    if(chosen)combat=Game.updateCombatant(combat,{...enemy,gridPos:chosen});
+  });
   const rect=arena.getBoundingClientRect();
   gridVisibleUnits().forEach(({combatant,el})=>{
     if(combatant.gridPos)return;
     const r=el.getBoundingClientRect();
     const cx=r.left+r.width/2-rect.left;
     const cy=r.top+r.height/2-rect.top;
-    const gridPos={x:Math.max(0,Math.floor(cx/MOVE_TILE_PX)),y:Math.max(0,Math.floor(cy/MOVE_TILE_PX))};
+    const gridPos={x:Math.max(0,Math.min(cols-1,Math.floor(cx/MOVE_TILE_PX))),y:Math.max(0,Math.min(rows-1,Math.floor(cy/MOVE_TILE_PX)))};
     combat=Game.updateCombatant(combat,{...combatant,gridPos});
   });
 }
