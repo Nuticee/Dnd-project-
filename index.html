@@ -224,7 +224,63 @@ function renderParty(){const box=document.querySelector("#partyStrip");if(!box)r
 function renderTurnOrder(){const box=document.querySelector("#turnOrder");if(!box||!combat)return;box.innerHTML="";combat.combatants.forEach(c=>{const d=document.createElement("div");d.className="turn-entry"+(c.side==="enemy"?" enemy":"")+(c.defeated?" dead":"")+(Game.currentCombatant(combat)?.id===c.id&&combat.status==="active"?" active":"");d.innerHTML="<b>"+c.name+"</b><span>"+(c.defeated?"☠":("🎲 "+c.initiativeRoll.total))+"</span>";box.appendChild(d)})}
 function requirePlayerTurn(){if(combat?.status!=="active"){toast("Combat sudah selesai.");return false}const current=Game.currentCombatant(combat);if(current?.side!=="player"){toast("⏳ Giliran "+(current?.name||"musuh")+" dulu.");return false}if(current.id!==activeCharacter.id){toast("🟡 Giliran "+current.name+". Pilih karakter tersebut.");return false}return true}
 function syncActiveToCurrentTurn(){const current=Game.currentCombatant(combat);if(current?.side==="player"){const base=Game.cloneCharacter(current.id)||activeCharacter;const stateChar=combat.combatants.find(x=>x.id===current.id);if(stateChar)base.hp.current=Math.max(0,stateChar.hp);activeCharacter=base;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;}}let enemyTurnBusy=false;function scheduleEnemyTurn(){if(enemyTurnBusy||!combat||combat.status!=="active")return;const current=Game.currentCombatant(combat);if(current?.side==="enemy")setTimeout(processEnemyTurns,250);}function finishPlayerTurn(){if(combat?.status!=="active")return;const current=Game.currentCombatant(combat);if(current?.side!=="player"){toast("Bukan giliran party.");return}playerActionBusy=false;combat=Game.startNextTurn(combat);syncActiveToCurrentTurn();render();saveAdventureState();scheduleEnemyTurn()}
-function processEnemyTurns(){if(enemyTurnBusy||!combat||combat.status!=="active")return;enemyTurnBusy=true;let guard=0;while(combat.status==="active"&&Game.currentCombatant(combat)?.side==="enemy"&&guard++<combat.combatants.length){const enemy=Game.currentCombatant(combat),preferred=combat.combatants.find(c=>c.side==="player"&&c.id===activeCharacter.id&&!c.defeated),target=preferred||combat.combatants.filter(c=>c.side==="player"&&!c.defeated).sort((a,b)=>a.hp-b.hp)[0];if(!target)break;const attackData=enemy.attacks?.[0];if(!attackData){log(enemy.name+" tidak memiliki serangan yang bisa digunakan.");combat=Game.startNextTurn(combat);continue}const result=Game.performAttack(enemy,target,attackData);combat=Game.updateCombatant(combat,result.defender);if(result.attack.hit){recordCombatDamage(enemy.name,target,result.damage?.appliedTotal??result.damage.total,attackData.damageType||"damage");log("👹 "+enemy.name+" menyerang "+target.name+" • HIT → "+(result.damage?.appliedTotal??result.damage.total)+" "+(attackData.damageType||"damage"))}else log("👹 "+enemy.name+" menyerang "+target.name+" • MISS");combat=Game.checkCombatEnd(combat);render();if(combat.status!=="active")break;combat=Game.startNextTurn(combat);render();}saveAdventureState();enemyTurnBusy=false;if(combat?.status==="active"&&Game.currentCombatant(combat)?.side==="player"){syncActiveToCurrentTurn();log("🟢 Giliran "+Game.currentCombatant(combat).name);render()}}
+
+/* Tactical Combat Phase 4: simple enemy movement and range-aware attack choice. */
+function gridRangeFeet(attacker,target){
+  ensureCombatGridPositions();
+  return combatDistanceFeet(attacker,target);
+}
+function moveEnemyTowardTarget(enemy,target,desiredRange=5){
+  ensureCombatGridPositions();
+  const live=combat.combatants.find(c=>c.id===enemy.id);
+  const foe=combat.combatants.find(c=>c.id===target.id);
+  if(!live?.gridPos||!foe?.gridPos)return live||enemy;
+  let pos={...live.gridPos};
+  let remaining=Math.max(0,Number(live.resources?.movement??live.speed??30));
+  let spent=0;
+  const occupied=()=>gridVisibleUnits().some(({combatant})=>combatant.id!==live.id&&combatant.id!==foe.id&&combatant.gridPos?.x===pos.x&&combatant.gridPos?.y===pos.y);
+  while(remaining>=MOVE_TILE_FT){
+    const distance=Math.max(Math.abs(pos.x-foe.gridPos.x),Math.abs(pos.y-foe.gridPos.y))*MOVE_TILE_FT;
+    if(distance<=desiredRange)break;
+    const sx=Math.sign(foe.gridPos.x-pos.x),sy=Math.sign(foe.gridPos.y-pos.y);
+    const candidates=[
+      {x:pos.x+sx,y:pos.y+sy},
+      {x:pos.x+sx,y:pos.y},
+      {x:pos.x,y:pos.y+sy}
+    ].filter((p,i,a)=>a.findIndex(q=>q.x===p.x&&q.y===p.y)===i);
+    let next=null;
+    for(const candidate of candidates){
+      if(candidate.x<0||candidate.y<0)continue;
+      const cols=Math.floor(document.querySelector(".combat-v2 .arena").clientWidth/MOVE_TILE_PX);
+      const rows=Math.floor(document.querySelector(".combat-v2 .arena").clientHeight/MOVE_TILE_PX);
+      if(candidate.x>=cols||candidate.y>=rows)continue;
+      const blocked=combat.combatants.some(c=>c.id!==live.id&&!c.defeated&&c.gridPos?.x===candidate.x&&c.gridPos?.y===candidate.y);
+      if(!blocked){next=candidate;break}
+    }
+    if(!next)break;
+    pos=next;remaining-=MOVE_TILE_FT;spent+=MOVE_TILE_FT;
+  }
+  if(!spent)return live;
+  const moved={...live,gridPos:pos,resources:{...live.resources,movement:remaining}};
+  combat=Game.updateCombatant(combat,moved);
+  log("👹 "+live.name+" bergerak "+spent+" ft untuk mendekati "+foe.name+".");
+  renderGridPositions();
+  return moved;
+}
+function chooseEnemyAttack(enemy,target){
+  const distance=gridRangeFeet(enemy,target);
+  const attacks=enemy.attacks||[];
+  const ranged=attacks.filter(a=>a.range);
+  if(distance!==null&&distance>5){
+    const usable=ranged.find(a=>{
+      const nums=String(a.range||"").match(/\d+/g)?.map(Number)||[];
+      return distance<=(nums[0]||30);
+    });
+    if(usable)return usable;
+  }
+  return attacks.find(a=>!a.range)||attacks[0]||null;
+}
+function processEnemyTurns(){if(enemyTurnBusy||!combat||combat.status!=="active")return;enemyTurnBusy=true;let guard=0;while(combat.status==="active"&&Game.currentCombatant(combat)?.side==="enemy"&&guard++<combat.combatants.length){const enemy=Game.currentCombatant(combat),preferred=combat.combatants.find(c=>c.side==="player"&&c.id===activeCharacter.id&&!c.defeated),target=preferred||combat.combatants.filter(c=>c.side==="player"&&!c.defeated).sort((a,b)=>a.hp-b.hp)[0];if(!target)break;ensureCombatGridPositions();let actingEnemy=combat.combatants.find(c=>c.id===enemy.id)||enemy;let distance=gridRangeFeet(actingEnemy,target);let attackData=chooseEnemyAttack(actingEnemy,target);if(distance!==null&&distance>5&&(!attackData?.range||distance>Number(String(attackData.range).match(/\d+/)?.[0]||0))){actingEnemy=moveEnemyTowardTarget(actingEnemy,target,5);distance=gridRangeFeet(actingEnemy,target);attackData=chooseEnemyAttack(actingEnemy,target)}if(!attackData){log(enemy.name+" tidak memiliki serangan yang bisa digunakan.");combat=Game.startNextTurn(combat);continue}const result=Game.performAttack(actingEnemy,target,attackData);combat=Game.updateCombatant(combat,result.defender);if(result.attack.hit){recordCombatDamage(enemy.name,target,result.damage?.appliedTotal??result.damage.total,attackData.damageType||"damage");log("👹 "+enemy.name+" menyerang "+target.name+" • HIT → "+(result.damage?.appliedTotal??result.damage.total)+" "+(attackData.damageType||"damage"))}else log("👹 "+enemy.name+" menyerang "+target.name+" • MISS");combat=Game.checkCombatEnd(combat);render();if(combat.status!=="active")break;combat=Game.startNextTurn(combat);render();}saveAdventureState();enemyTurnBusy=false;if(combat?.status==="active"&&Game.currentCombatant(combat)?.side==="player"){syncActiveToCurrentTurn();log("🟢 Giliran "+Game.currentCombatant(combat).name);render()}}
 function enemyTemplate(id){return Game.MONSTERS[id]}
 function log(text){const el=document.querySelector("#combatLog");if(!el)return;const p=document.createElement("p");p.textContent=text;el.prepend(p);while(el.children.length>30)el.removeChild(el.lastChild)}
 function recordCombatDamage(source,target,damage,type="damage"){if(!damage||damage<=0||!target)return;addAdventureEvent("⚔️ Combat",source+" → "+target.name+" • "+damage+" "+type,{type:"combat-damage",source,target:target.name,damage,damageType:type,targetHP:target.hp,targetMaxHP:target.maxHP})}
