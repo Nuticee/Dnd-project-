@@ -611,19 +611,53 @@ function gridVisibleUnits(){
   const arena=document.querySelector(".combat-v2 .arena");
   if(!arena||!combat)return [];
   const entries=[];
-  const pc=combat.combatants.find(x=>x.side==="player"&&x.id===activeCharacter.id&&!x.defeated);
-  const pcEl=document.querySelector(".unit.pc");
-  if(pc&&pcEl)entries.push({combatant:pc,el:pcEl});
-  const enemies=combat.combatants.filter(x=>x.side==="enemy");
-  document.querySelectorAll(".unit.enemy").forEach((el,i)=>{
-    const e=enemies[i];
+  combat.combatants.filter(c=>c.side==="player"&&!c.defeated).forEach(c=>{
+    const el=arena.querySelector('[data-player-id="'+c.id+'"]');
+    if(el)entries.push({combatant:c,el});
+  });
+  const enemies=combat.combatants.filter(x=>x.side==="enemy"&&!x.defeated);
+  arena.querySelectorAll(".unit.enemy").forEach(el=>{
+    const slot=Number(el.dataset.enemySlot);
+    const e=enemies[slot]||combat.combatants.filter(x=>x.side==="enemy")[slot];
     if(e&&!e.defeated)entries.push({combatant:e,el});
   });
   return entries;
 }
+function ensurePartyTokens(){
+  const arena=document.querySelector(".combat-v2 .arena");
+  if(!arena||!combat)return;
+  const base=arena.querySelector(".unit.pc");
+  if(base)base.style.display="none";
+  combat.combatants.filter(c=>c.side==="player").forEach((c,i)=>{
+    let el=arena.querySelector('[data-player-id="'+c.id+'"]');
+    if(!el){
+      el=document.createElement("div");
+      el.className="unit pc party-unit";
+      el.dataset.playerId=c.id;
+      el.innerHTML='<div class="unit-token portrait-mini" style="padding:0;overflow:hidden"><img alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block"></div><div class="unit-name"></div><div class="unit-hp"></div><div class="unit-hpbar"><i></i></div>';
+      arena.appendChild(el);
+    }
+    const char=Game.cloneCharacter(c.id)||c;
+    const img=el.querySelector("img");
+    if(img)img.src=portraitFor(char);
+    el.querySelector(".unit-name").textContent=c.name;
+    el.querySelector(".unit-hp").textContent=c.hp+"/"+c.maxHP;
+    el.querySelector(".unit-hpbar i").style.width=Math.max(0,c.hp/c.maxHP*100)+"%";
+    el.classList.toggle("active",Game.currentCombatant(combat)?.id===c.id);
+    if(!c.gridPos){
+      const oldLeft=[30,20,40,30][i%4];
+      const oldTop=[67,72,72,60][i%4];
+      const cols=Math.max(1,Math.floor(arena.clientWidth/MOVE_TILE_PX));
+      const rows=Math.max(1,Math.floor(arena.clientHeight/MOVE_TILE_PX));
+      const pos={x:Math.max(0,Math.min(cols-1,Math.floor(arena.clientWidth*oldLeft/100/MOVE_TILE_PX))),y:Math.max(0,Math.min(rows-1,Math.floor(arena.clientHeight*oldTop/100/MOVE_TILE_PX)))};
+      combat=Game.updateCombatant(combat,{...c,gridPos:pos});
+    }
+  });
+}
 function initializeGridPositions(){
   const arena=document.querySelector(".combat-v2 .arena");
-  if(!arena)return;
+  if(!arena||!combat)return;
+  ensurePartyTokens();
   const rect=arena.getBoundingClientRect();
   gridVisibleUnits().forEach(({combatant,el})=>{
     if(combatant.gridPos)return;
@@ -637,6 +671,7 @@ function initializeGridPositions(){
 function renderGridPositions(){
   const arena=document.querySelector(".combat-v2 .arena");
   if(!arena||!combat)return;
+  ensurePartyTokens();
   gridVisibleUnits().forEach(({combatant,el})=>{
     if(!combatant.gridPos)return;
     el.style.left=((combatant.gridPos.x+.5)*MOVE_TILE_PX)+"px";
