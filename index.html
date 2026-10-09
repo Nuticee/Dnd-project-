@@ -95,15 +95,14 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 /* Location-based illustrated tabletop battle maps. Keep the tactical grid and unit layer above the scenery. */
 .combat-v2 .arena{
   isolation:isolate;
-  background-color:#243323;
+  background-color:#263b28;
   background-image:
-    radial-gradient(ellipse at 48% 52%,rgba(148,142,83,.28) 0 13%,transparent 39%),
-    linear-gradient(132deg,transparent 0 36%,rgba(106,78,48,.68) 37% 43%,rgba(174,139,85,.42) 44% 47%,transparent 48%),
-    radial-gradient(ellipse at 14% 20%,#344a2c 0 10%,transparent 25%),
-    radial-gradient(ellipse at 82% 18%,#263f2a 0 13%,transparent 27%),
-    radial-gradient(ellipse at 15% 78%,#3d542e 0 13%,transparent 28%),
-    radial-gradient(ellipse at 88% 78%,#344b2b 0 14%,transparent 29%),
-    radial-gradient(ellipse at 50% 50%,#68754a 0,#37492f 52%,#17291e 100%);
+    radial-gradient(ellipse at 50% 50%,rgba(115,130,75,.22) 0,transparent 55%),
+    radial-gradient(ellipse at 12% 18%,#34472c 0 9%,transparent 24%),
+    radial-gradient(ellipse at 88% 17%,#2d432b 0 12%,transparent 26%),
+    radial-gradient(ellipse at 12% 82%,#35492c 0 12%,transparent 27%),
+    radial-gradient(ellipse at 87% 82%,#2c4229 0 14%,transparent 29%),
+    radial-gradient(ellipse at 50% 50%,#4d6040 0,#34492f 58%,#1c2b20 100%);
   transition:background .35s ease;
 }
 .combat-v2 .arena:after{
@@ -800,14 +799,46 @@ function initializeGridPositions(){
 function renderGridPositions(){
   const arena=document.querySelector(".combat-v2 .arena");
   if(!arena||!combat)return;
-  // Re-check positions after the arena becomes visible/resizes. Saved grid coordinates
-  // can be stale (or all zero) if combat was initialized while its screen was hidden.
+  // Wait until the arena has real dimensions; hidden screens report 0x0 and can
+  // otherwise collapse every token into the same top-left grid cell.
+  const rect=arena.getBoundingClientRect();
+  if(rect.width<100||rect.height<100){
+    requestAnimationFrame(()=>renderGridPositions());
+    return;
+  }
   initializeGridPositions();
   ensurePartyTokens();
+  const cols=Math.max(1,Math.floor(rect.width/MOVE_TILE_PX));
+  const rows=Math.max(1,Math.floor(rect.height/MOVE_TILE_PX));
+  const entries=gridVisibleUnits();
+  const occupied=new Set();
+  // Repair any positions that are still duplicated or out of bounds after a
+  // hidden-screen initialization, then distribute units into safe distinct cells.
+  for(const {combatant} of entries){
+    const p=combatant.gridPos;
+    if(!p||p.x<0||p.y<0||p.x>=cols||p.y>=rows||occupied.has(p.x+","+p.y)){
+      let chosen=null;
+      const isEnemy=combatant.side==="enemy";
+      const startY=isEnemy?Math.min(1,rows-1):Math.max(0,rows-2);
+      for(let radius=0;radius<Math.max(cols,rows)&&!chosen;radius++){
+        for(let y=Math.max(0,startY-radius);y<=Math.min(rows-1,startY+radius)&&!chosen;y++){
+          for(let x=0;x<cols;x++){
+            const key=x+","+y;
+            if(!occupied.has(key)){chosen={x,y};break}
+          }
+        }
+      }
+      if(chosen){
+        combat=Game.updateCombatant(combat,{...combatant,gridPos:chosen});
+      }
+    }
+    const latest=combat.combatants.find(c=>c.id===combatant.id);
+    if(latest?.gridPos)occupied.add(latest.gridPos.x+","+latest.gridPos.y);
+  }
   gridVisibleUnits().forEach(({combatant,el})=>{
     if(!combatant.gridPos)return;
-    el.style.left=((combatant.gridPos.x+.5)*MOVE_TILE_PX)+"px";
-    el.style.top=((combatant.gridPos.y+.5)*MOVE_TILE_PX)+"px";
+    el.style.left=(((combatant.gridPos.x+.5)/cols)*100)+"%";
+    el.style.top=(((combatant.gridPos.y+.5)/rows)*100)+"%";
     el.style.display="";
   });
 }
