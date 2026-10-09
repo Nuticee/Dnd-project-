@@ -680,6 +680,23 @@ function initializeGridPositions(){
   ensurePartyTokens();
   const cols=Math.max(1,Math.floor(arena.clientWidth/MOVE_TILE_PX));
   const rows=Math.max(1,Math.floor(arena.clientHeight/MOVE_TILE_PX));
+  // Repair saved positions that overlap or fall outside the current arena dimensions.
+  // This is especially important when a hidden combat screen was initialized at 0x0.
+  const living=combat.combatants.filter(c=>!c.defeated);
+  const occupiedPositions=new Set();
+  let positionsNeedReset=false;
+  for(const c of living){
+    const p=c.gridPos;
+    if(!p||!Number.isInteger(p.x)||!Number.isInteger(p.y)||p.x<0||p.y<0||p.x>=cols||p.y>=rows||occupiedPositions.has(p.x+","+p.y)){
+      positionsNeedReset=true;
+      break;
+    }
+    occupiedPositions.add(p.x+","+p.y);
+  }
+  if(positionsNeedReset){
+    combat.combatants.forEach(c=>{if(c.gridPos)combat=Game.updateCombatant(combat,{...c,gridPos:null})});
+    ensurePartyTokens();
+  }
   const enemies=combat.combatants.filter(c=>c.side==="enemy"&&!c.defeated);
   // Give enemies deterministic top-side spawn cells instead of inferring cells from transformed DOM coordinates.
   enemies.forEach((enemy,i)=>{
@@ -710,11 +727,15 @@ function initializeGridPositions(){
 function renderGridPositions(){
   const arena=document.querySelector(".combat-v2 .arena");
   if(!arena||!combat)return;
+  // Re-check positions after the arena becomes visible/resizes. Saved grid coordinates
+  // can be stale (or all zero) if combat was initialized while its screen was hidden.
+  initializeGridPositions();
   ensurePartyTokens();
   gridVisibleUnits().forEach(({combatant,el})=>{
     if(!combatant.gridPos)return;
     el.style.left=((combatant.gridPos.x+.5)*MOVE_TILE_PX)+"px";
     el.style.top=((combatant.gridPos.y+.5)*MOVE_TILE_PX)+"px";
+    el.style.display="";
   });
 }
 function handleGridMovement(event){
