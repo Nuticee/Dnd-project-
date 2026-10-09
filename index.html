@@ -258,7 +258,7 @@ function validateAttackRange(attacker,target,range,kind="attack"){
   const normal=Number(range?.normal??range??5);
   const long=Number(range?.long??normal);
   if(distance>long){toast("Target di luar jangkauan: "+distance+" ft (maks. "+long+" ft).");return false}
-  if(distance>normal){toast("Target di luar jangkauan normal ("+normal+" ft). Serangan jarak jauh berjarak jauh memiliki disadvantage.");return false}
+  if(distance>normal){toast("Target dalam long range ("+distance+" ft). Serangan memakai disadvantage.");return true}
   return true;
 }
 function spellRangeFeet(name){
@@ -323,7 +323,10 @@ const spent=beginPlayerAction();
 if(!spent)return;
 
 const hadAdvantage=spent.effects?.advantageNextAttack===true;
-const mode=hadAdvantage?"advantage":"normal";
+const dist=combatDistanceFeet(spent,target);
+const weaponRange=weaponRangeFeet(weapon);
+const longRangeShot=!!(dist!==null&&dist>weaponRange.normal&&dist<=weaponRange.long);
+const mode=hadAdvantage?(longRangeShot?"normal":"advantage"):(longRangeShot?"disadvantage":"normal");
 const result=Game.performAttack(spent,target,weapon,mode);
 combat=Game.updateCombatant(combat,result.defender);
 
