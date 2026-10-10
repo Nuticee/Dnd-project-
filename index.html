@@ -209,6 +209,22 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 .combat-v2 .damage-float{position:absolute;z-index:9;left:50%;top:-8px;transform:translate(-50%,-100%);color:#ffe1a6;font-size:17px;font-weight:900;text-shadow:0 2px 4px #000,0 0 10px rgba(255,155,65,.65);pointer-events:none;animation:damageFloatUp 850ms ease-out forwards;white-space:nowrap}
 @keyframes damageFloatUp{0%{opacity:0;transform:translate(-50%,-55%) scale(.75)}15%{opacity:1;transform:translate(-50%,-100%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-190%) scale(.96)}}
 @media(prefers-reduced-motion:reduce){.battle-dice-overlay,.battle-dice-overlay.rolling .battle-die-face,.combat-v2 .unit.damage-flash .unit-token,.combat-v2 .damage-float{animation-duration:1ms!important}}
+
+/* Combat POV v3: slightly farther camera framing for mobile; visual-only, rules/coordinates unchanged. */
+.combat-v2 .arena{min-height:440px}
+.combat-v2 .arena:before{background-size:32px 32px}
+.combat-v2 .arena .unit{min-width:44px}
+.combat-v2 .arena .unit-token{width:27px;height:27px;font-size:14px;border-width:1.5px}
+.combat-v2 .arena .unit-name{font-size:7px;margin-top:2px}
+.combat-v2 .arena .unit-hp{font-size:6px;margin-top:1px}
+.combat-v2 .arena .unit-hpbar{width:36px;height:3px;margin-top:2px}
+@media(max-width:420px){
+ .combat-v2 .arena{min-height:460px}
+ .combat-v2 .arena .unit{min-width:40px}
+ .combat-v2 .arena .unit-token{width:24px;height:24px;font-size:12px}
+ .combat-v2 .arena .unit-name{font-size:6px}
+ .combat-v2 .arena .unit-hpbar{width:32px}
+}
 </style>
 </head>
 <body>
