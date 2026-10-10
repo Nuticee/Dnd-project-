@@ -638,6 +638,11 @@ function renderBestiary(){const el=document.querySelector("#bestiaryList");if(!e
 const ADVENTURE_SAVE_KEY="frozen-passage-adventure-v1";
 const CLOUD_SYNC_URL="https://qphfbqhejnexavhdsxay.supabase.co/functions/v1/clever-task";
 const CLOUD_SESSION_ID="frozen-passage-shared-v1";
+const PLAYER_PRESENCE_URL="https://qphfbqhejnexavhdsxay.supabase.co/functions/v1/player-presence";
+let onlinePlayerPresence=[];
+async function refreshPlayerPresence(){try{const response=await fetch(PLAYER_PRESENCE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"list"})});const data=await response.json();if(response.ok&&Array.isArray(data.players)){onlinePlayerPresence=data.players;renderAdventurePartyPresence()}}catch(error){console.warn("Presence sync failed",error)}}
+function renderAdventurePartyPresence(){const party=document.querySelector("#adventureParty");if(!party)return;party.querySelectorAll("button[data-character-id]").forEach(button=>{const id=button.dataset.characterId;const local=id===getLocalCharacterId();const online=onlinePlayerPresence.some(player=>player.character_id===id);const label=button.querySelector(".party-text span");if(label){const base=label.textContent.replace(/ • (AKTIF DI HP INI|ONLINE|Player|AKTIF)$/,"");label.textContent=base+(local?" • AKTIF DI HP INI":online?" • ONLINE":" • Player")}})}
+
 const DEFAULT_ADVENTURE_STATE={version:2,campaignId:"the-frozen-passage",title:"The Frozen Passage",location:"Gerbang Membeku",scene:"Gerbang yang Membeku",description:"Salju turun perlahan. Gerbang batu tua berdiri di depanmu, tertutup lapisan es.",weather:"snow",timeOfDay:"unknown",flags:{},discoveredLocations:["Gerbang Membeku"],knownNPCs:[],quests:[{id:"cold-source",title:"Menemukan sumber dingin",status:"Aktif"}],inventory:[],consequences:[],activeEncounter:null,combat:null,combatState:null,status:"active",turn:0,pendingCheck:null,pendingPlayerQuestion:null,events:[],activeCharacterId:"ilgar-zamani",characterProgress:{},updatedAt:null};
 function loadAdventureState(){try{const raw=localStorage.getItem(ADVENTURE_SAVE_KEY);return raw?{...structuredClone(DEFAULT_ADVENTURE_STATE),...JSON.parse(raw)}:structuredClone(DEFAULT_ADVENTURE_STATE)}catch{return structuredClone(DEFAULT_ADVENTURE_STATE)}}
 let adventureState=loadAdventureState();
