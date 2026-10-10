@@ -288,7 +288,7 @@ Deno.serve(async (req) => {
         headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: imagePrompt }] }],
-          generationConfig: { responseModalities: ["TEXT", "IMAGE"], imageConfig: { aspectRatio: "4:3" } }
+          generationConfig: { responseModalities: ["TEXT", "IMAGE"], responseFormat: { image: { aspectRatio: "4:3" } } }
         })
       });
       const visualRaw = await visualResponse.text();
