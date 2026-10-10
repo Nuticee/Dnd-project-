@@ -374,20 +374,17 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 }
 
 
-/* Real illustrated SVG combat maps v1 — local assets, no remote API, no paid dependencies. */
+/* DM-generated raster battlemap; never use geometric SVG as the combat scene. */
 .combat-v2 .arena{
-  background-color:#26382d;
-  background-image:url("assets/maps/forest.svg") !important;
+  background-color:#202a2b !important;
+  background-image:none !important;
   background-size:cover !important;
   background-position:center !important;
   background-repeat:no-repeat !important;
 }
-.combat-v2 .arena.location-forest{background-image:url("assets/maps/forest.svg") !important}
-.combat-v2 .arena.location-village{background-image:url("assets/maps/village.svg") !important}
-.combat-v2 .arena.location-cave{background-image:url("assets/maps/cave.svg") !important}
-.combat-v2 .arena.location-dungeon{background-image:url("assets/maps/dungeon.svg") !important}
-.combat-v2 .arena.location-ruins{background-image:url("assets/maps/ruins.svg") !important}
-.combat-v2 .arena.location-mountain{background-image:url("assets/maps/mountain.svg") !important}
+.combat-v2 .arena.visual-loading{
+  background-image:radial-gradient(ellipse at center,rgba(76,94,89,.8),rgba(18,27,29,.98)) !important;
+}
 .combat-v2 .arena:before{background-size:40px 40px !important;opacity:.42 !important}
 </style>
 </head>
@@ -527,6 +524,45 @@ function resolveBattleLocation(monsterIds=[],storyText=""){
   if(ids.some(id=>id.includes("orc")||id.includes("cave")))return "cave";
   return "forest";
 }
+const combatVisualCache=new Map();
+let activeCombatVisualKey="";
+async function loadDMCombatVisual(location,storyText=""){
+  const arena=document.querySelector(".combat-v2 .arena");
+  if(!arena)return;
+  const scene=String(adventureState?.scene||"").slice(0,180);
+  const description=String(adventureState?.description||storyText||"").slice(0,500);
+  const key=location+"|"+scene+"|"+description;
+  if(key===activeCombatVisualKey)return;
+  activeCombatVisualKey=key;
+  const cached=combatVisualCache.get(key);
+  if(cached){
+    try{const image=await cached;if(activeCombatVisualKey===key&&image)arena.style.setProperty("background-image",'url("'+image+'")',"important");}catch{}
+    return;
+  }
+  arena.classList.add("visual-loading");
+  const request=(async()=>{
+    const response=await fetch("https://qphfbqhejnexavhdsxay.supabase.co/functions/v1/ai-dm",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({mode:"sceneVisual",location,scene,description,storyText:String(storyText||"").slice(0,500)})
+    });
+    const data=await response.json();
+    if(!response.ok||!data.imageDataUrl)throw new Error(data.detail||data.error||"Visual generation failed");
+    return data.imageDataUrl;
+  })();
+  combatVisualCache.set(key,request);
+  try{
+    const image=await request;
+    if(activeCombatVisualKey===key){
+      arena.style.setProperty("background-image",'url("'+image+'")',"important");
+      arena.classList.remove("visual-loading");
+    }
+  }catch(error){
+    combatVisualCache.delete(key);
+    if(activeCombatVisualKey===key)arena.classList.remove("visual-loading");
+    console.warn("DM battlemap visual unavailable:",error);
+    toast("Visual lokasi belum berhasil dibuat. Coba lagi nanti.");
+  }
+}
 function setCombatEnvironment(monsterIds=[],storyText=""){
   const arena=document.querySelector(".combat-v2 .arena");
   if(!arena)return;
@@ -536,6 +572,7 @@ function setCombatEnvironment(monsterIds=[],storyText=""){
   arena.dataset.location=location;
   arena.dataset.locationLabel=labels[location]||labels.forest;
   arena.setAttribute("aria-label","Arena pertempuran: "+location);
+  loadDMCombatVisual(location,storyText);
 }
 function init(){startCombat(activeCharacter.id)}
 function startCombat(charId,monsterList=null){const ids=Array.isArray(monsterList)&&monsterList.length?monsterList:enemyIds;setCombatEnvironment(ids,[adventureState.location,adventureState.scene,adventureState.description].filter(Boolean).join(" "));const sameCombat=!!combat&&combat.status==="active"&&Array.isArray(adventureState.activeEncounter?.monsterIds)&&adventureState.activeEncounter.monsterIds.join(",")===ids.join(",");if(sameCombat){const stateChar=combat.combatants.find(x=>x.id===charId&&x.side==="player");const base=Game.cloneCharacter(charId)||activeCharacter;if(stateChar)base.hp.current=Math.max(0,stateChar.hp);activeCharacter=base;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;saveAdventureState();render();renderParty();renderCombatActions();return;}activeCharacter=Game.cloneCharacter(charId)||activeCharacter;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;staffCharges=activeCharacter.id==="ilgar-zamani"?10:0;const partySources=Game.CHARACTERS;const enemies=ids.map(id=>Game.spawnMonster(id)).filter(Boolean);const loadoutText=describeMonsterLoadout(enemies);const scene=document.querySelector("#sceneText");if(scene&&loadoutText)scene.textContent=loadoutText;combat=Game.createCombat(partySources,enemies);selectedEnemy=combat.combatants.find(x=>x.side==="enemy")?.id||"";const firstTurn=Game.currentCombatant(combat);if(firstTurn?.side==="player"){activeCharacter=Game.cloneCharacter(firstTurn.id)||activeCharacter;player=activeCharacter;adventureState.activeCharacterId=activeCharacter.id;}adventureState.activeEncounter={monsterIds:ids,startedAt:new Date().toISOString(),status:"active"};adventureState.combat={status:"active",monsterIds:ids};saveAdventureState();render();renderParty();renderCombatActions();log("Pertempuran dimulai.");log("🎲 Initiative seluruh party dan musuh sudah di-roll sekali.");animateInitiative();setTimeout(processEnemyTurns,1000);}
