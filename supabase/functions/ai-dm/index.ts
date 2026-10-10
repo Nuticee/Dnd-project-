@@ -267,6 +267,43 @@ Deno.serve(async (req) => {
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) return json({ error: "GEMINI_API_KEY is not configured in Supabase secrets." }, 503);
 
+  // On-demand scene illustration. Called only when the combat location/scene changes.
+  if (payload?.mode === "sceneVisual") {
+    const allowedLocations = new Set(["forest","cave","dungeon","village","ruins","mountain"]);
+    const location = allowedLocations.has(payload.location) ? payload.location : "forest";
+    const scene = String(payload.scene || "").slice(0, 180);
+    const description = String(payload.description || payload.storyText || "").slice(0, 700);
+    const locationStyle = {
+      forest: "dense ancient fantasy forest, natural woodland floor and trees",
+      cave: "natural rocky cavern, irregular stone walls, stalactites, believable cave floor",
+      dungeon: "ancient stone dungeon interior, worn masonry and atmospheric torchlight",
+      village: "medieval fantasy village street, believable timber-and-stone buildings and earth paths",
+      ruins: "overgrown ancient fantasy ruins, broken masonry and weathered stone",
+      mountain: "rugged snowy mountain pass, rock outcrops and wind-swept snow"
+    }[location];
+    const imagePrompt = "Create one immersive D&D fantasy tactical battlemap background image, top-down/isometric tabletop game camera, readable open central ground for character tokens, rich hand-painted realistic fantasy illustration, natural textures and coherent lighting. Environment: " + locationStyle + ". Scene: " + scene + ". Additional story context: " + description + ". No characters, no monsters, no tokens, no grid, no text, no UI, no geometric icon art. Wide landscape composition, detailed but uncluttered center.";
+    try {
+      const visualResponse = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent", {
+        method: "POST",
+        headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: imagePrompt }] }],
+          generationConfig: { responseModalities: ["IMAGE"], imageConfig: { aspectRatio: "4:3" } }
+        })
+      });
+      const visualRaw = await visualResponse.text();
+      if (!visualResponse.ok) return json({ error: "Image generation failed.", detail: visualRaw.slice(0, 700) }, 502);
+      const visualData = JSON.parse(visualRaw);
+      const parts = visualData?.candidates?.[0]?.content?.parts || [];
+      const imagePart = parts.find(part => part?.inlineData?.data || part?.inline_data?.data);
+      const imageData = imagePart?.inlineData || imagePart?.inline_data;
+      if (!imageData?.data) return json({ error: "No image returned by generator." }, 502);
+      return json({ imageDataUrl: "data:" + (imageData.mimeType || imageData.mime_type || "image/png") + ";base64," + imageData.data });
+    } catch (error) {
+      return json({ error: "Scene visual generation failed.", detail: error instanceof Error ? error.message : "Unknown image error." }, 502);
+    }
+  }
+
   if (!payload?.playerAction || typeof payload.playerAction !== "string") {
     return json({ error: "playerAction is required." }, 400);
   }
