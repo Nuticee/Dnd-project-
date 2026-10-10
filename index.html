@@ -225,6 +225,80 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
  .combat-v2 .arena .unit-name{font-size:6px}
  .combat-v2 .arena .unit-hpbar{width:32px}
 }
+
+/* Illustrated tabletop terrain pass v1 — visual only; tactical grid and unit coordinates remain unchanged. */
+.combat-v2 .arena{
+  background-color:#263b2b;
+  background-image:
+    radial-gradient(ellipse at 15% 15%,rgba(88,116,59,.96) 0 7%,transparent 15%),
+    radial-gradient(ellipse at 82% 20%,rgba(57,91,48,.95) 0 10%,transparent 18%),
+    radial-gradient(ellipse at 20% 72%,rgba(77,105,49,.92) 0 11%,transparent 19%),
+    radial-gradient(ellipse at 82% 78%,rgba(49,79,43,.96) 0 12%,transparent 20%),
+    linear-gradient(145deg,transparent 0 39%,rgba(143,116,75,.92) 40% 47%,rgba(86,68,48,.95) 48% 51%,transparent 52%),
+    radial-gradient(ellipse at 50% 50%,#65754a 0,#3b5638 62%,#1b3024 100%);
+  background-size:100% 100%;
+}
+.combat-v2 .arena.location-forest{
+  background-color:#243b28;
+  background-image:
+    radial-gradient(ellipse at 8% 12%,#637c3e 0 6%,#314d2e 10%,transparent 16%),
+    radial-gradient(ellipse at 24% 22%,#486d36 0 7%,#263f29 12%,transparent 18%),
+    radial-gradient(ellipse at 82% 14%,#6b8241 0 7%,#2e4b2c 12%,transparent 19%),
+    radial-gradient(ellipse at 91% 48%,#56753a 0 8%,#29452c 13%,transparent 20%),
+    radial-gradient(ellipse at 13% 68%,#708546 0 7%,#2c492c 12%,transparent 20%),
+    radial-gradient(ellipse at 83% 82%,#647a3e 0 8%,#29442a 13%,transparent 21%),
+    linear-gradient(132deg,transparent 0 35%,#776447 36% 41%,#a18a5f 42% 44%,#5b4b35 45% 47%,transparent 48%),
+    linear-gradient(35deg,transparent 0 54%,rgba(54,104,111,.95) 55% 62%,rgba(124,174,168,.9) 63% 65%,transparent 66%),
+    radial-gradient(ellipse at 50% 50%,#536d3b 0,#314d30 70%,#182b20 100%);
+}
+.combat-v2 .arena.location-cave{
+  background-image:
+    radial-gradient(ellipse at 50% 58%,rgba(223,151,70,.48) 0 5%,transparent 16%),
+    radial-gradient(ellipse at 18% 18%,#625648 0 12%,#3a332c 20%,transparent 29%),
+    radial-gradient(ellipse at 85% 20%,#554a3d 0 14%,#2f2b27 23%,transparent 33%),
+    radial-gradient(ellipse at 8% 74%,#5b5144 0 13%,#312c27 23%,transparent 32%),
+    radial-gradient(ellipse at 94% 78%,#625746 0 14%,#342f29 24%,transparent 34%),
+    repeating-linear-gradient(128deg,rgba(15,14,13,.34) 0 10px,transparent 10px 27px),
+    radial-gradient(ellipse at 50% 50%,#77634b 0,#43392e 55%,#171615 100%);
+}
+.combat-v2 .arena.location-dungeon{
+  background-image:
+    radial-gradient(ellipse at 50% 40%,rgba(155,167,164,.18),transparent 55%),
+    repeating-linear-gradient(0deg,transparent 0 38px,rgba(10,14,18,.82) 38px 42px),
+    repeating-linear-gradient(90deg,#626864 0 38px,#363d3e 38px 42px);
+}
+.combat-v2 .arena.location-village{
+  background-image:
+    linear-gradient(90deg,transparent 0 18%,rgba(98,73,48,.95) 18% 31%,transparent 31% 68%,rgba(98,73,48,.95) 68% 80%,transparent 80%),
+    linear-gradient(0deg,transparent 0 34%,rgba(155,125,82,.92) 34% 45%,transparent 45%),
+    radial-gradient(ellipse at 20% 20%,#9a875c 0 8%,#5d563d 13%,transparent 20%),
+    radial-gradient(ellipse at 80% 75%,#9c8357 0 10%,#5b5138 16%,transparent 23%),
+    radial-gradient(ellipse at 50% 50%,#6b7949,#2d432c);
+}
+.combat-v2 .arena.location-ruins{
+  background-image:
+    linear-gradient(35deg,transparent 0 19%,rgba(139,143,127,.75) 20% 23%,transparent 24% 69%,rgba(139,143,127,.7) 70% 73%,transparent 74%),
+    repeating-linear-gradient(35deg,transparent 0 48px,rgba(25,30,29,.72) 48px 61px),
+    radial-gradient(ellipse at 30% 40%,#8a8975 0 10%,transparent 22%),
+    radial-gradient(ellipse at 70% 65%,#777d6a 0 12%,transparent 25%),
+    radial-gradient(ellipse at 50% 50%,#59605a,#252d2b);
+}
+.combat-v2 .arena.location-mountain{
+  background-image:
+    linear-gradient(145deg,transparent 0 20%,#87908a 21% 31%,#4d5b5b 32% 37%,transparent 38%),
+    linear-gradient(35deg,transparent 0 42%,#343f41 43% 58%,transparent 59%),
+    radial-gradient(ellipse at 50% 50%,#87958b,#3a5151 68%,#26383b);
+}
+.combat-v2 .arena:before{
+  background-size:32px 32px;
+  opacity:.92;
+}
+.combat-v2 .arena:after{
+  padding:5px 12px;
+  border:1px solid rgba(180,213,224,.24);
+  border-radius:0 0 9px 9px;
+  text-shadow:0 2px 5px #000;
+}
 </style>
 </head>
 <body>
