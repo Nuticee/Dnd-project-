@@ -288,16 +288,24 @@ Deno.serve(async (req) => {
         headers: { "x-goog-api-key": apiKey, "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ role: "user", parts: [{ text: imagePrompt }] }],
-          generationConfig: { responseModalities: ["IMAGE"], imageConfig: { aspectRatio: "4:3" } }
+          generationConfig: { responseModalities: ["TEXT", "IMAGE"], imageConfig: { aspectRatio: "4:3" } }
         })
       });
       const visualRaw = await visualResponse.text();
-      if (!visualResponse.ok) return json({ error: "Image generation failed.", detail: visualRaw.slice(0, 700) }, 502);
-      const visualData = JSON.parse(visualRaw);
+      if (!visualResponse.ok) {
+        console.error("DM scene image API error", visualResponse.status, visualRaw.slice(0, 1200));
+        return json({ error: "Image generation failed.", detail: "Gemini Image API HTTP " + visualResponse.status + ": " + visualRaw.slice(0, 700) }, 502);
+      }
+      let visualData;
+      try { visualData = JSON.parse(visualRaw); }
+      catch {
+        console.error("DM scene image API returned invalid JSON", visualRaw.slice(0, 1000));
+        return json({ error: "Invalid image API response." }, 502);
+      }
       const parts = visualData?.candidates?.[0]?.content?.parts || [];
       const imagePart = parts.find(part => part?.inlineData?.data || part?.inline_data?.data);
       const imageData = imagePart?.inlineData || imagePart?.inline_data;
-      if (!imageData?.data) return json({ error: "No image returned by generator." }, 502);
+      if (!imageData?.data) { console.error("DM scene image API returned no inline image", JSON.stringify(visualData).slice(0, 1200)); return json({ error: "No image returned by generator.", detail: "Gemini returned no inline image data; inspect function logs." }, 502); }
       return json({ imageDataUrl: "data:" + (imageData.mimeType || imageData.mime_type || "image/png") + ";base64," + imageData.data });
     } catch (error) {
       return json({ error: "Scene visual generation failed.", detail: error instanceof Error ? error.message : "Unknown image error." }, 502);
