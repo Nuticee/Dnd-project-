@@ -286,77 +286,90 @@ button.spell{min-height:92px;text-align:left;display:flex;flex-direction:column;
 }
 /* End free location-specific map pass v2. */
 
-/* Illustrated tabletop terrain pass v1 — visual only; tactical grid and unit coordinates remain unchanged. */
+/* Combat terrain v3: organic tabletop-style scenery using local CSS only.
+   Keep tactical grid, token positioning, and combat logic untouched. */
 .combat-v2 .arena{
-  background-color:#263b2b;
+  background-color:#26372b;
   background-image:
-    radial-gradient(ellipse at 15% 15%,rgba(88,116,59,.96) 0 7%,transparent 15%),
-    radial-gradient(ellipse at 82% 20%,rgba(57,91,48,.95) 0 10%,transparent 18%),
-    radial-gradient(ellipse at 20% 72%,rgba(77,105,49,.92) 0 11%,transparent 19%),
-    radial-gradient(ellipse at 82% 78%,rgba(49,79,43,.96) 0 12%,transparent 20%),
-    linear-gradient(145deg,transparent 0 39%,rgba(143,116,75,.92) 40% 47%,rgba(86,68,48,.95) 48% 51%,transparent 52%),
-    radial-gradient(ellipse at 50% 50%,#65754a 0,#3b5638 62%,#1b3024 100%);
+    radial-gradient(ellipse at 8% 12%,rgba(15,29,22,.96) 0 3%,rgba(38,63,39,.96) 5%,rgba(69,91,48,.7) 8%,transparent 15%),
+    radial-gradient(ellipse at 19% 28%,rgba(17,35,24,.94) 0 3%,rgba(45,70,40,.96) 6%,rgba(87,103,54,.6) 10%,transparent 16%),
+    radial-gradient(ellipse at 87% 13%,rgba(15,29,22,.96) 0 4%,rgba(39,65,39,.96) 6%,rgba(74,96,48,.7) 10%,transparent 17%),
+    radial-gradient(ellipse at 94% 47%,rgba(15,29,22,.96) 0 4%,rgba(39,65,39,.96) 7%,rgba(74,96,48,.6) 11%,transparent 18%),
+    radial-gradient(ellipse at 9% 72%,rgba(15,29,22,.96) 0 4%,rgba(39,65,39,.96) 7%,rgba(74,96,48,.6) 11%,transparent 18%),
+    radial-gradient(ellipse at 85% 88%,rgba(15,29,22,.96) 0 4%,rgba(39,65,39,.96) 7%,rgba(74,96,48,.6) 11%,transparent 18%),
+    radial-gradient(ellipse at 48% 48%,rgba(127,133,79,.45),transparent 38%),
+    repeating-radial-gradient(ellipse at 50% 50%,rgba(213,197,136,.045) 0 2px,transparent 3px 13px),
+    linear-gradient(160deg,#536343 0%,#394d32 47%,#293c2c 100%);
   background-size:100% 100%;
+  background-repeat:no-repeat;
+  isolation:isolate;
 }
 .combat-v2 .arena.location-forest{
-  background-color:#243b28;
   background-image:
-    radial-gradient(ellipse at 8% 12%,#637c3e 0 6%,#314d2e 10%,transparent 16%),
-    radial-gradient(ellipse at 24% 22%,#486d36 0 7%,#263f29 12%,transparent 18%),
-    radial-gradient(ellipse at 82% 14%,#6b8241 0 7%,#2e4b2c 12%,transparent 19%),
-    radial-gradient(ellipse at 91% 48%,#56753a 0 8%,#29452c 13%,transparent 20%),
-    radial-gradient(ellipse at 13% 68%,#708546 0 7%,#2c492c 12%,transparent 20%),
-    radial-gradient(ellipse at 83% 82%,#647a3e 0 8%,#29442a 13%,transparent 21%),
-    linear-gradient(132deg,transparent 0 35%,#776447 36% 41%,#a18a5f 42% 44%,#5b4b35 45% 47%,transparent 48%),
-    linear-gradient(35deg,transparent 0 54%,rgba(54,104,111,.95) 55% 62%,rgba(124,174,168,.9) 63% 65%,transparent 66%),
-    radial-gradient(ellipse at 50% 50%,#536d3b 0,#314d30 70%,#182b20 100%);
-}
-.combat-v2 .arena.location-cave{
-  background-image:
-    radial-gradient(ellipse at 50% 58%,rgba(223,151,70,.48) 0 5%,transparent 16%),
-    radial-gradient(ellipse at 18% 18%,#625648 0 12%,#3a332c 20%,transparent 29%),
-    radial-gradient(ellipse at 85% 20%,#554a3d 0 14%,#2f2b27 23%,transparent 33%),
-    radial-gradient(ellipse at 8% 74%,#5b5144 0 13%,#312c27 23%,transparent 32%),
-    radial-gradient(ellipse at 94% 78%,#625746 0 14%,#342f29 24%,transparent 34%),
-    repeating-linear-gradient(128deg,rgba(15,14,13,.34) 0 10px,transparent 10px 27px),
-    radial-gradient(ellipse at 50% 50%,#77634b 0,#43392e 55%,#171615 100%);
-}
-.combat-v2 .arena.location-dungeon{
-  background-image:
-    radial-gradient(ellipse at 50% 40%,rgba(155,167,164,.18),transparent 55%),
-    repeating-linear-gradient(0deg,transparent 0 38px,rgba(10,14,18,.82) 38px 42px),
-    repeating-linear-gradient(90deg,#626864 0 38px,#363d3e 38px 42px);
+    radial-gradient(ellipse at 6% 8%,#15291e 0 4%,#29482d 5%,#597342 8%,transparent 15%),
+    radial-gradient(ellipse at 21% 21%,#182d20 0 4%,#315333 6%,#637a43 10%,transparent 17%),
+    radial-gradient(ellipse at 88% 10%,#15291e 0 5%,#2a492d 7%,#597342 10%,transparent 18%),
+    radial-gradient(ellipse at 97% 41%,#172b1f 0 5%,#2c4b30 8%,#5e7540 11%,transparent 19%),
+    radial-gradient(ellipse at 9% 70%,#172b1f 0 5%,#2c4b30 8%,#5e7540 11%,transparent 19%),
+    radial-gradient(ellipse at 82% 91%,#172b1f 0 5%,#2c4b30 8%,#5e7540 11%,transparent 19%),
+    radial-gradient(ellipse at 50% 50%,rgba(153,151,91,.28),transparent 40%),
+    linear-gradient(130deg,transparent 0 42%,rgba(92,75,49,.92) 43% 47%,rgba(169,143,94,.92) 48% 50%,rgba(83,67,45,.92) 51% 54%,transparent 55%),
+    repeating-radial-gradient(ellipse at 50% 50%,rgba(218,202,145,.04) 0 2px,transparent 3px 12px),
+    linear-gradient(155deg,#536943,#31482f 70%,#1c3023);
 }
 .combat-v2 .arena.location-village{
   background-image:
-    linear-gradient(90deg,transparent 0 18%,rgba(98,73,48,.95) 18% 31%,transparent 31% 68%,rgba(98,73,48,.95) 68% 80%,transparent 80%),
-    linear-gradient(0deg,transparent 0 34%,rgba(155,125,82,.92) 34% 45%,transparent 45%),
-    radial-gradient(ellipse at 20% 20%,#9a875c 0 8%,#5d563d 13%,transparent 20%),
-    radial-gradient(ellipse at 80% 75%,#9c8357 0 10%,#5b5138 16%,transparent 23%),
-    radial-gradient(ellipse at 50% 50%,#6b7949,#2d432c);
+    radial-gradient(ellipse at 7% 10%,#18291e 0 5%,#345136 8%,transparent 15%),
+    radial-gradient(ellipse at 93% 13%,#18291e 0 5%,#345136 8%,transparent 15%),
+    radial-gradient(ellipse at 9% 91%,#18291e 0 5%,#345136 8%,transparent 15%),
+    radial-gradient(ellipse at 92% 89%,#18291e 0 5%,#345136 8%,transparent 15%),
+    linear-gradient(0deg,transparent 0 38%,#9a8057 38% 48%,#c0a577 49% 51%,#806746 52% 57%,transparent 58%),
+    linear-gradient(90deg,transparent 0 31%,#8b704c 31% 38%,#c0a577 39% 41%,#806746 42% 45%,transparent 46%),
+    radial-gradient(ellipse at 26% 26%,#796248 0 5%,#4b4936 7%,transparent 13%),
+    radial-gradient(ellipse at 76% 75%,#796248 0 5%,#4b4936 7%,transparent 13%),
+    repeating-radial-gradient(ellipse at 50% 50%,rgba(237,218,167,.045) 0 2px,transparent 3px 13px),
+    linear-gradient(145deg,#596744,#344832 75%,#24372a);
+}
+.combat-v2 .arena.location-cave{
+  background-image:
+    radial-gradient(ellipse at 8% 12%,#242321 0 7%,#51483b 11%,#71624d 14%,transparent 23%),
+    radial-gradient(ellipse at 92% 14%,#242321 0 8%,#51483b 12%,#71624d 15%,transparent 24%),
+    radial-gradient(ellipse at 7% 82%,#242321 0 8%,#51483b 12%,#71624d 15%,transparent 24%),
+    radial-gradient(ellipse at 93% 85%,#242321 0 8%,#51483b 12%,#71624d 15%,transparent 24%),
+    radial-gradient(ellipse at 52% 55%,rgba(221,137,56,.23) 0 3%,transparent 17%),
+    repeating-radial-gradient(ellipse at 50% 50%,rgba(10,10,10,.14) 0 3px,transparent 4px 17px),
+    linear-gradient(135deg,#665845,#39352d 58%,#211f1c);
+}
+.combat-v2 .arena.location-dungeon{
+  background-image:
+    radial-gradient(ellipse at 50% 45%,rgba(170,179,167,.18),transparent 54%),
+    repeating-linear-gradient(0deg,transparent 0 39px,rgba(16,20,21,.76) 40px 43px),
+    repeating-linear-gradient(90deg,rgba(112,117,106,.9) 0 38px,rgba(48,54,52,.95) 39px 43px),
+    radial-gradient(ellipse at 50% 50%,#687068,#29302e);
 }
 .combat-v2 .arena.location-ruins{
   background-image:
-    linear-gradient(35deg,transparent 0 19%,rgba(139,143,127,.75) 20% 23%,transparent 24% 69%,rgba(139,143,127,.7) 70% 73%,transparent 74%),
-    repeating-linear-gradient(35deg,transparent 0 48px,rgba(25,30,29,.72) 48px 61px),
-    radial-gradient(ellipse at 30% 40%,#8a8975 0 10%,transparent 22%),
-    radial-gradient(ellipse at 70% 65%,#777d6a 0 12%,transparent 25%),
-    radial-gradient(ellipse at 50% 50%,#59605a,#252d2b);
+    radial-gradient(ellipse at 12% 16%,#333a32 0 5%,#777e6b 7%,transparent 15%),
+    radial-gradient(ellipse at 86% 76%,#333a32 0 6%,#858675 9%,transparent 17%),
+    linear-gradient(35deg,transparent 0 20%,rgba(137,142,124,.75) 21% 25%,transparent 26% 67%,rgba(137,142,124,.72) 68% 72%,transparent 73%),
+    repeating-radial-gradient(ellipse at 50% 50%,rgba(219,210,169,.05) 0 2px,transparent 3px 15px),
+    linear-gradient(145deg,#586056,#343c35 70%,#242c28);
 }
 .combat-v2 .arena.location-mountain{
   background-image:
-    linear-gradient(145deg,transparent 0 20%,#87908a 21% 31%,#4d5b5b 32% 37%,transparent 38%),
-    linear-gradient(35deg,transparent 0 42%,#343f41 43% 58%,transparent 59%),
-    radial-gradient(ellipse at 50% 50%,#87958b,#3a5151 68%,#26383b);
+    radial-gradient(ellipse at 11% 15%,#d0d5cc 0 3%,#75847e 7%,transparent 18%),
+    radial-gradient(ellipse at 88% 80%,#d0d5cc 0 4%,#647570 9%,transparent 21%),
+    linear-gradient(145deg,transparent 0 18%,#87918a 19% 28%,#4e6060 29% 34%,transparent 35%),
+    linear-gradient(35deg,transparent 0 44%,#344648 45% 57%,transparent 58%),
+    repeating-radial-gradient(ellipse at 50% 50%,rgba(229,239,235,.07) 0 2px,transparent 3px 13px),
+    linear-gradient(145deg,#8d9a91,#405958 68%,#273b3d);
 }
+/* Softer tactical grid: still aligned to movement squares, but less visually dominant. */
 .combat-v2 .arena:before{
-  background-size:32px 32px;
-  opacity:.92;
+  background-size:40px 40px;
+  opacity:.48;
 }
 .combat-v2 .arena:after{
-  padding:5px 12px;
-  border:1px solid rgba(180,213,224,.24);
-  border-radius:0 0 9px 9px;
   text-shadow:0 2px 5px #000;
 }
 
