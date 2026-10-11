@@ -981,16 +981,17 @@ function detectPlayerDialogueTargets(text,speakerId){
 function pendingPlayerResponseFor(characterId){const pq=adventureState.pendingPlayerQuestion;if(!pq)return null;return (pq.responses||[]).find(r=>r.characterId===characterId)||null}
 async function submitPlayerDialogueResponse(textValue){const pq=adventureState.pendingPlayerQuestion;if(!pq)return false;if(!pq.targetIds.includes(activeCharacter.id))return false;if(pendingPlayerResponseFor(activeCharacter.id))return true;addAdventureEvent(activeCharacter.name,textValue,{type:"player-response",questionId:pq.id});pq.responses=[...(pq.responses||[]),{characterId:activeCharacter.id,name:activeCharacter.name,text:textValue,turn:adventureState.turn+1}];const waiting=pq.targetIds.filter(id=>!pq.responses.some(r=>r.characterId===id));if(waiting.length){saveAdventureState();renderAdventure();return true}const responses=pq.responses.map(r=>r.name+": "+r.text).join("\\n");const original=pq.questionText;adventureState.pendingPlayerQuestion=null;saveAdventureState();const status=document.querySelector("#dmStatus");status.textContent="Semua jawaban sudah masuk. DM sedang menarasikan reaksi kelompok…";const action="[PLAYER-TO-PLAYER DIALOGUE COMPLETE] Pertanyaan awal: "+original+"\\nJawaban pemain yang sudah diberikan:\\n"+responses+"\\nSemua karakter yang dituju sudah menjawab. Sekarang DM boleh menarasikan reaksi dunia/NPC dan konsekuensi dari percakapan ini. Jangan membuat dialog atau keputusan baru atas nama player characters di luar jawaban yang sudah diberikan.";try{const reply=await Game.askAIDM(adventureState,action,{character:activeCharacter});if(reply?.narration){addAdventureEvent("DM AI",reply.narration,{type:"dm-narration-after-player-dialogue",questionId:pq.id});speakDM(reply.narration)}else addAdventureEvent("DM AI","Semua jawaban sudah diterima. Dunia menunggu tindakan kalian berikutnya.",{type:"dm-fallback-after-player-dialogue"});handleDMReply(reply||{});saveAdventureState();renderAdventure()}catch(err){addAdventureEvent("DM AI","Semua jawaban sudah diterima. DM belum sempat menarasikan kelanjutannya.",{type:"dm-fallback-after-player-dialogue",error:String(err?.message||err)});saveAdventureState();renderAdventure()}return true}
 function normalizeAdventurePlace(raw){
-  const value=String(raw||"").trim().replace(/[.!?,;]+$/g,"");
+  let value=String(raw||"").trim().replace(/[.!?,;]+$/g,"");
+  value=value.replace(/^(?:ke|menuju|ke arah|dari|ke dalam|masuk ke dalam|masuk ke|di dalam|di|dalam|menuju ke)\s+/i,"").trim();
   if(!value)return "";
   const low=value.toLowerCase();
   const places=[
-    [/\b(hutan|ke hutan|menuju hutan|forest)\b/i,"Hutan"],
+    [/\b(hutan|forest)\b/i,"Hutan"],
     [/\b(desa|village|perkampungan)\b/i,"Desa"],
-    [/\b(kedai|tavern|penginapan|inn)\b/i,"Kedai"],
+    [/\b(kedai|tavern|penginapan|inn|warung)\b/i,"Kedai"],
     [/\b(gua|goa|cave|cavern)\b/i,"Gua"],
     [/\b(gerbang membeku|gerbang es|frozen gate|gerbang)\b/i,"Gerbang Membeku"],
-    [/\b(jalan|road|jalur)\b/i,"Jalan Bersalju"],
+    [/\b(jalan bersalju|jalan|road|jalur)\b/i,"Jalan Bersalju"],
     [/\b(reruntuhan|ruins)\b/i,"Reruntuhan"]
   ];
   for(const [pattern,label] of places)if(pattern.test(low))return label;
@@ -1005,21 +1006,21 @@ function ensurePartyState(){
 }
 function detectPartyMovementCommand(raw){
   const text=String(raw||"").trim();
-  if(!/\b(pergi|berangkat|menuju|bergerak|jalan|melanjutkan perjalanan|kembali|masuk|keluar|mendatangi)\b/i.test(text))return null;
   const normalized=normalizePlayerName(text);
+  const hasDestination=/\b(hutan|forest|desa|village|perkampungan|kedai|tavern|penginapan|inn|warung|gua|goa|cave|cavern|gerbang membeku|gerbang es|frozen gate|gerbang|reruntuhan|ruins|jalan bersalju)\b/i.test(text);
+  const hasAction=/\b(pergi|berangkat|menuju|bergerak|jalan|melanjutkan perjalanan|kembali|masuk|keluar|mendatangi|berada|tinggal|datang|menyusul|mengikuti)\b/i.test(text);
+  if(!hasDestination||!hasAction)return null;
   const names=Game.CHARACTERS.filter(c=>{
     const full=normalizePlayerName(c.name);
     const first=full.split(" ")[0];
     const padded=" "+normalized+" ";
     return (full&&padded.includes(" "+full+" "))||(first&&padded.includes(" "+first+" "));
   });
-  const placeMatch=text.match(/\b(?:ke|menuju|ke arah|dari)\s+(?:arah\s+)?(.+?)(?:[.!?,;]|$)/i);
-  let destination=placeMatch?normalizeAdventurePlace(placeMatch[1]):"";
-  if(!destination){
-    const m=text.match(/\b(hutan|desa|village|kedai|tavern|penginapan|gua|goa|cave|gerbang membeku|gerbang|reruntuhan|jalan bersalju)\b/i);
-    if(m)destination=normalizeAdventurePlace(m[1]);
-  }
-  if(!names.length||!destination)return null;
+  if(!names.length)return null;
+  const destination=normalizeAdventurePlace(text);
+  if(!destination)return null;
+  // Explicitly named characters are the complete party for this command.
+  // One name means solo; multiple names means a party/duo/trio.
   return {characterIds:[...new Set(names.map(c=>c.id))],destination};
 }
 function activatePartyForCharacter(characterId){
