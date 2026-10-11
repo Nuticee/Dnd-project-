@@ -985,13 +985,13 @@ function normalizeAdventurePlace(raw){
   if(!value)return "";
   const low=value.toLowerCase();
   const places=[
-    [/\\b(hutan|ke hutan|menuju hutan|forest)\\b/i,"Hutan"],
-    [/\\b(desa|village|perkampungan)\\b/i,"Desa"],
-    [/\\b(kedai|tavern|penginapan|inn)\\b/i,"Kedai"],
-    [/\\b(gua|goa|cave|cavern)\\b/i,"Gua"],
-    [/\\b(gerbang membeku|gerbang es|frozen gate|gerbang)\\b/i,"Gerbang Membeku"],
-    [/\\b(jalan|road|jalur)\\b/i,"Jalan Bersalju"],
-    [/\\b(reruntuhan|ruins)\\b/i,"Reruntuhan"]
+    [/\b(hutan|ke hutan|menuju hutan|forest)\b/i,"Hutan"],
+    [/\b(desa|village|perkampungan)\b/i,"Desa"],
+    [/\b(kedai|tavern|penginapan|inn)\b/i,"Kedai"],
+    [/\b(gua|goa|cave|cavern)\b/i,"Gua"],
+    [/\b(gerbang membeku|gerbang es|frozen gate|gerbang)\b/i,"Gerbang Membeku"],
+    [/\b(jalan|road|jalur)\b/i,"Jalan Bersalju"],
+    [/\b(reruntuhan|ruins)\b/i,"Reruntuhan"]
   ];
   for(const [pattern,label] of places)if(pattern.test(low))return label;
   return value.charAt(0).toUpperCase()+value.slice(1);
