@@ -1319,7 +1319,9 @@ export function summarizeAdventureState(state) {
     turn: state?.turn ?? null,
     status: state?.status ?? "active",
     pendingCheck: canonical ? (state.dm?.pendingCheck ?? null) : (state?.pendingCheck ?? null),
-    lastEvents: (canonical ? state.history : state?.events ?? []).slice(-8)
+    lastEvents: (canonical ? state.history : state?.events ?? []).slice(-16),
+    activeCharacterId: state?.activeCharacterId ?? null,
+    conversationContext: (() => { const events=(canonical ? state.history : state?.events ?? []).slice(-16); const lastNpc=[...events].reverse().find(e=>/DM AI|NPC/i.test(String(e.actor||""))); const lastPlayer=[...events].reverse().find(e=>!(/DM AI|NPC/i.test(String(e.actor||"")))); return {lastNpcReply:lastNpc?{actor:lastNpc.actor,text:lastNpc.narration}:null,lastPlayerTurn:lastPlayer?{speaker:lastPlayer.actor,text:lastPlayer.narration}:null,instruction:"Continue the existing conversation with its established NPC. Character selection changes who is speaking, not the world's memory. Do not invent actions or dialogue for party members who did not act."}; })()
   };
 }
 
