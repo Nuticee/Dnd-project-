@@ -213,7 +213,7 @@ export const CHARACTERS = [
     background: "Folk Hero",
     alignment: "Neutral",
     xp: 2700,
-    xpMode: "Milestone",
+    xpMode: "XP",
     subclass: "Champion",
     hp: { current: 19, max: 19 },
     hitDie: "d10",
