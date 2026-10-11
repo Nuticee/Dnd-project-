@@ -888,8 +888,13 @@ function ensureCharacterProgress(){
         existing.xp=null;
         existing.mode="Milestone";
       }else{
-        existing.xp=Number.isFinite(Number(existing.xp))?Number(existing.xp):Number(c.xp)||0;
-        existing.mode=existing.mode||"XP";
+        // Migrate characters previously configured for milestone progression to XP.
+        if(existing.mode==="Milestone"||existing.xp===null||existing.xp===undefined){
+          existing.xp=Number(c.xp)||0;
+        }else{
+          existing.xp=Number.isFinite(Number(existing.xp))?Number(existing.xp):Number(c.xp)||0;
+        }
+        existing.mode=c.xpMode||"XP";
       }
       existing.level=Math.max(1,Math.min(20,Number(existing.level)||Number(c.level)||1));
       if(!("levelUpAvailable" in existing)) existing.levelUpAvailable=null;
