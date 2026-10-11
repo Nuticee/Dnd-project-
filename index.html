@@ -1005,12 +1005,16 @@ function ensurePartyState(){
 }
 function detectPartyMovementCommand(raw){
   const text=String(raw||"").trim();
-  if(!/\\b(pergi|berangkat|menuju|bergerak|jalan|melanjutkan perjalanan|kembali|masuk|keluar|mendatangi)\\b/i.test(text))return null;
-  const names=Game.CHARACTERS.filter(c=>new RegExp("\\b"+c.name.split(/\\s+/).map(x=>x.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\async function submitDMAction(){const input=document.querySelector("#dmInput"),textValue=input.value.trim();if(!textValue)return;ensurePartyState();const partyCommand=detectPartyMovementCommand(textValue);if(partyCommand){applyPartyMovement(partyCommand,textValue);input.value="";return}")).join("\\\\s+")+"\\b","i").test(text));
-  const placeMatch=text.match(/\\b(?:ke|menuju|ke arah|dari)\\s+(?:arah\\s+)?(.+?)(?:[.!?,;]|$)/i);
+  if(!/\b(pergi|berangkat|menuju|bergerak|jalan|melanjutkan perjalanan|kembali|masuk|keluar|mendatangi)\b/i.test(text))return null;
+  const normalized=normalizePlayerName(text);
+  const names=Game.CHARACTERS.filter(c=>{
+    const n=normalizePlayerName(c.name);
+    return n && (" "+normalized+" ").includes(" "+n+" ");
+  });
+  const placeMatch=text.match(/\b(?:ke|menuju|ke arah|dari)\s+(?:arah\s+)?(.+?)(?:[.!?,;]|$)/i);
   let destination=placeMatch?normalizeAdventurePlace(placeMatch[1]):"";
   if(!destination){
-    const m=text.match(/\\b(hutan|desa|village|kedai|tavern|penginapan|gua|goa|cave|gerbang membeku|gerbang|reruntuhan|jalan bersalju)\\b/i);
+    const m=text.match(/\b(hutan|desa|village|kedai|tavern|penginapan|gua|goa|cave|gerbang membeku|gerbang|reruntuhan|jalan bersalju)\b/i);
     if(m)destination=normalizeAdventurePlace(m[1]);
   }
   if(!names.length||!destination)return null;
