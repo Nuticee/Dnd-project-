@@ -1008,8 +1008,10 @@ function detectPartyMovementCommand(raw){
   if(!/\b(pergi|berangkat|menuju|bergerak|jalan|melanjutkan perjalanan|kembali|masuk|keluar|mendatangi)\b/i.test(text))return null;
   const normalized=normalizePlayerName(text);
   const names=Game.CHARACTERS.filter(c=>{
-    const n=normalizePlayerName(c.name);
-    return n && (" "+normalized+" ").includes(" "+n+" ");
+    const full=normalizePlayerName(c.name);
+    const first=full.split(" ")[0];
+    const padded=" "+normalized+" ";
+    return (full&&padded.includes(" "+full+" "))||(first&&padded.includes(" "+first+" "));
   });
   const placeMatch=text.match(/\b(?:ke|menuju|ke arah|dari)\s+(?:arah\s+)?(.+?)(?:[.!?,;]|$)/i);
   let destination=placeMatch?normalizeAdventurePlace(placeMatch[1]):"";
